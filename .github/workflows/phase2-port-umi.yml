@@ -65,6 +65,8 @@ jobs:
           mkdir -p artifacts/umi_bundle
           cp -v target/porting/phase2/summary.txt artifacts/ || true
           cp -v target/porting/phase2/copied_dts.txt artifacts/ || true
+          cp -v target/porting/phase2/seed_dts.txt artifacts/ || true
+          cp -v target/porting/phase2/included_dts.txt artifacts/ || true
           cp -v out/.config artifacts/ || true
           cp -v out/arch/arm64/boot/Image artifacts/ || true
           cp -v out/arch/arm64/boot/Image.gz artifacts/ || true
