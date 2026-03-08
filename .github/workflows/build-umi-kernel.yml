@@ -4,9 +4,8 @@ on:
   workflow_dispatch:
     inputs:
       kernel_repo:
-        description: "Kernel source repo"
+        description: "Kernel source repo (must contain umi_defconfig and kernel VERSION > 5)"
         required: true
-        default: "https://github.com/yefxx/xiaomi-umi-linux-kernel.git"
       kernel_branch:
         description: "Kernel branch"
         required: true
@@ -40,9 +39,19 @@ jobs:
           git clone --depth=1 --branch "${{ github.event.inputs.kernel_branch }}" \
             "${{ github.event.inputs.kernel_repo }}" kernel
 
-      - name: Show kernel version from Makefile
+      - name: Validate kernel source (version + umi defconfig)
         run: |
           grep -E '^(VERSION|PATCHLEVEL|SUBLEVEL)\s*=\s*' kernel/Makefile
+          KV_MAJOR=$(grep -E '^VERSION\s*=\s*' kernel/Makefile | awk '{print $3}')
+          if [ -z "$KV_MAJOR" ] || [ "$KV_MAJOR" -le 5 ]; then
+            echo "[ERROR] Kernel VERSION must be > 5, got: ${KV_MAJOR:-unknown}" >&2
+            exit 1
+          fi
+
+          if [ ! -f kernel/arch/arm64/configs/umi_defconfig ] && [ ! -f kernel/arch/arm64/configs/vendor/umi_defconfig ]; then
+            echo "[ERROR] umi_defconfig not found in source tree. Please provide a proper umi kernel repo/branch." >&2
+            exit 1
+          fi
 
       - name: Pick defconfig (strict for umi)
         id: defconfig

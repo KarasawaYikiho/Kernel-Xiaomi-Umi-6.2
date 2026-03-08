@@ -26,7 +26,10 @@
 
 1. 在 GitHub 创建新仓库并推送本目录内容。
 2. 进入仓库 Actions 页面，手动触发 `Build Xiaomi 10 (umi) Kernel > 5`。
-3. 构建完成后，在 Artifacts 下载 `umi-kernel-*`。
+3. 触发时填写：
+   - `kernel_repo`：你要编译的 GitHub 内核仓库（必须含 `umi_defconfig`，且 `VERSION > 5`）
+   - `kernel_branch`：对应分支
+4. 构建完成后，在 Artifacts 下载 `umi-kernel-*`。
 
 ## 注意
 
