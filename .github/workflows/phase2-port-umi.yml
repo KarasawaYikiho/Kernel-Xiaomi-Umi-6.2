@@ -103,21 +103,31 @@ jobs:
           cp -v target/porting/phase2/summary.txt artifacts/umi_bundle/ || true
 
           dtb_count=0
+          xiaomi_dtb_count=0
           if [ -s artifacts/umi_primary_dtb_paths.txt ]; then
             while IFS= read -r f; do
               [ -f "$f" ] || continue
               cp -v "$f" artifacts/ || true
               cp -v "$f" artifacts/umi_bundle/ || true
               dtb_count=$((dtb_count+1))
+              echo "$f" | grep -Eiq 'xiaomi|umi|sm8250' && xiaomi_dtb_count=$((xiaomi_dtb_count+1)) || true
             done < artifacts/umi_primary_dtb_paths.txt
+          fi
+
+          flash_ready="no"
+          if [ "$xiaomi_dtb_count" -ge 1 ] && [ -f out/arch/arm64/boot/Image ]; then
+            flash_ready="candidate"
           fi
 
           {
             echo "device=${{ github.event.inputs.device }}"
             echo "umi_bundle_dtb_count=$dtb_count"
+            echo "umi_bundle_xiaomi_dtb_count=$xiaomi_dtb_count"
+            echo "flash_ready_hint=$flash_ready"
           } > artifacts/umi_bundle/pack-info.txt
 
           (cd artifacts/umi_bundle && zip -r ../phase2-umi-focused-package.zip .)
+          python3 tools/porting/evaluate_artifact.py || true
 
       - name: Upload artifacts
         if: always()
