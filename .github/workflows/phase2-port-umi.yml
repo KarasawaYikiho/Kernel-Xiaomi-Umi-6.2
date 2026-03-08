@@ -1,0 +1,78 @@
+name: Phase2 Port UMI (SO-TS -> 5+)
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_repo:
+        description: "4.19 source repo"
+        required: true
+        default: "https://github.com/SO-TS/android_kernel_xiaomi_sm8250.git"
+      source_branch:
+        description: "4.19 source branch"
+        required: true
+        default: "android16-aptusitu"
+      target_repo:
+        description: "5+ target repo"
+        required: true
+        default: "https://github.com/yefxx/xiaomi-umi-linux-kernel.git"
+      target_branch:
+        description: "5+ target branch"
+        required: true
+        default: "master"
+      device:
+        description: "device codename"
+        required: true
+        default: "umi"
+
+jobs:
+  port-and-build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout orchestrator repo
+        uses: actions/checkout@v4
+
+      - name: Install deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git bc bison flex libssl-dev make libc6-dev libncurses5-dev \
+            crossbuild-essential-arm64 ccache pahole lz4 xz-utils zstd python3 clang lld llvm
+
+      - name: Clone source and target
+        run: |
+          git clone --depth=1 --branch "${{ github.event.inputs.source_branch }}" "${{ github.event.inputs.source_repo }}" source
+          git clone --depth=1 --branch "${{ github.event.inputs.target_branch }}" "${{ github.event.inputs.target_repo }}" target
+
+      - name: Check target kernel major
+        run: |
+          grep -E '^(VERSION|PATCHLEVEL|SUBLEVEL)\s*=\s*' target/Makefile
+
+      - name: Apply Phase2 migration
+        run: |
+          chmod +x tools/porting/phase2_apply.sh
+          ./tools/porting/phase2_apply.sh "$PWD/source" "$PWD/target" "${{ github.event.inputs.device }}"
+
+      - name: Build target kernel (attempt)
+        env:
+          ARCH: arm64
+        run: |
+          mkdir -p out
+          make -C target O=$PWD/out LLVM=1 LLVM_IAS=1 "${{ github.event.inputs.device }}_defconfig"
+          make -C target O=$PWD/out LLVM=1 LLVM_IAS=1 -j"$(nproc)" Image.gz dtbs modules
+
+      - name: Collect artifacts
+        if: always()
+        run: |
+          mkdir -p artifacts
+          cp -v target/porting/phase2/summary.txt artifacts/ || true
+          cp -v target/porting/phase2/copied_dts.txt artifacts/ || true
+          cp -v out/.config artifacts/ || true
+          cp -v out/arch/arm64/boot/Image artifacts/ || true
+          cp -v out/arch/arm64/boot/Image.gz artifacts/ || true
+          find out/arch/arm64/boot/dts -type f \( -name '*.dtb' -o -name '*.dtbo' \) -exec cp -v {} artifacts/ \; || true
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase2-umi-${{ github.run_number }}
+          path: artifacts/
