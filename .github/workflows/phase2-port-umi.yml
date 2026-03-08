@@ -72,12 +72,14 @@ jobs:
           # diagnostic lists
           find out/arch/arm64/boot/dts -type f \( -name '*.dtb' -o -name '*.dtbo' \) > artifacts/all_dtb_paths.txt || true
 
-          # stricter umi-first matching
-          grep -Ei '/.*(umi|xiaomi-sm8250-common|sm8250-xiaomi-umi).*(\.dtb|\.dtbo)$' artifacts/all_dtb_paths.txt > artifacts/umi_primary_dtb_paths.txt || true
+          # stricter umi-first matching (exclude rumi/lumia/sony false positives)
+          grep -Ei '/.*(sm8250-xiaomi|umi-sm8250|xiaomi-sm8250-common).*(\.dtb|\.dtbo)$' artifacts/all_dtb_paths.txt \
+            | grep -Eiv 'rumi|lumia|sony' > artifacts/umi_primary_dtb_paths.txt || true
 
-          # fallback family matching if strict match is empty
+          # fallback: allow umi/sm8250 family but still exclude obvious non-target boards
           if [ ! -s artifacts/umi_primary_dtb_paths.txt ]; then
-            grep -Ei 'umi|sm8250|lmi|cmi|apollo|thyme|alioth' artifacts/all_dtb_paths.txt > artifacts/umi_primary_dtb_paths.txt || true
+            grep -Ei '(umi|sm8250|lmi|cmi|apollo|thyme|alioth).*(\.dtb|\.dtbo)$' artifacts/all_dtb_paths.txt \
+              | grep -Eiv 'rumi|lumia|sony|hdk|mtp' > artifacts/umi_primary_dtb_paths.txt || true
           fi
 
           cp -v out/arch/arm64/boot/Image artifacts/umi_bundle/ || true

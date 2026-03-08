@@ -8,5 +8,6 @@
 - 启动 Phase 2：新增 `tools/porting/phase2_apply.sh`（defconfig + dts 首批迁移脚本）。
 - 新增 Action：`.github/workflows/phase2-port-umi.yml`（自动执行迁移并尝试编译 5+ 内核）。
 - Phase 2.2：Action 增加 `umi-focused` 产物打包（优先 umi 严格匹配，失败则回退家族匹配），输出 `phase2-umi-focused-package.zip` 用于无刷机条件下的结构验收。
+- Phase 2.3：修正 umi 过滤规则，排除 `rumi/lumia/sony/hdk/mtp` 等误命中 dtb，聚焦 sm8250-xiaomi/umi 主线目标。
 - Phase 2.1：修复 dts 迁移逻辑（递归扫描 + 目标路径映射 + copied_dts 清单）。
 - Phase 2.1：Action 产物增加 `all_dtb_paths.txt` 与 `umi_related_dtb_paths.txt`，便于定位 umi 相关 dtb 是否落地。

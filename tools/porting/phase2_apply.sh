@@ -64,7 +64,7 @@ for rel in "${SRC_ROOTS[@]}"; do
   log "scan DTS recursively in $sroot"
   while IFS= read -r f; do
     b="$(basename "$f")"
-    if [[ "$b" =~ umi|sm8250|lmi|cmi|apollo|thyme|alioth ]]; then
+    if [[ "$b" =~ umi|sm8250|lmi|cmi|apollo|thyme|alioth ]] && [[ ! "$b" =~ rumi|lumia|sony ]]; then
       # keep relative subtree under chosen target root
       subdir="$(dirname "${f#$sroot/}")"
       [[ "$subdir" == "." ]] && subdir=""
