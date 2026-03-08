@@ -1,0 +1,80 @@
+name: Build Xiaomi 10 (umi) Kernel > 5
+
+on:
+  workflow_dispatch:
+    inputs:
+      kernel_repo:
+        description: "Kernel source repo"
+        required: true
+        default: "https://github.com/yefxx/xiaomi-umi-linux-kernel.git"
+      kernel_branch:
+        description: "Kernel branch"
+        required: true
+        default: "master"
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout builder repo
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            git bc bison flex libssl-dev make libc6-dev libncurses5-dev \
+            crossbuild-essential-arm64 ccache pahole lz4 xz-utils zstd \
+            python3 python3-pip
+
+      - name: Install LLVM/Clang
+        run: |
+          sudo apt-get install -y clang lld llvm
+          clang --version
+
+      - name: Clone kernel source (GitHub)
+        run: |
+          git clone --depth=1 --branch "${{ github.event.inputs.kernel_branch }}" \
+            "${{ github.event.inputs.kernel_repo }}" kernel
+
+      - name: Show kernel version from Makefile
+        run: |
+          grep -E '^(VERSION|PATCHLEVEL|SUBLEVEL)\s*=\s*' kernel/Makefile
+
+      - name: Pick defconfig
+        id: defconfig
+        run: |
+          if [ -f kernel/arch/arm64/configs/umi_defconfig ]; then
+            echo "name=umi_defconfig" >> "$GITHUB_OUTPUT"
+          elif [ -f kernel/arch/arm64/configs/vendor/umi_defconfig ]; then
+            echo "name=vendor/umi_defconfig" >> "$GITHUB_OUTPUT"
+          elif [ -f kernel/arch/arm64/configs/gki_defconfig ]; then
+            echo "name=gki_defconfig" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=defconfig" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build kernel
+        env:
+          ARCH: arm64
+        run: |
+          mkdir -p out
+          make -C kernel O=$PWD/out LLVM=1 LLVM_IAS=1 "${{ steps.defconfig.outputs.name }}"
+          make -C kernel O=$PWD/out LLVM=1 LLVM_IAS=1 -j"$(nproc)" Image.gz dtbs modules
+
+      - name: Collect artifacts
+        run: |
+          mkdir -p artifacts
+          cp -v out/.config artifacts/ || true
+          cp -v out/arch/arm64/boot/Image.gz artifacts/ || true
+          cp -v out/arch/arm64/boot/Image artifacts/ || true
+          find out/arch/arm64/boot/dts -type f \( -name '*.dtb' -o -name '*.dtbo' \) -exec cp -v {} artifacts/ \; || true
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: umi-kernel-${{ github.run_number }}
+          path: artifacts/
