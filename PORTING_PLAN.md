@@ -9,14 +9,14 @@
 
 ## 实施阶段
 
-### Phase 0 - 基线冻结
-- [ ] 锁定 5+ 基线仓库 + 分支
-- [ ] 建立分支策略：`port/phase-*`
+### Phase 0 - 基线冻结（已完成）
+- [x] 锁定 5+ 基线仓库 + 分支
+- [x] 建立分支策略：`port/phase-*`
 
-### Phase 1 - 能力盘点（进行中）
-- [ ] 提取 SO-TS 的设备 defconfig、dts、techpack、MIUI patch 点
-- [ ] 提取 5+ 基线的对应能力清单
-- [ ] 生成“可直接移植/需改写/不可移植”分类表
+### Phase 1 - 能力盘点（已完成）
+- [x] 提取 SO-TS 的设备 defconfig、dts、techpack、MIUI patch 点
+- [x] 提取 5+ 基线的对应能力清单
+- [x] 生成“可直接移植/需改写/不可移植”分类表
 
 ### Phase 2 - 最小可启动移植（已启动）
 - [x] defconfig 迁移流水线（umi，自动化脚本）
