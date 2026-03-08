@@ -10,6 +10,7 @@
 - Phase 2.2：Action 增加 `umi-focused` 产物打包（优先 umi 严格匹配，失败则回退家族匹配），输出 `phase2-umi-focused-package.zip` 用于无刷机条件下的结构验收。
 - Phase 2.3：修正 umi 过滤规则，排除 `rumi/lumia/sony/hdk/mtp` 等误命中 dtb，聚焦 sm8250-xiaomi/umi 主线目标。
 - Phase 2.4：迁移脚本升级为 include-aware（递归解析并复制 dts/dtsi 引用依赖），并输出 `seed_dts.txt` / `included_dts.txt` 供结构验收。
+- Phase 2.5：新增 `tools/porting/build_dtb_manifest.py`，优先依据“已迁移 dts 清单”生成目标 dtb manifest，减少 umi 包误收录。
 - 完成 Phase 0：新增 `porting/baseline-lock.json` 与 `porting/BRANCHING.md`。
 - 完成 Phase 1：新增 `porting/classification-phase1.md`，并将盘点与分类结论固化。
 - Phase 2.1：修复 dts 迁移逻辑（递归扫描 + 目标路径映射 + copied_dts 清单）。
