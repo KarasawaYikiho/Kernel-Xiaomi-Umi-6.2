@@ -69,6 +69,7 @@ After each `phase2-port-umi.yml` run, check in order:
 - `artifacts/build-error-summary.txt` (condensed error clues from make logs)
 - `artifacts/artifact-index.txt` (artifact list with file sizes)
 - `artifacts/artifact-summary.md` (human-friendly markdown summary)
+- `artifacts/phase2-report-validate.txt` (schema/key presence check)
 
 ## Repository Layout
 

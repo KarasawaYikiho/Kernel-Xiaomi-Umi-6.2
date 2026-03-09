@@ -235,6 +235,11 @@ jobs:
         run: |
           python3 tools/porting/summarize_artifacts_markdown.py || true
 
+      - name: Validate phase2 report schema
+        if: always()
+        run: |
+          python3 tools/porting/validate_phase2_report.py || true
+
       - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v4
