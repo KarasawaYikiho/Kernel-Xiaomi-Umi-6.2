@@ -18,6 +18,7 @@
 - `build_phase2_report.py` 新增 `next_action` 决策提示字段（`ready-for-action-test` / `fix-anykernel-packaging` / `collect-more-data`），便于减少人工判断成本。
 - 新增 `tools/porting/analyze_dtb_miss.py`，对 `dtb-postcheck` 的 miss 列表做桶化统计，输出 `artifacts/dtb-miss-analysis.txt`。
 - `phase2-port-umi.yml` 接入 `analyze_dtb_miss.py`，并在 `phase2-report.txt` 汇总 `miss_bucket_total/miss_top_buckets`，便于下轮定向补齐。
+- `phase2-port-umi.yml` 新增 `artifacts/run-meta.txt`（run_id/run_number/sha/ref + 输入参数快照），便于跨运行对比与回溯。
 
 ## 2026-03-08
 - 初始化 5+ 移植工程骨架。

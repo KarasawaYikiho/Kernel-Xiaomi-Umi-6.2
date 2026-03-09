@@ -179,6 +179,23 @@ jobs:
         run: |
           python3 tools/porting/build_phase2_report.py || true
 
+      - name: Write run metadata
+        if: always()
+        run: |
+          mkdir -p artifacts
+          {
+            echo "workflow=phase2-port-umi"
+            echo "run_id=${{ github.run_id }}"
+            echo "run_number=${{ github.run_number }}"
+            echo "sha=${{ github.sha }}"
+            echo "ref=${{ github.ref }}"
+            echo "device=${{ github.event.inputs.device }}"
+            echo "source_repo=${{ github.event.inputs.source_repo }}"
+            echo "source_branch=${{ github.event.inputs.source_branch }}"
+            echo "target_repo=${{ github.event.inputs.target_repo }}"
+            echo "target_branch=${{ github.event.inputs.target_branch }}"
+          } > artifacts/run-meta.txt
+
       - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v4
