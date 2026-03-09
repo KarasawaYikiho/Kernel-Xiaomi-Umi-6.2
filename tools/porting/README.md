@@ -46,6 +46,7 @@ This directory contains the automation chain used by `phase2-port-umi.yml`.
 - **AnyKernel packaging orchestration:** `build_anykernel_candidate.sh` (builds candidate AnyKernel zip + diagnostics)
 - **Run metadata orchestration:** `write_run_meta.sh` (records run/input metadata)
 - **Postprocess orchestration:** `run_postprocess_suite.sh` (runs post-build reporting scripts in CI)
+- **Repository sanity checks:** `repo_sanity_check.py` (python compile, workflow script refs, markdown link checks)
 
 ## Local Dry-Run Notes
 

@@ -119,6 +119,14 @@ Additional diagnostics:
 - Tooling script index: `tools/porting/README.md`
 - Chinese README: `README.zh-CN.md`
 
+## Repository sanity check
+
+Run:
+
+- `python tools/porting/repo_sanity_check.py`
+
+Checks include Python script compilation, workflow script references, and markdown local-link validity.
+
 ## Contributing
 
 - Guide: `CONTRIBUTING.md`
