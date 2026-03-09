@@ -25,6 +25,16 @@ def main() -> int:
     dtb = parse_kv(ART / "dtb-postcheck.txt")
     anyk = parse_kv(ART / "anykernel-info.txt")
 
+    # derive a simple decision hint for next step automation
+    flash_status = flash.get('status', 'unknown')
+    anykernel_ok = anyk.get('anykernel_ok', 'no')
+    hit_ratio = dtb.get('hit_ratio', '0.000')
+    next_action = 'collect-more-data'
+    if flash_status == 'candidate' and anykernel_ok == 'yes':
+        next_action = 'ready-for-action-test'
+    elif flash_status == 'candidate' and anykernel_ok != 'yes':
+        next_action = 'fix-anykernel-packaging'
+
     lines = [
         "phase2_report=1",
         f"device={pack.get('device', summary.get('device', 'unknown'))}",
@@ -37,11 +47,12 @@ def main() -> int:
         f"manifest_wanted={dtb.get('wanted', '0')}",
         f"manifest_hit={dtb.get('hit', '0')}",
         f"manifest_miss={dtb.get('miss', '0')}",
-        f"manifest_hit_ratio={dtb.get('hit_ratio', '0.000')}",
-        f"anykernel_ok={anyk.get('anykernel_ok', 'no')}",
+        f"manifest_hit_ratio={hit_ratio}",
+        f"anykernel_ok={anykernel_ok}",
         f"anykernel_has_imagegz={anyk.get('has_imagegz', 'no')}",
         f"anykernel_has_dtb={anyk.get('has_dtb', 'no')}",
         f"anykernel_dtb_source={anyk.get('dtb_source', '')}",
+        f"next_action={next_action}",
     ]
 
     OUT.write_text("\n".join(lines) + "\n", encoding="utf-8")
