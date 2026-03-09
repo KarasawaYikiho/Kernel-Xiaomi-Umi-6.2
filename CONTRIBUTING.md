@@ -1,5 +1,7 @@
 # Contributing
 
+[中文贡献指南（CONTRIBUTING.zh-CN.md）](./CONTRIBUTING.zh-CN.md)
+
 Thanks for helping improve **Kernel-Xiaomi-Umi**.
 
 ## Scope

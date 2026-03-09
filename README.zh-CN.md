@@ -120,7 +120,8 @@ Phase2 迁移 + 构建 + 诊断流程：
 
 ## 贡献
 
-- 贡献指南：`CONTRIBUTING.md`
+- 中文贡献指南：`CONTRIBUTING.zh-CN.md`
+- 英文贡献指南：`CONTRIBUTING.md`
 - 代码所有者：`.github/CODEOWNERS`
 
 ## 许可证
