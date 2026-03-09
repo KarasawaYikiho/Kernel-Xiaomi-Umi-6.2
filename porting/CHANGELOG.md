@@ -12,6 +12,8 @@
 - 优化 `build_dtb_manifest.py`：增加 umi 优先级排序（`sm8250-xiaomi-umi*` > `umi-sm8250*` > `xiaomi-sm8250-common*`），提升首选 dtb 命中概率。
 - 优化 `dtb_postcheck.py`：新增 `hit_ratio` 指标，便于单次构建后快速评估 manifest 命中质量趋势。
 - 新增仓库级 `.gitignore`（Python `__pycache__` / `*.pyc` 等），减少本地调试产生的无关变更噪音。
+- 新增 `tools/porting/build_phase2_report.py`，汇总 `summary/pack-info/flash-readiness/dtb-postcheck/anykernel-info` 为单文件 `artifacts/phase2-report.txt`。
+- `phase2-port-umi.yml` 增加“Generate consolidated phase2 report”步骤，单次 Action 即可直接读取关键结论。
 
 ## 2026-03-08
 - 初始化 5+ 移植工程骨架。

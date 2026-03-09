@@ -173,6 +173,11 @@ jobs:
             echo "dtb_source=$anykernel_dtb_source"
           } > artifacts/anykernel-info.txt
 
+      - name: Generate consolidated phase2 report
+        if: always()
+        run: |
+          python3 tools/porting/build_phase2_report.py || true
+
       - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v4
