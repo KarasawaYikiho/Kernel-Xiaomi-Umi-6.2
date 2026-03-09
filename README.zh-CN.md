@@ -1,0 +1,128 @@
+# Kernel-Xiaomi-Umi
+
+[English README](./README.md)
+
+Kernel-Xiaomi-Umi 是一个面向 Xiaomi 10（umi）内核迁移任务的**编排仓库**，用于自动化执行 Phase2 迁移、构建尝试、诊断汇总与工件打包。
+
+> 本仓库**不是**完整内核源码仓。
+
+## 仓库功能
+
+- 通过 GitHub Actions 执行内核构建/迁移流程
+- 执行 SO-TS 4.19 → 5+ 基线的 Phase2 迁移
+- 生成结构化诊断与决策工件
+- 产出候选打包结果（含 AnyKernel 候选包）
+
+## 上游参考
+
+- SO-TS 参考源：`SO-TS/android_kernel_xiaomi_sm8250`
+- URL：<https://github.com/SO-TS/android_kernel_xiaomi_sm8250>
+
+## 工作流
+
+### 快速开始（推荐）
+
+先以默认参数运行 **`phase2-port-umi.yml`**，随后按顺序查看：
+
+1. `artifacts/phase2-report.txt`
+2. `artifacts/build-exit.txt`
+3. `artifacts/build-error-summary.txt`
+4. `artifacts/anykernel-info.txt`
+5. `artifacts/next-focus.txt`
+
+该顺序可快速判断本轮是否通过，以及下一步应优化方向。
+
+### `build-umi-kernel.yml`
+
+参考式云端构建流程：
+
+1. 安装依赖并配置 ccache
+2. 下载 ZyC Clang 15
+3. 克隆目标内核仓库/分支
+4. 按设备参数运行 `build.sh`（可选 KernelSU）
+5. 上传构建产物
+
+输入参数：
+
+- `kernel_repo`
+- `kernel_branch`
+- `device`（默认 `umi`）
+- `ksu`（默认 `false`）
+
+### `phase2-port-umi.yml`
+
+Phase2 迁移 + 构建 + 诊断流程：
+
+1. 准备 source/target 源码树
+2. 执行 Phase2 迁移
+3. 执行核心构建与 DTB 目标构建
+4. 收集工件并生成 umi 聚焦包
+5. 构建 AnyKernel 候选包
+6. 生成汇总报告并上传全部工件
+
+输入参数：
+
+- `source_repo`
+- `source_branch`
+- `target_repo`
+- `target_branch`
+- `device`（默认 `umi`）
+
+## 关键脚本
+
+核心编排脚本：
+
+- `tools/porting/install_ci_deps.sh`
+- `tools/porting/prepare_phase2_sources.sh`
+- `tools/porting/check_target_kernel_version.sh`
+- `tools/porting/apply_phase2_migration.sh`
+- `tools/porting/run_phase2_build.sh`
+- `tools/porting/collect_phase2_artifacts.sh`
+- `tools/porting/build_anykernel_candidate.sh`
+- `tools/porting/write_run_meta.sh`
+- `tools/porting/run_postprocess_suite.sh`
+
+完整脚本索引：
+
+- `tools/porting/README.md`
+
+## Phase2 工件速读
+
+建议优先查看：
+
+- `artifacts/phase2-report.txt`：单文件汇总
+- `artifacts/build-exit.txt`：`defconfig_rc` / `build_rc` / `dtbs_rc`
+- `artifacts/build-error-summary.txt`：关键报错摘要
+- `artifacts/anykernel-info.txt`：AnyKernel 候选包状态
+- `artifacts/next-focus.txt`：下一轮优化建议
+
+补充诊断工件：
+
+- `artifacts/make-defconfig.log`
+- `artifacts/make-build.log`
+- `artifacts/make-target-dtbs.log`
+- `artifacts/make-dtb-manifest.log`
+- `artifacts/dtb-postcheck.txt`
+- `artifacts/dtb-miss-analysis.txt`
+- `artifacts/phase2-metrics.json`
+
+## 仓库结构
+
+- `.github/workflows/`：CI 工作流
+- `tools/porting/`：迁移与诊断工具
+- `porting/`：计划、盘点、报告、变更记录
+
+## 文档入口
+
+- 移植文档索引：`porting/README.md`
+- 脚本索引：`tools/porting/README.md`
+- 英文文档：`README.md`
+
+## 贡献
+
+- 贡献指南：`CONTRIBUTING.md`
+- 代码所有者：`.github/CODEOWNERS`
+
+## 许可证
+
+本项目采用 **GNU GPL v2.0** 许可证，详见 `LICENSE`。

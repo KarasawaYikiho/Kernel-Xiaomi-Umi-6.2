@@ -1,22 +1,29 @@
 # Kernel-Xiaomi-Umi
 
-Xiaomi 10 (umi) kernel build/porting orchestrator.
+[中文文档（README.zh-CN.md）](./README.zh-CN.md)
 
-This repository provides GitHub Actions workflows and helper scripts to:
-- build kernel artifacts in CI
-- run Phase2 porting steps from SO-TS 4.19 to a 5+ baseline
-- generate diagnostics and packaging candidates (including AnyKernel candidate zip)
+Kernel-Xiaomi-Umi is a **porting orchestrator** for Xiaomi 10 (umi) kernel migration work.
+It is designed to automate Phase2 migration, CI build attempts, diagnostics, and artifact packaging.
 
-## Reference
+> This repository is **not** a full kernel source tree.
 
-- Source reference: `SO-TS/android_kernel_xiaomi_sm8250`
-- URL: https://github.com/SO-TS/android_kernel_xiaomi_sm8250
+## What this repository does
+
+- Runs CI-based kernel build/porting workflows
+- Applies Phase2 migration from SO-TS 4.19 toward a 5+ baseline
+- Generates structured diagnostics and decision artifacts
+- Produces candidate packaging artifacts (including AnyKernel candidate zip)
+
+## Upstream references
+
+- SO-TS source reference: `SO-TS/android_kernel_xiaomi_sm8250`
+- URL: <https://github.com/SO-TS/android_kernel_xiaomi_sm8250>
 
 ## Workflows
 
-### Quick Start (Phase2)
+### Quick Start (recommended)
 
-Run `phase2-port-umi.yml` with default inputs first, then review artifacts in this order:
+Run **`phase2-port-umi.yml`** with default inputs, then inspect artifacts in this order:
 
 1. `artifacts/phase2-report.txt`
 2. `artifacts/build-exit.txt`
@@ -24,102 +31,99 @@ Run `phase2-port-umi.yml` with default inputs first, then review artifacts in th
 4. `artifacts/anykernel-info.txt`
 5. `artifacts/next-focus.txt`
 
-This gives a fast pass/fail + next-action loop without digging through full logs first.
+This provides a fast pass/fail + next-action loop.
 
+### `build-umi-kernel.yml`
 
-### 1) build-umi-kernel.yml
 Reference-style cloud build flow:
-1. install dependencies + setup ccache
-2. download ZyC Clang 15
-3. clone target kernel repo/branch
-4. run `build.sh` with selected `device` and optional `ksu`
-5. upload build artifacts
+
+1. Install dependencies + setup ccache
+2. Download ZyC Clang 15
+3. Clone target kernel repo/branch
+4. Run `build.sh` with selected device and optional KernelSU
+5. Upload build artifacts
 
 Inputs:
+
 - `kernel_repo`
 - `kernel_branch`
 - `device` (default: `umi`)
 - `ksu` (default: `false`)
 
-### 2) phase2-port-umi.yml
-Phase2 migration + build attempt flow:
-1. clone source (4.19) and target (5+) trees
-2. apply `tools/porting/phase2_apply.sh`
-3. attempt target kernel build
-4. collect dtb diagnostics and umi-focused bundle
-5. generate AnyKernel candidate package
-6. generate consolidated report and upload artifacts
+### `phase2-port-umi.yml`
+
+Phase2 migration + build + diagnostics flow:
+
+1. Prepare source/target trees
+2. Apply Phase2 migration
+3. Run core build and DTB-target attempts
+4. Collect artifacts and umi-focused package
+5. Build AnyKernel candidate
+6. Generate reports and upload all artifacts
 
 Inputs:
+
 - `source_repo`
 - `source_branch`
 - `target_repo`
 - `target_branch`
 - `device` (default: `umi`)
 
-## Key Scripts
+## Key scripts
 
-- `tools/porting/phase2_apply.sh` — defconfig + include-aware dts/dtsi migration
-- `tools/porting/build_dtb_manifest.py` — derive target dtb manifest from migrated dts list
-- `tools/porting/dtb_postcheck.py` — hit/miss + hit_ratio stats for manifest mapping
-- `tools/porting/analyze_dtb_miss.py` — bucketized miss analysis
-- `tools/porting/evaluate_artifact.py` — flash-readiness heuristic
-- `tools/porting/build_phase2_report.py` — consolidated phase2 summary
-- `tools/porting/README.md` — full script index and execution order
-- `tools/porting/install_ci_deps.sh` — CI dependency bootstrapper
-- `tools/porting/prepare_phase2_sources.sh` — source/target clone orchestrator
-- `tools/porting/check_target_kernel_version.sh` — target kernel version probe
-- `tools/porting/apply_phase2_migration.sh` — phase2 migration wrapper
-- `tools/porting/run_phase2_build.sh` — kernel build orchestrator (defconfig/build + exit snapshot)
-- `tools/porting/collect_phase2_artifacts.sh` — artifact collection + umi-focused packaging orchestrator
-- `tools/porting/build_anykernel_candidate.sh` — AnyKernel candidate packaging orchestrator
-- `tools/porting/write_run_meta.sh` — run metadata writer
-- `tools/porting/run_postprocess_suite.sh` — one-shot postprocess orchestrator
+Core wrappers / orchestrators:
 
-## Artifact Quick Read (Phase2)
+- `tools/porting/install_ci_deps.sh`
+- `tools/porting/prepare_phase2_sources.sh`
+- `tools/porting/check_target_kernel_version.sh`
+- `tools/porting/apply_phase2_migration.sh`
+- `tools/porting/run_phase2_build.sh`
+- `tools/porting/collect_phase2_artifacts.sh`
+- `tools/porting/build_anykernel_candidate.sh`
+- `tools/porting/write_run_meta.sh`
+- `tools/porting/run_postprocess_suite.sh`
 
-After each `phase2-port-umi.yml` run, check in order:
-- `artifacts/phase2-report.txt` (single-file summary)
-- `artifacts/run-meta.txt` (run inputs + revision metadata)
-- `artifacts/artifact-completeness.txt` (required/optional artifact completeness)
-- `artifacts/build-exit.txt` (`defconfig_rc` / `build_rc` / `dtbs_rc`)
-- `artifacts/make-defconfig.log` / `artifacts/make-build.log` / `artifacts/make-target-dtbs.log`
-- `artifacts/make-dtb-manifest.log` (manifest generation log)
-- `artifacts/flash-readiness.txt`
+Detailed script index:
+
+- `tools/porting/README.md`
+
+## Phase2 artifact guide
+
+After each run, check:
+
+- `artifacts/phase2-report.txt` — single-file summary
+- `artifacts/build-exit.txt` — `defconfig_rc` / `build_rc` / `dtbs_rc`
+- `artifacts/build-error-summary.txt` — condensed error clues
+- `artifacts/anykernel-info.txt` — candidate packaging status
+- `artifacts/next-focus.txt` — suggested next optimization direction
+
+Additional diagnostics:
+
+- `artifacts/make-defconfig.log`
+- `artifacts/make-build.log`
+- `artifacts/make-target-dtbs.log`
+- `artifacts/make-dtb-manifest.log`
 - `artifacts/dtb-postcheck.txt`
 - `artifacts/dtb-miss-analysis.txt`
-- `artifacts/anykernel-info.txt`
-- `artifacts/next-focus.txt` (recommended next optimization direction)
-- `artifacts/build-error-summary.txt` (condensed error clues from make logs)
-- `artifacts/artifact-index.txt` (artifact list with file sizes)
-- `artifacts/artifact-summary.md` (human-friendly markdown summary)
-- `artifacts/phase2-report-validate.txt` (schema/key presence check)
-- `artifacts/phase2-metrics.json` (structured metrics for automation/dashboard)
-- `artifacts/status-badge-line.txt` (one-line status snapshot)
-- `artifacts/artifact-sha256.txt` (sha256 checksums for uploaded artifacts)
+- `artifacts/phase2-metrics.json`
 
-## Repository Layout
+## Repository layout
 
 - `.github/workflows/` — CI workflows
 - `tools/porting/` — migration/analysis tooling
 - `porting/` — plans, inventory, reports, changelog
 
-## Documentation Entry
+## Documentation
 
 - Porting docs index: `porting/README.md`
 - Tooling script index: `tools/porting/README.md`
-
-## Style Notes
-
-- This repo is an **orchestrator**, not a full kernel source tree.
-- Prioritize reproducible CI outputs over one-off local fixes.
-- Keep new diagnostics under `tools/porting/` and document them in `tools/porting/README.md`.
+- Chinese README: `README.zh-CN.md`
 
 ## Contributing
 
-- Contribution guide: `CONTRIBUTING.md`
+- Guide: `CONTRIBUTING.md`
 - Code owners: `.github/CODEOWNERS`
 
 ## License
 
-See `LICENSE`.
+Licensed under **GNU GPL v2.0**. See `LICENSE`.
