@@ -1,6 +1,6 @@
 # Porting Changelog
 
-> Milestone-only changelog. Detailed bullets are archived in `CHANGELOG-archive-2026-03-09.md`.
+> Milestone-only changelog for long-term maintainability.
 
 ## 2026-03-09
 - Added AnyKernel candidate zip packaging in Phase2 workflow (`AnyKernel3-umi-candidate.zip`).
