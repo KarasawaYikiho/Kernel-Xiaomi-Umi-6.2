@@ -66,6 +66,7 @@ Inputs:
 - `tools/porting/evaluate_artifact.py` — flash-readiness heuristic
 - `tools/porting/build_phase2_report.py` — consolidated phase2 summary
 - `tools/porting/README.md` — full script index and execution order
+- `tools/porting/install_ci_deps.sh` — CI dependency bootstrapper
 - `tools/porting/prepare_phase2_sources.sh` — source/target clone orchestrator
 - `tools/porting/check_target_kernel_version.sh` — target kernel version probe
 - `tools/porting/apply_phase2_migration.sh` — phase2 migration wrapper

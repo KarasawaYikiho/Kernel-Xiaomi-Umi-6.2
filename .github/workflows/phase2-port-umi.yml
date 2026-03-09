@@ -38,9 +38,8 @@ jobs:
 
       - name: Install deps
         run: |
-          sudo apt-get update
-          sudo apt-get install -y git bc bison flex libssl-dev make libc6-dev libncurses5-dev \
-            crossbuild-essential-arm64 ccache pahole lz4 xz-utils zstd python3 clang lld llvm zip
+          chmod +x tools/porting/install_ci_deps.sh
+          ./tools/porting/install_ci_deps.sh
 
       - name: Clone source and target
         run: |

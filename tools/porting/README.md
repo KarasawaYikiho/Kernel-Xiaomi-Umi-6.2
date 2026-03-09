@@ -4,23 +4,25 @@ This directory contains the automation chain used by `phase2-port-umi.yml`.
 
 ## Pipeline Order (as used in CI)
 
-1. `prepare_phase2_sources.sh`
+1. `install_ci_deps.sh`
+   - Installs required CI packages for build and diagnostics.
+2. `prepare_phase2_sources.sh`
    - Clones source and target trees into `source/` and `target/`.
-2. `check_target_kernel_version.sh`
+3. `check_target_kernel_version.sh`
    - Prints target kernel version tuple from `target/Makefile`.
-3. `apply_phase2_migration.sh`
+4. `apply_phase2_migration.sh`
    - Wrapper around `phase2_apply.sh` for device-specific migration.
-4. `run_phase2_build.sh`
+5. `run_phase2_build.sh`
    - Runs defconfig/build and writes `artifacts/build-exit.txt` + make logs.
-5. `collect_phase2_artifacts.sh`
+6. `collect_phase2_artifacts.sh`
    - Collects build outputs, resolves primary DTB candidates, packages umi bundle, and writes flash-readiness inputs.
-6. `build_anykernel_candidate.sh`
+7. `build_anykernel_candidate.sh`
    - Packages AnyKernel3 candidate zip and writes `artifacts/anykernel-info.txt`.
-7. `build_phase2_report.py`  
+8. `build_phase2_report.py`  
    - Generates `artifacts/phase2-report.txt`.
-8. `write_run_meta.sh`
+9. `write_run_meta.sh`
    - Writes normalized workflow/run/input metadata to `artifacts/run-meta.txt`.
-9. Post-processing suite:
+10. Post-processing suite:
    - `check_artifact_completeness.py`
    - `suggest_next_focus.py`
    - `extract_build_errors.py`
