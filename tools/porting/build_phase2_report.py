@@ -24,6 +24,7 @@ def main() -> int:
     flash = parse_kv(ART / "flash-readiness.txt")
     dtb = parse_kv(ART / "dtb-postcheck.txt")
     anyk = parse_kv(ART / "anykernel-info.txt")
+    missa = parse_kv(ART / "dtb-miss-analysis.txt")
 
     # derive a simple decision hint for next step automation
     flash_status = flash.get('status', 'unknown')
@@ -52,6 +53,8 @@ def main() -> int:
         f"anykernel_has_imagegz={anyk.get('has_imagegz', 'no')}",
         f"anykernel_has_dtb={anyk.get('has_dtb', 'no')}",
         f"anykernel_dtb_source={anyk.get('dtb_source', '')}",
+        f"miss_bucket_total={missa.get('bucket_total', '0')}",
+        f"miss_top_buckets={missa.get('top_buckets', '')}",
         f"next_action={next_action}",
     ]
 

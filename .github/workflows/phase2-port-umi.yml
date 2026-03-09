@@ -87,6 +87,7 @@ jobs:
           fi
 
           python3 tools/porting/dtb_postcheck.py || true
+          python3 tools/porting/analyze_dtb_miss.py || true
 
           # fallback 1: strict umi/xiaomi/sm8250 path matching
           if [ ! -s artifacts/umi_primary_dtb_paths.txt ]; then

@@ -16,6 +16,8 @@
 - `phase2-port-umi.yml` 增加“Generate consolidated phase2 report”步骤，单次 Action 即可直接读取关键结论。
 - README 新增“Phase2 产物速读”，固定优先查看的关键产物路径，减少人工定位时间。
 - `build_phase2_report.py` 新增 `next_action` 决策提示字段（`ready-for-action-test` / `fix-anykernel-packaging` / `collect-more-data`），便于减少人工判断成本。
+- 新增 `tools/porting/analyze_dtb_miss.py`，对 `dtb-postcheck` 的 miss 列表做桶化统计，输出 `artifacts/dtb-miss-analysis.txt`。
+- `phase2-port-umi.yml` 接入 `analyze_dtb_miss.py`，并在 `phase2-report.txt` 汇总 `miss_bucket_total/miss_top_buckets`，便于下轮定向补齐。
 
 ## 2026-03-08
 - 初始化 5+ 移植工程骨架。
