@@ -13,7 +13,7 @@ This directory contains the automation chain used by `phase2-port-umi.yml`.
 4. `apply_phase2_migration.sh`
    - Wrapper around `phase2_apply.sh` for device-specific migration.
 5. `run_phase2_build.sh`
-   - Runs defconfig, core build (`Image.gz` + modules), then DTB build; writes `artifacts/build-exit.txt` and build logs.
+   - Runs defconfig, core build (`Image.gz` + modules), then preferred DTB targets from manifest (fallback to matrix DTB build); writes `artifacts/build-exit.txt` and build logs.
 6. `collect_phase2_artifacts.sh`
    - Collects build outputs, resolves primary DTB candidates, packages umi bundle, and writes flash-readiness inputs.
 7. `build_anykernel_candidate.sh`
