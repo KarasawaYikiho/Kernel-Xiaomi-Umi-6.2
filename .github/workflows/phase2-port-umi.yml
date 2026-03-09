@@ -219,55 +219,11 @@ jobs:
             echo "target_branch=${{ github.event.inputs.target_branch }}"
           } > artifacts/run-meta.txt
 
-      - name: Check artifact completeness
+      - name: Run postprocess suite
         if: always()
         run: |
-          python3 tools/porting/check_artifact_completeness.py || true
-
-      - name: Suggest next focus
-        if: always()
-        run: |
-          python3 tools/porting/suggest_next_focus.py || true
-
-      - name: Extract build error summary
-        if: always()
-        run: |
-          python3 tools/porting/extract_build_errors.py || true
-
-      - name: Build artifact index
-        if: always()
-        run: |
-          python3 tools/porting/build_artifact_index.py || true
-
-      - name: Build artifact markdown summary
-        if: always()
-        run: |
-          python3 tools/porting/summarize_artifacts_markdown.py || true
-
-      - name: Validate phase2 report schema
-        if: always()
-        run: |
-          python3 tools/porting/validate_phase2_report.py || true
-
-      - name: Export metrics json
-        if: always()
-        run: |
-          python3 tools/porting/collect_metrics_json.py || true
-
-      - name: Build status badge line
-        if: always()
-        run: |
-          python3 tools/porting/build_status_badge_line.py || true
-
-      - name: Build artifact checksums
-        if: always()
-        run: |
-          python3 tools/porting/build_artifact_checksums.py || true
-
-      - name: Enforce quality gates
-        if: always()
-        run: |
-          python3 tools/porting/enforce_quality_gates.py "${{ github.event.inputs.quality_gate_mode }}"
+          chmod +x tools/porting/run_postprocess_suite.sh
+          ./tools/porting/run_postprocess_suite.sh "${{ github.event.inputs.quality_gate_mode }}"
 
       - name: Upload artifacts
         if: always()

@@ -54,6 +54,7 @@ Inputs:
 - `tools/porting/evaluate_artifact.py` — flash-readiness heuristic
 - `tools/porting/build_phase2_report.py` — consolidated phase2 summary
 - `tools/porting/README.md` — full script index and execution order
+- `tools/porting/run_postprocess_suite.sh` — one-shot postprocess + quality gate orchestrator
 
 ## Artifact Quick Read (Phase2)
 
