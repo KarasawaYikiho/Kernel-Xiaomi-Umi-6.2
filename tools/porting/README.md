@@ -16,7 +16,9 @@ This directory contains the automation chain used by `phase2-port-umi.yml`.
    - Emits flash-readiness hints.
 6. `build_phase2_report.py`  
    - Generates `artifacts/phase2-report.txt`.
-7. Post-processing suite:
+7. `collect_phase2_artifacts.sh`
+   - Collects build outputs, resolves primary DTB candidates, packages umi bundle, and writes flash-readiness inputs.
+8. Post-processing suite:
    - `check_artifact_completeness.py`
    - `suggest_next_focus.py`
    - `extract_build_errors.py`
@@ -34,6 +36,7 @@ This directory contains the automation chain used by `phase2-port-umi.yml`.
 - **Readiness/reporting:** `evaluate_artifact.py`, `build_phase2_report.py`, `validate_phase2_report.py`
 - **CI artifact UX:** `build_artifact_index.py`, `summarize_artifacts_markdown.py`, `build_status_badge_line.py`, `build_artifact_checksums.py`
 - **Automation metrics:** `collect_metrics_json.py`, `check_artifact_completeness.py`, `suggest_next_focus.py`, `extract_build_errors.py`
+- **Build artifact orchestration:** `collect_phase2_artifacts.sh` (collect/package primary artifacts after build)
 - **Postprocess orchestration:** `run_postprocess_suite.sh` (runs post-build reporting scripts in CI)
 
 ## Local Dry-Run Notes
