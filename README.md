@@ -82,6 +82,11 @@ After each `phase2-port-umi.yml` run, check in order:
 - `tools/porting/` — migration/analysis tooling
 - `porting/` — plans, inventory, reports, changelog
 
+## Documentation Entry
+
+- Porting docs index: `porting/README.md`
+- Tooling script index: `tools/porting/README.md`
+
 ## License
 
 See `LICENSE`.

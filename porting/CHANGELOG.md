@@ -4,7 +4,7 @@
 - Phase 2.9：在 `.github/workflows/phase2-port-umi.yml` 新增 `Build AnyKernel candidate zip` 步骤。
 - 当 `Image.gz` 存在时自动拉取 `AnyKernel3`，注入 `Image.gz`，并尝试附带首个 umi 相关 dtb 生成 `AnyKernel3-umi-candidate.zip`。
 - 该产物为候选刷机包（best-effort），用于推进“编译产出 + AnyKernel zip”目标的自动化闭环。
-- 回退门禁机制：移除 `pre_action_gate.py` 及门禁相关 workflow 输入/步骤，恢复直接编译流程。
+- 精简编译流程：移除门禁相关 workflow 输入/步骤，恢复直接编译路径。
 - 优化 AnyKernel 候选打包步骤：克隆前清理 `anykernel3` 目录，避免工作目录残留影响产物一致性。
 - 收紧 `phase2_apply.sh` 的 dts 种子过滤黑名单（增加 `hdk/mtp/pdx/edo`），减少非目标板级误迁移。
 - `phase2_apply.sh` 的 `summary.txt` 新增拆分统计：`dts_only_copied` 与 `dtsi_only_copied`，便于后续定位 manifest 命中质量。
