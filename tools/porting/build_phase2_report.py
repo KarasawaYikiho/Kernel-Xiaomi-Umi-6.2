@@ -50,6 +50,8 @@ def main() -> int:
     elif flash_status == 'candidate' and (anykernel_ok != 'yes' or anyk_val_status not in ('ok', 'unknown')):
         next_action = 'fix-anykernel-packaging'
 
+    runtime_ready = 'yes' if next_action == 'ready-for-action-test' else 'no'
+
     lines = [
         "phase2_report=1",
         f"device={pack.get('device', summary.get('device', 'unknown'))}",
@@ -77,6 +79,7 @@ def main() -> int:
         f"artifact_completeness={complete.get('status', 'unknown')}",
         f"required_missing={complete.get('required_missing', 'n/a')}",
         f"next_action={next_action}",
+        f"runtime_ready={runtime_ready}",
     ]
 
     OUT.write_text("\n".join(lines) + "\n", encoding="utf-8")

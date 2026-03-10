@@ -32,6 +32,7 @@ def main() -> int:
         f"- AnyKernel Validate: `{r.get('anykernel_validate_status', 'unknown')}` ({r.get('anykernel_validate_reason', 'n/a')})",
         f"- Manifest Hit Ratio: `{r.get('manifest_hit_ratio', '0.000')}`",
         f"- Artifact Completeness: `{c.get('status', 'unknown')}`",
+        f"- Runtime Ready: `{r.get('runtime_ready', 'no')}`",
         "",
         "## Next Focus",
         f"- Focus: `{n.get('focus', 'collect-more-data')}`",
@@ -44,6 +45,9 @@ def main() -> int:
         "- `anykernel-info.txt`",
         "- `anykernel-validate.txt`",
     ]
+
+    if r.get('next_action', '') == 'ready-for-action-test':
+        md.append("- `action-validation-checklist.md`")
 
     OUT.write_text("\n".join(md) + "\n", encoding="utf-8")
     print(f"wrote {OUT}")

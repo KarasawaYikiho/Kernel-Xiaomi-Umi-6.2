@@ -42,7 +42,7 @@ This directory contains the automation chain used by `phase2-port-umi.yml`.
 - **Source prep orchestration:** `prepare_phase2_sources.sh`, `check_target_kernel_version.sh`
 - **Migration:** `apply_phase2_migration.sh`, `phase2_apply.sh`
 - **DTB matching/diagnostics:** `build_dtb_manifest.py`, `dtb_postcheck.py`, `analyze_dtb_miss.py`
-- **Readiness/reporting:** `evaluate_artifact.py`, `build_phase2_report.py`, `validate_phase2_report.py`, `validate_anykernel_candidate.py`, `build_action_validation_checklist.py`
+- **Readiness/reporting:** `evaluate_artifact.py`, `build_phase2_report.py`, `validate_phase2_report.py`, `validate_anykernel_candidate.py`, `build_action_validation_checklist.py` (includes `runtime_ready` report field)
 - **CI artifact UX:** `build_artifact_index.py`, `summarize_artifacts_markdown.py`, `build_status_badge_line.py`, `build_artifact_checksums.py`
 - **Automation metrics:** `collect_metrics_json.py`, `check_artifact_completeness.py`, `suggest_next_focus.py`, `extract_build_errors.py`
 - **Build orchestration:** `run_phase2_build.sh` (defconfig/build attempt + exit snapshot)

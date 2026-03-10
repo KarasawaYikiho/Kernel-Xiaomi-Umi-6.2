@@ -46,6 +46,7 @@ def main() -> int:
         },
         "report": {
             "next_action": report.get("next_action", "collect-more-data"),
+            "runtime_ready": report.get("runtime_ready", "no"),
             "schema_status": valid.get("status", "unknown"),
         },
     }

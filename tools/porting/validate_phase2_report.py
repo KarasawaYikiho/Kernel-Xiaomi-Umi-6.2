@@ -13,6 +13,7 @@ REQ_KEYS = [
     "anykernel_validate_status",
     "manifest_hit_ratio",
     "next_action",
+    "runtime_ready",
 ]
 
 
