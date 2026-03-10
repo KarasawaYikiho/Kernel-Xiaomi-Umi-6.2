@@ -41,6 +41,8 @@ def main() -> int:
         "packaging": {
             "flash_status": report.get("flash_status", "unknown"),
             "anykernel_ok": report.get("anykernel_ok", "no"),
+            "anykernel_validate_status": report.get("anykernel_validate_status", "unknown"),
+            "anykernel_validate_reason": report.get("anykernel_validate_reason", "n/a"),
         },
         "report": {
             "next_action": report.get("next_action", "collect-more-data"),

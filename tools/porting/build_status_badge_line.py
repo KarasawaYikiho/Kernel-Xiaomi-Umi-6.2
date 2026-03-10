@@ -23,10 +23,11 @@ def main() -> int:
     build_rc = r.get("build_rc", "n/a")
     flash = r.get("flash_status", "unknown")
     anyk = r.get("anykernel_ok", "no")
+    anyk_val = r.get("anykernel_validate_status", "unknown")
     ratio = r.get("manifest_hit_ratio", "0.000")
     next_action = r.get("next_action", "collect-more-data")
 
-    line = f"build={build_rc} | flash={flash} | anykernel={anyk} | hit_ratio={ratio} | next={next_action}"
+    line = f"build={build_rc} | flash={flash} | anykernel={anyk}/{anyk_val} | hit_ratio={ratio} | next={next_action}"
     OUT.write_text(line + "\n", encoding="utf-8")
     print(f"wrote {OUT}")
     return 0
