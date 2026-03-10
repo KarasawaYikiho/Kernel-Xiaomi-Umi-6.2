@@ -67,6 +67,31 @@ PY
 patch_led_color_compat "$DST_DIR/drivers/leds/led-core.c"
 patch_led_color_compat "$DST_DIR/drivers/leds/led-class.c"
 
+# 1.6) hid apple keyboard backlight LED function compat
+HID_APPLE="$DST_DIR/drivers/hid/hid-apple.c"
+if [[ -f "$HID_APPLE" ]] && grep -q "LED_FUNCTION_KBD_BACKLIGHT" "$HID_APPLE"; then
+  if ! grep -q "OC_PHASE2_LED_FUNCTION_COMPAT" "$HID_APPLE"; then
+    python3 - "$HID_APPLE" <<'PY'
+from pathlib import Path
+p = Path(__import__('sys').argv[1])
+s = p.read_text(encoding='utf-8', errors='ignore')
+if 'OC_PHASE2_LED_FUNCTION_COMPAT' in s:
+    raise SystemExit(0)
+if '#ifndef LED_FUNCTION_KBD_BACKLIGHT' in s:
+    raise SystemExit(0)
+needle = '#include <linux/leds.h>\n'
+compat = '''#ifndef LED_FUNCTION_KBD_BACKLIGHT
+#define OC_PHASE2_LED_FUNCTION_COMPAT 1
+#define LED_FUNCTION_KBD_BACKLIGHT "kbd_backlight"
+#endif
+'''
+if needle in s:
+    s = s.replace(needle, needle + compat, 1)
+    p.write_text(s, encoding='utf-8')
+PY
+  fi
+fi
+
 # 2) dts/dtsi migration (recursive + include-aware)
 SRC_ROOTS=(
   "arch/arm64/boot/dts/vendor/qcom"
