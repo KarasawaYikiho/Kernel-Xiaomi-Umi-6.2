@@ -26,6 +26,17 @@ def main() -> int:
     sha = meta.get("sha", "")
     next_action = report.get("next_action", "collect-more-data")
     runtime_ready = report.get("runtime_ready", "no")
+    blockers = []
+    if report.get("defconfig_rc", "n/a") not in ("0", "n/a"):
+        blockers.append(f"defconfig_rc={report.get('defconfig_rc', 'n/a')}")
+    if report.get("build_rc", "n/a") not in ("0", "n/a"):
+        blockers.append(f"build_rc={report.get('build_rc', 'n/a')}")
+    if report.get("dtbs_rc", "n/a") not in ("0", "n/a"):
+        blockers.append(f"dtbs_rc={report.get('dtbs_rc', 'n/a')}")
+    if report.get("anykernel_ok", "no") != "yes":
+        blockers.append("anykernel_ok!=yes")
+    if report.get("anykernel_validate_status", "unknown") not in ("ok", "unknown"):
+        blockers.append(f"anykernel_validate_status={report.get('anykernel_validate_status', 'unknown')}")
 
     md = [
         "# Phase2 Runtime Validation Checklist",
@@ -40,6 +51,16 @@ def main() -> int:
         "- [ ] If `runtime_ready=yes`, proceed with device runtime validation now.",
         "- [ ] If `runtime_ready=no`, stop and fix report blockers first.",
         "",
+    ]
+
+    if blockers:
+        md.extend([
+            "## Blockers (from phase2-report)",
+            *[f"- {b}" for b in blockers],
+            "",
+        ])
+
+    md.extend([
         "## Pre-check",
         "- [ ] Confirm battery >= 50% and USB debugging available.",
         "- [ ] Confirm bootloader/unlock state and recovery path prepared.",
@@ -63,7 +84,7 @@ def main() -> int:
         "- [ ] Export dmesg/logcat snippets if anomaly appears.",
         "- [ ] Provide pass/fail + failing step index for next patch round.",
         "",
-    ]
+    ])
 
     OUT.write_text("\n".join(md), encoding="utf-8")
     print(f"wrote {OUT}")

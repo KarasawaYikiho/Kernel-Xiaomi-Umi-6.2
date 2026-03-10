@@ -26,7 +26,7 @@ This directory contains the automation chain used by `phase2-port-umi.yml`.
    - Writes normalized workflow/run/input metadata to `artifacts/run-meta.txt`.
 11. Post-processing suite:
    - `check_artifact_completeness.py`
-   - `validate_anykernel_candidate.py`
+   - `validate_anykernel_candidate.py` (re-run for tolerance when earlier step is skipped/partial)
    - `suggest_next_focus.py`
    - `extract_build_errors.py`
    - `build_artifact_index.py`
