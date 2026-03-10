@@ -26,6 +26,9 @@ def main() -> int:
     sha = meta.get("sha", "")
     next_action = report.get("next_action", "collect-more-data")
     runtime_ready = report.get("runtime_ready", "no")
+    bootimg_status = report.get("bootimg_status", "missing")
+    bootimg_size = report.get("bootimg_size_bytes", "0")
+    bootimg_required = report.get("bootimg_required_bytes", "268435456")
     blockers = []
     if report.get("defconfig_rc", "n/a") not in ("0", "n/a"):
         blockers.append(f"defconfig_rc={report.get('defconfig_rc', 'n/a')}")
@@ -37,6 +40,8 @@ def main() -> int:
         blockers.append("anykernel_ok!=yes")
     if report.get("anykernel_validate_status", "unknown") not in ("ok", "unknown"):
         blockers.append(f"anykernel_validate_status={report.get('anykernel_validate_status', 'unknown')}")
+    if bootimg_status != "ok":
+        blockers.append(f"bootimg_status={bootimg_status}")
 
     md = [
         "# Phase2 Runtime Validation Checklist",
@@ -46,6 +51,9 @@ def main() -> int:
         f"- SHA: `{sha}`",
         f"- next_action: `{next_action}`",
         f"- runtime_ready: `{runtime_ready}`",
+        f"- bootimg_status: `{bootimg_status}`",
+        f"- bootimg_size_bytes: `{bootimg_size}`",
+        f"- bootimg_required_bytes: `{bootimg_required}`",
         "",
         "## Decision",
         "- [ ] If `runtime_ready=yes`, proceed with device runtime validation now.",
