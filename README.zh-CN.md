@@ -73,6 +73,7 @@ Phase2 迁移 + 构建 + 诊断流程：
 - `target_repo`
 - `target_branch`
 - `device`（默认 `umi`）
+- `bootimg_required_bytes`（默认 `268435456`，即 256MiB）
 
 ## 关键脚本
 

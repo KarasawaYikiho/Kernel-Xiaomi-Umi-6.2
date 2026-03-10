@@ -27,11 +27,17 @@ on:
         description: "device codename"
         required: true
         default: "umi"
+      bootimg_required_bytes:
+        description: "required boot.img size in bytes (default 256MiB)"
+        required: false
+        default: "268435456"
 
 jobs:
   port-and-build:
     runs-on: ubuntu-24.04
     timeout-minutes: 90
+    env:
+      BOOTIMG_REQUIRED_BYTES: ${{ github.event.inputs.bootimg_required_bytes || '268435456' }}
     steps:
       - name: Checkout orchestrator repo
         uses: actions/checkout@v4

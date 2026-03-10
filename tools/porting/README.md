@@ -59,6 +59,7 @@ This directory contains the automation chain used by `phase2-port-umi.yml`.
 - `runtime_ready`: coarse gate (`yes`/`no`) indicating whether device-side runtime validation should proceed
 - `anykernel_validate_status`: structure validation result for `AnyKernel3-umi-candidate.zip`
 - `bootimg_status`: release boot image readiness signal (`ok` / `missing` / `size_mismatch`)
+- `bootimg_required_bytes`: required boot image size (from workflow input, default `268435456`)
 
 ## Local Dry-Run Notes
 

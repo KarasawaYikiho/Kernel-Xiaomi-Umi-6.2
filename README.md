@@ -74,6 +74,7 @@ Inputs:
 - `target_repo`
 - `target_branch`
 - `device` (default: `umi`)
+- `bootimg_required_bytes` (default: `268435456`, i.e. 256MiB)
 
 ## Key scripts
 
