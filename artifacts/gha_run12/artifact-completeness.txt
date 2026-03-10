@@ -1,6 +1,0 @@
-status=ok
-required_total=5
-required_present=5
-required_missing=0
-missing_required=
-present_optional=dtb-miss-analysis.txt,phase2-umi-focused-package.zip

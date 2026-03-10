@@ -1,4 +1,0 @@
-miss_total=0
-bucket_total=0
-top_buckets=
-miss_names=

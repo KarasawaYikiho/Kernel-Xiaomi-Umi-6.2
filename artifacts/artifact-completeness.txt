@@ -1,6 +1,0 @@
-status=incomplete
-required_total=5
-required_present=0
-required_missing=5
-missing_required=phase2-report.txt,run-meta.txt,flash-readiness.txt,dtb-postcheck.txt,anykernel-info.txt
-present_optional=

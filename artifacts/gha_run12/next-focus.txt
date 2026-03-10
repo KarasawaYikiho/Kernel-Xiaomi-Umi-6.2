@@ -1,7 +1,0 @@
-focus=fix-build-errors
-reason=core_build_failed
-flash_status=not_ready
-anykernel_ok=no
-manifest_hit_ratio=1.000
-build_rc=2
-dtbs_rc=0

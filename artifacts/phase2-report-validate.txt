@@ -1,3 +1,0 @@
-status=invalid
-required_keys=8
-missing_keys=phase2_report,device,defconfig_rc,build_rc,flash_status,anykernel_ok,manifest_hit_ratio,next_action

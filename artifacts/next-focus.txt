@@ -1,7 +1,0 @@
-focus=improve-dtb-manifest-mapping
-reason=low_manifest_hit_ratio
-flash_status=unknown
-anykernel_ok=no
-manifest_hit_ratio=0.000
-build_rc=n/a
-dtbs_rc=n/a

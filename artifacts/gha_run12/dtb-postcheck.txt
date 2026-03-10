@@ -1,6 +1,0 @@
-wanted=13
-hit=13
-miss=0
-hit_ratio=1.000
-hit_names=umi-sm8250-overlay.dtb,alioth-sm8250-overlay.dtb,apollo-sm8250-overlay.dtb,cas-sm8250-overlay.dtb,cmi-sm8250-overlay.dtb,dagu-sm8250-overlay.dtb,elish-sm8250-overlay.dtb,enuma-sm8250-overlay.dtb,lmi-sm8250-overlay.dtb,munch-sm8250-overlay.dtb,pipa-sm8250-overlay.dtb,psyche-sm8250-overlay.dtb,thyme-sm8250-overlay.dtb
-miss_names=

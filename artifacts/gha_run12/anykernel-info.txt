@@ -1,4 +1,0 @@
-anykernel_ok=no
-has_imagegz=no
-has_dtb=no
-dtb_source=

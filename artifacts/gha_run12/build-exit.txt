@@ -1,4 +1,0 @@
-defconfig_rc=0
-build_rc=2
-dtbs_rc=0
-dtb_manifest_rc=0

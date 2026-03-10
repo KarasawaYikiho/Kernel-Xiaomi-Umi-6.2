@@ -1,2 +1,0 @@
-status=not_ready
-reason=insufficient-xiaomi-dtb

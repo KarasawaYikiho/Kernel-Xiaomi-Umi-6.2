@@ -1,4 +1,0 @@
-device=umi
-umi_bundle_dtb_count=13
-umi_bundle_xiaomi_dtb_count=13
-flash_ready_hint=no

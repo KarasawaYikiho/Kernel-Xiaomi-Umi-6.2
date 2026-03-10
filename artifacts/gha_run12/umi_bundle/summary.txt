@@ -1,8 +1,0 @@
-device=umi
-defconfig=/home/runner/work/Kernel-Xiaomi-Umi-6.2/Kernel-Xiaomi-Umi-6.2/target/arch/arm64/configs/umi_defconfig
-dst_dts_root=arch/arm64/boot/dts/qcom
-seed_dts_count=175
-dts_copied=304
-dts_only_copied=49
-dtsi_only_copied=255
-dt_bindings_copied=492
