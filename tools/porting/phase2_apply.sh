@@ -92,6 +92,35 @@ PY
   fi
 fi
 
+# 1.7) hid nintendo player LED function compat
+HID_NINTENDO="$DST_DIR/drivers/hid/hid-nintendo.c"
+if [[ -f "$HID_NINTENDO" ]] && grep -q "LED_FUNCTION_PLAYER1" "$HID_NINTENDO"; then
+  if ! grep -q "OC_PHASE2_LED_FUNCTION_PLAYER_COMPAT" "$HID_NINTENDO"; then
+    python3 - "$HID_NINTENDO" <<'PY'
+from pathlib import Path
+p = Path(__import__('sys').argv[1])
+s = p.read_text(encoding='utf-8', errors='ignore')
+if 'OC_PHASE2_LED_FUNCTION_PLAYER_COMPAT' in s:
+    raise SystemExit(0)
+if '#ifndef LED_FUNCTION_PLAYER1' in s:
+    raise SystemExit(0)
+needle = '#include <linux/leds.h>\n'
+compat = '''#ifndef LED_FUNCTION_PLAYER1
+#define OC_PHASE2_LED_FUNCTION_PLAYER_COMPAT 1
+#define LED_FUNCTION_PLAYER1 "player-1"
+#define LED_FUNCTION_PLAYER2 "player-2"
+#define LED_FUNCTION_PLAYER3 "player-3"
+#define LED_FUNCTION_PLAYER4 "player-4"
+#define LED_FUNCTION_PLAYER5 "player-5"
+#endif
+'''
+if needle in s:
+    s = s.replace(needle, needle + compat, 1)
+    p.write_text(s, encoding='utf-8')
+PY
+  fi
+fi
+
 # 2) dts/dtsi migration (recursive + include-aware)
 SRC_ROOTS=(
   "arch/arm64/boot/dts/vendor/qcom"
