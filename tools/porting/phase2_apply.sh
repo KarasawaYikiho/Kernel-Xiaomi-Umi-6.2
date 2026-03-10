@@ -87,7 +87,17 @@ compat = '''#ifndef LED_FUNCTION_KBD_BACKLIGHT
 '''
 if needle in s:
     s = s.replace(needle, needle + compat, 1)
-    p.write_text(s, encoding='utf-8')
+else:
+    idx = s.find('#include ')
+    if idx != -1:
+        end = s.find('\n', idx)
+        if end != -1:
+            s = s[:end+1] + compat + s[end+1:]
+        else:
+            s = s + '\n' + compat
+    else:
+        s = compat + '\n' + s
+p.write_text(s, encoding='utf-8')
 PY
   fi
 fi
@@ -116,7 +126,17 @@ compat = '''#ifndef LED_FUNCTION_PLAYER1
 '''
 if needle in s:
     s = s.replace(needle, needle + compat, 1)
-    p.write_text(s, encoding='utf-8')
+else:
+    idx = s.find('#include ')
+    if idx != -1:
+        end = s.find('\n', idx)
+        if end != -1:
+            s = s[:end+1] + compat + s[end+1:]
+        else:
+            s = s + '\n' + compat
+    else:
+        s = compat + '\n' + s
+p.write_text(s, encoding='utf-8')
 PY
   fi
 fi
