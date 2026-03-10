@@ -26,11 +26,28 @@ def main() -> int:
     hit_ratio = float(report.get("manifest_hit_ratio", "0") or 0)
     build_rc = report.get("build_rc", "n/a")
     dtbs_rc = report.get("dtbs_rc", "n/a")
+    report_next = report.get("next_action", "")
 
     focus = "collect-more-data"
     reason = "default"
 
-    if build_rc not in ("0", "n/a"):
+    # Prefer phase2-report decision when present to keep postprocess outputs consistent.
+    if report_next == "fix-defconfig-errors":
+        focus = "fix-defconfig-errors"
+        reason = "report_next_action"
+    elif report_next == "fix-build-errors":
+        focus = "fix-build-errors"
+        reason = "report_next_action"
+    elif report_next == "fix-dtb-build-errors":
+        focus = "fix-dtb-errors"
+        reason = "report_next_action"
+    elif report_next == "fix-anykernel-packaging":
+        focus = "fix-anykernel-packaging"
+        reason = "report_next_action"
+    elif report_next == "ready-for-action-test":
+        focus = "request-action-validation"
+        reason = "report_next_action"
+    elif build_rc not in ("0", "n/a"):
         focus = "fix-build-errors"
         reason = "core_build_failed"
     elif dtbs_rc not in ("0", "n/a"):
