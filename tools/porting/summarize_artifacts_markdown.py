@@ -33,6 +33,7 @@ def main() -> int:
         f"- Manifest Hit Ratio: `{r.get('manifest_hit_ratio', '0.000')}`",
         f"- Artifact Completeness: `{c.get('status', 'unknown')}`",
         f"- Runtime Ready: `{r.get('runtime_ready', 'no')}`",
+        f"- Boot Image: `{r.get('bootimg_status', 'missing')}` ({r.get('bootimg_reason', 'n/a')})",
         "",
         "## Next Focus",
         f"- Focus: `{n.get('focus', 'collect-more-data')}`",

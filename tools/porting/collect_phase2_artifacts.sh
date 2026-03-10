@@ -14,6 +14,8 @@ cp -v target/porting/phase2/included_dts.txt artifacts/ || true
 cp -v out/.config artifacts/ || true
 cp -v out/arch/arm64/boot/Image artifacts/ || true
 cp -v out/arch/arm64/boot/Image.gz artifacts/ || true
+cp -v out/arch/arm64/boot/boot.img artifacts/ || true
+cp -v out/boot.img artifacts/ || true
 
 # diagnostic lists
 find out/arch/arm64/boot/dts -type f \( -name '*.dtb' -o -name '*.dtbo' \) > artifacts/all_dtb_paths.txt || true

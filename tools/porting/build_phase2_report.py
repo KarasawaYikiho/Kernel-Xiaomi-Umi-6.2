@@ -25,6 +25,7 @@ def main() -> int:
     dtb = parse_kv(ART / "dtb-postcheck.txt")
     anyk = parse_kv(ART / "anykernel-info.txt")
     anyk_val = parse_kv(ART / "anykernel-validate.txt")
+    boot = parse_kv(ART / "bootimg-info.txt")
     missa = parse_kv(ART / "dtb-miss-analysis.txt")
     bexit = parse_kv(ART / "build-exit.txt")
     complete = parse_kv(ART / "artifact-completeness.txt")
@@ -47,6 +48,9 @@ def main() -> int:
         next_action = 'fix-dtb-build-errors'
     elif flash_status == 'candidate' and anykernel_ok == 'yes' and anyk_val_status in ('ok', 'unknown'):
         next_action = 'ready-for-action-test'
+
+    if boot.get('status', 'missing') in ('missing', 'size_mismatch'):
+        next_action = 'prepare-release-bootimg'
     elif flash_status == 'candidate' and (anykernel_ok != 'yes' or anyk_val_status not in ('ok', 'unknown')):
         next_action = 'fix-anykernel-packaging'
 
@@ -74,6 +78,11 @@ def main() -> int:
         f"anykernel_dtb_source={anyk.get('dtb_source', '')}",
         f"anykernel_validate_status={anyk_val.get('status', 'unknown')}",
         f"anykernel_validate_reason={anyk_val.get('reason', 'n/a')}",
+        f"bootimg_status={boot.get('status', 'missing')}",
+        f"bootimg_reason={boot.get('reason', 'n/a')}",
+        f"bootimg_size_bytes={boot.get('size_bytes', '0')}",
+        f"bootimg_required_bytes={boot.get('required_bytes', '268435456')}",
+        f"bootimg_size_match={boot.get('size_match', 'no')}",
         f"miss_bucket_total={missa.get('bucket_total', '0')}",
         f"miss_top_buckets={missa.get('top_buckets', '')}",
         f"artifact_completeness={complete.get('status', 'unknown')}",

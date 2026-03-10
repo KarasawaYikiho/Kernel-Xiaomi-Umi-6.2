@@ -43,6 +43,10 @@ def main() -> int:
             "anykernel_ok": report.get("anykernel_ok", "no"),
             "anykernel_validate_status": report.get("anykernel_validate_status", "unknown"),
             "anykernel_validate_reason": report.get("anykernel_validate_reason", "n/a"),
+            "bootimg_status": report.get("bootimg_status", "missing"),
+            "bootimg_reason": report.get("bootimg_reason", "n/a"),
+            "bootimg_size_bytes": report.get("bootimg_size_bytes", "0"),
+            "bootimg_required_bytes": report.get("bootimg_required_bytes", "268435456"),
         },
         "report": {
             "next_action": report.get("next_action", "collect-more-data"),

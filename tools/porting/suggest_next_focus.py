@@ -47,6 +47,9 @@ def main() -> int:
     elif report_next == "ready-for-action-test":
         focus = "request-action-validation"
         reason = "report_next_action"
+    elif report_next == "prepare-release-bootimg":
+        focus = "prepare-release-bootimg"
+        reason = "report_next_action"
     elif build_rc not in ("0", "n/a"):
         focus = "fix-build-errors"
         reason = "core_build_failed"

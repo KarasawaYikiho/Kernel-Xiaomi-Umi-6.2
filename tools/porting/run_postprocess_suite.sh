@@ -6,6 +6,7 @@ set -euo pipefail
 
 python3 tools/porting/check_artifact_completeness.py || true
 python3 tools/porting/validate_anykernel_candidate.py || true
+python3 tools/porting/validate_boot_image.py || true
 python3 tools/porting/suggest_next_focus.py || true
 python3 tools/porting/extract_build_errors.py || true
 python3 tools/porting/build_artifact_index.py || true

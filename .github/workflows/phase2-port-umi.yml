@@ -84,6 +84,11 @@ jobs:
         run: |
           python3 tools/porting/validate_anykernel_candidate.py || true
 
+      - name: Validate boot image constraints
+        if: always()
+        run: |
+          python3 tools/porting/validate_boot_image.py || true
+
       - name: Generate consolidated phase2 report
         if: always()
         run: |

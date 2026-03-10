@@ -17,6 +17,7 @@ OPTIONAL = [
     "phase2-umi-focused-package.zip",
     "AnyKernel3-umi-candidate.zip",
     "anykernel-validate.txt",
+    "bootimg-info.txt",
     "action-validation-checklist.md",
 ]
 

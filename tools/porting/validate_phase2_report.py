@@ -14,6 +14,7 @@ REQ_KEYS = [
     "manifest_hit_ratio",
     "next_action",
     "runtime_ready",
+    "bootimg_status",
 ]
 
 

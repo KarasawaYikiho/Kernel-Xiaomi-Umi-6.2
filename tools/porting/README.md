@@ -27,6 +27,7 @@ This directory contains the automation chain used by `phase2-port-umi.yml`.
 11. Post-processing suite:
    - `check_artifact_completeness.py`
    - `validate_anykernel_candidate.py` (re-run for tolerance when earlier step is skipped/partial)
+   - `validate_boot_image.py`
    - `suggest_next_focus.py`
    - `extract_build_errors.py`
    - `build_artifact_index.py`
@@ -57,6 +58,7 @@ This directory contains the automation chain used by `phase2-port-umi.yml`.
 - `next_action`: machine-friendly next step (`ready-for-action-test`, `fix-build-errors`, etc.)
 - `runtime_ready`: coarse gate (`yes`/`no`) indicating whether device-side runtime validation should proceed
 - `anykernel_validate_status`: structure validation result for `AnyKernel3-umi-candidate.zip`
+- `bootimg_status`: release boot image readiness signal (`ok` / `missing` / `size_mismatch`)
 
 ## Local Dry-Run Notes
 
