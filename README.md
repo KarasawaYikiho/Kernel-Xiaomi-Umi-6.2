@@ -30,6 +30,7 @@ It is designed to automate Phase2 migration, CI build attempts, diagnostics, and
 ### Quick Start (recommended)
 
 > Note: GitHub Actions artifacts are downloaded as `.zip` by design. If you need `boot.img`, download the artifact zip and extract `boot.img` from it.
+> Size reminder: zip size is compressed size. Confirm final boot image size using `artifacts/bootimg-info.txt` (`size_bytes`) or by checking extracted `boot.img` file size.
 
 Run **`Phase2-Port-Umi.yml`** with default inputs, then inspect artifacts in this order:
 
