@@ -51,6 +51,10 @@ fi
 # mkbootimg tool detection
 if command -v mkbootimg >/dev/null 2>&1; then
   mkbootimg_cmd="mkbootimg"
+elif [[ -x "$HOME/.local/bin/mkbootimg" ]]; then
+  mkbootimg_cmd="$HOME/.local/bin/mkbootimg"
+elif [[ -x "$HOME/.local/bin/mkbootimg.py" ]]; then
+  mkbootimg_cmd="$HOME/.local/bin/mkbootimg.py"
 elif [[ -f source/tools/mkbootimg/mkbootimg.py ]]; then
   mkbootimg_cmd="python3 source/tools/mkbootimg/mkbootimg.py"
 elif [[ -f target/tools/mkbootimg/mkbootimg.py ]]; then
