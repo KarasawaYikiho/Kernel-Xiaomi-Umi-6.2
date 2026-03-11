@@ -68,7 +68,8 @@ This directory contains the automation chain used by `Phase2-Port-Umi.yml`.
 - `bootimg_build_status`: boot image build stage result (`ok` / `blocked` / `failed`)
 - `bootimg_required_bytes`: final target boot image size (from workflow input, default `134217728`, aligned with official umi ROM baseline; set `<=0` to disable size check)
 - `bootimg_required_bytes_parse`: parser state for size input (`exact` / `default-empty` / `default-invalid`) to improve diagnostics
-- `action-validation-checklist.md`: now includes boot image status/size/required-size snapshot and blocker projection
+- `decision-consistency.txt`: cross-checks report/focus/runtime semantics (`ok` / `invalid` with explicit error list)
+- `action-validation-checklist.md`: now includes boot image status/size/required-size snapshot and decision-consistency gate
 
 ## Local Dry-Run Notes
 

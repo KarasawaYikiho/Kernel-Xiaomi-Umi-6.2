@@ -20,6 +20,7 @@ def main() -> int:
     ART.mkdir(parents=True, exist_ok=True)
     report = parse_kv(ART / "phase2-report.txt")
     meta = parse_kv(ART / "run-meta.txt")
+    consistency = parse_kv(ART / "decision-consistency.txt")
 
     device = report.get("device", meta.get("device", "umi"))
     run_no = meta.get("run_number", "?")
@@ -32,6 +33,8 @@ def main() -> int:
     bootimg_size = report.get("bootimg_size_bytes", "0")
     bootimg_required = report.get("bootimg_required_bytes", "134217728")
     bootimg_required_parse = report.get("bootimg_required_bytes_parse", "unknown")
+    consistency_status = consistency.get("status", "unknown")
+    consistency_errors = consistency.get("errors", "")
     blockers = []
     if report.get("defconfig_rc", "n/a") not in ("0", "n/a"):
         blockers.append(f"defconfig_rc={report.get('defconfig_rc', 'n/a')}")
@@ -49,6 +52,10 @@ def main() -> int:
         blockers.append(f"bootimg_build_status={bootimg_build_status}")
     if bootimg_build_missing:
         blockers.append(f"bootimg_build_missing={bootimg_build_missing}")
+    if consistency_status not in ("ok", "unknown"):
+        blockers.append(f"decision_consistency={consistency_status}")
+    if consistency_errors:
+        blockers.append(f"decision_consistency_errors={consistency_errors}")
 
     md = [
         "# Phase2 Runtime Validation Checklist",
@@ -63,10 +70,12 @@ def main() -> int:
         f"- bootimg_size_bytes: `{bootimg_size}`",
         f"- bootimg_required_bytes: `{bootimg_required}`",
         f"- bootimg_required_bytes_parse: `{bootimg_required_parse}`",
+        f"- decision_consistency: `{consistency_status}`",
+        f"- decision_consistency_errors: `{consistency_errors or 'none'}`",
         "",
         "## Decision",
-        "- [ ] If `runtime_ready=yes`, proceed with device runtime validation now.",
-        "- [ ] If `runtime_ready=no`, stop and fix report blockers first.",
+        "- [ ] If `runtime_ready=yes` and `decision_consistency=ok`, proceed with device runtime validation now.",
+        "- [ ] If `runtime_ready=no` or `decision_consistency!=ok`, stop and fix report blockers first.",
         "",
     ]
 
