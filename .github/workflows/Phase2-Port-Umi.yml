@@ -52,7 +52,7 @@ jobs:
       PATH: /home/runner/.local/bin:/usr/local/bin:/usr/bin:/bin
     steps:
       - name: Checkout orchestrator repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install deps
         run: |
@@ -147,7 +147,7 @@ jobs:
 
       - name: Upload artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: phase2-umi-${{ github.run_number }}
           path: artifacts/

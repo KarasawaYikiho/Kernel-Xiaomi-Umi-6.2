@@ -46,7 +46,7 @@ jobs:
 
     steps:
       - name: Checkout builder repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Cleanup disk
         run: |
@@ -100,7 +100,7 @@ jobs:
           cp -v kernel/out/arch/arm64/boot/dtb artifacts/ || true
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: Kernel-${{ github.event.inputs.device }}-${{ github.run_number }}
           path: artifacts/
