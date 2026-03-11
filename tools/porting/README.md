@@ -63,7 +63,7 @@ This directory contains the automation chain used by `Phase2-Port-Umi.yml`.
 - `anykernel_validate_status`: structure validation result for `AnyKernel3-umi-candidate.zip`
 - `bootimg_status`: release boot image readiness signal (`ok` / `missing` / `size_mismatch`)
 - `bootimg_build_status`: boot image build stage result (`ok` / `blocked` / `failed`)
-- `bootimg_required_bytes`: max allowed boot image size (from workflow input, default `268435456`; set `<=0` to disable size gate)
+- `bootimg_required_bytes`: final target boot image size (from workflow input, default `268435456`; set `<=0` to disable size check)
 - `action-validation-checklist.md`: now includes boot image status/size/required-size snapshot and blocker projection
 
 ## Local Dry-Run Notes

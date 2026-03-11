@@ -74,7 +74,7 @@ Inputs:
 - `target_repo`
 - `target_branch`
 - `device` (default: `umi`)
-- `bootimg_required_bytes` (default: `268435456`, i.e. 256MiB; interpreted as max allowed size, set `<=0` to disable size gate)
+- `bootimg_required_bytes` (default: `268435456`, i.e. 256MiB; interpreted as final target size, set `<=0` to disable size check)
 - `bootimg_ramdisk_url` (optional URL for `ramdisk.cpio.gz`, or a zip that contains a ramdisk payload)
 - `bootimg_prebuilt_url` (optional URL for a prebuilt `boot.img`, or a zip that contains `boot.img`)
 

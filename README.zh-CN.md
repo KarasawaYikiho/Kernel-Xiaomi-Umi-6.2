@@ -73,7 +73,7 @@ Phase2 迁移 + 构建 + 诊断流程：
 - `target_repo`
 - `target_branch`
 - `device`（默认 `umi`）
-- `bootimg_required_bytes`（默认 `268435456`，即 256MiB；按“最大允许大小”解释，设为 `<=0` 可关闭大小门禁）
+- `bootimg_required_bytes`（默认 `268435456`，即 256MiB；按“最终目标大小”解释，设为 `<=0` 可关闭大小检查）
 - `bootimg_ramdisk_url`（可选：用于下载 `ramdisk.cpio.gz`，也支持填写包含 ramdisk 的 zip 链接）
 - `bootimg_prebuilt_url`（可选：当缺少 ramdisk 时，下载预构建 `boot.img`，也支持填写包含 `boot.img` 的 zip 链接）
 

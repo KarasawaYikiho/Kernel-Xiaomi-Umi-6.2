@@ -123,6 +123,7 @@ header_version="${BOOTIMG_HEADER_VERSION:-3}"
 base="${BOOTIMG_BASE:-0x00000000}"
 pagesize="${BOOTIMG_PAGESIZE:-4096}"
 cmdline="${BOOTIMG_CMDLINE:-}"
+required_bytes="${BOOTIMG_REQUIRED_BYTES:-268435456}"
 
 # fallback: use a prebuilt boot.img directly when mkbootimg inputs are unavailable
 if [[ -n "$prebuilt_url" ]]; then
@@ -139,9 +140,19 @@ if [[ -n "$prebuilt_url" ]]; then
   fi
   if [[ -f "$out_boot" ]]; then
     size="$(stat -c%s "$out_boot" 2>/dev/null || wc -c < "$out_boot")"
+    final_reason="prebuilt-bootimg-downloaded"
+    if [[ "$required_bytes" =~ ^[0-9]+$ ]] && [[ "$required_bytes" -gt 0 ]]; then
+      if [[ "$size" -lt "$required_bytes" ]]; then
+        truncate -s "$required_bytes" "$out_boot"
+        size="$required_bytes"
+        final_reason="prebuilt-bootimg-downloaded-and-padded"
+      elif [[ "$size" -gt "$required_bytes" ]]; then
+        final_reason="prebuilt-bootimg-oversize"
+      fi
+    fi
     {
       echo "status=ok"
-      echo "reason=prebuilt-bootimg-downloaded"
+      echo "reason=$final_reason"
       echo "missing="
       echo "kernel_path=$kernel_path"
       echo "ramdisk_path=$ramdisk_path"
@@ -152,10 +163,11 @@ if [[ -n "$prebuilt_url" ]]; then
       echo "pagesize=$pagesize"
       echo "output=$out_boot"
       echo "output_size_bytes=$size"
+      echo "required_bytes=$required_bytes"
       echo "source=prebuilt_url"
       echo "prebuilt_url=$prebuilt_url"
     } > "$OUT"
-    echo "bootimg downloaded: $out_boot ($size bytes)"
+    echo "bootimg prepared: $out_boot ($size bytes)"
     exit 0
   fi
 fi
@@ -211,9 +223,19 @@ if [[ $rc -ne 0 || ! -f "$out_boot" ]]; then
 fi
 
 size="$(stat -c%s "$out_boot" 2>/dev/null || wc -c < "$out_boot")"
+final_reason="bootimg-built"
+if [[ "$required_bytes" =~ ^[0-9]+$ ]] && [[ "$required_bytes" -gt 0 ]]; then
+  if [[ "$size" -lt "$required_bytes" ]]; then
+    truncate -s "$required_bytes" "$out_boot"
+    size="$required_bytes"
+    final_reason="bootimg-built-and-padded"
+  elif [[ "$size" -gt "$required_bytes" ]]; then
+    final_reason="bootimg-built-oversize"
+  fi
+fi
 {
   echo "status=ok"
-  echo "reason=bootimg-built"
+  echo "reason=$final_reason"
   echo "missing="
   echo "kernel_path=$kernel_path"
   echo "ramdisk_path=$ramdisk_path"
@@ -224,6 +246,7 @@ size="$(stat -c%s "$out_boot" 2>/dev/null || wc -c < "$out_boot")"
   echo "pagesize=$pagesize"
   echo "output=$out_boot"
   echo "output_size_bytes=$size"
+  echo "required_bytes=$required_bytes"
 } > "$OUT"
 
 echo "bootimg built: $out_boot ($size bytes)"

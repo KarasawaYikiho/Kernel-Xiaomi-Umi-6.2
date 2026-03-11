@@ -12,7 +12,7 @@ def write_kv(lines: list[str]) -> None:
 
 
 def main() -> int:
-    required_bytes = int(os.getenv("BOOTIMG_REQUIRED_BYTES", "268435456"))  # max allowed bytes by default (256 MiB)
+    required_bytes = int(os.getenv("BOOTIMG_REQUIRED_BYTES", "268435456"))  # target final size by default (256 MiB)
 
     bootimg = ART / "boot.img"
     if not bootimg.exists():
@@ -30,16 +30,15 @@ def main() -> int:
 
     size = bootimg.stat().st_size
 
-    # BOOTIMG_REQUIRED_BYTES is treated as an upper bound (partition budget).
-    # Set <=0 to disable size gating.
+    # BOOTIMG_REQUIRED_BYTES is treated as the final target size.
     if required_bytes <= 0:
         size_match = "yes"
         status = "ok"
         reason = "size-check-disabled"
     else:
-        size_match = "yes" if size <= required_bytes else "no"
+        size_match = "yes" if size == required_bytes else "no"
         status = "ok" if size_match == "yes" else "size_mismatch"
-        reason = "release-ready-size-ok" if size_match == "yes" else "size-over-budget"
+        reason = "release-ready-size-ok" if size_match == "yes" else "size-not-target"
 
     write_kv([
         f"status={status}",

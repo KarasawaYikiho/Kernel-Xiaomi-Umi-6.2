@@ -28,7 +28,7 @@ on:
         required: true
         default: "umi"
       bootimg_required_bytes:
-        description: "max allowed boot.img size in bytes (default 256MiB, set <=0 to disable size gate)"
+        description: "target final boot.img size in bytes (default 256MiB)"
         required: false
         default: "268435456"
       bootimg_ramdisk_url:
