@@ -23,7 +23,7 @@ This directory contains the automation chain used by `Phase2-Port-Umi.yml`.
    - Detection order summary: system `mkbootimg` -> `$HOME/.local/bin/mkbootimg(.py)` -> source/target embedded script -> `python3 -m mkbootimg` -> best-effort remote `mkbootimg.py` fetch into `artifacts/`.
 9. `Validate_Anykernel_Candidate.py`
    - Validates `AnyKernel3-umi-candidate.zip` structure and writes `artifacts/anykernel-validate.txt`.
-9. `Build_Phase2_Report.py`  
+9. `Build_Phase2_Report.py`
    - Generates `artifacts/phase2-report.txt`.
 10. `Write_Run_Meta.sh`
    - Writes normalized workflow/run/input metadata to `artifacts/run-meta.txt`.

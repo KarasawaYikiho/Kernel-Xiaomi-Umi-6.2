@@ -8,7 +8,7 @@
 
 ## Package Metadata
 ```text
-ota-property-files=metadata:69:328,metadata.pb:465:206                 
+ota-property-files=metadata:69:328,metadata.pb:465:206
 ota-required-cache=0
 ota-type=BLOCK
 post-build=Xiaomi/umi/umi:13/TKQ1.221114.001/V816.0.5.0.TJBCNXM:user/release-keys
