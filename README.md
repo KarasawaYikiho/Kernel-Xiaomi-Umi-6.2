@@ -27,6 +27,8 @@ It is designed to automate Phase2 migration, CI build attempts, diagnostics, and
 
 ## Workflows
 
+> CI compatibility note: workflows set `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true` to avoid Node20 deprecation issues on GitHub-hosted runners.
+
 ### Quick Start (recommended)
 
 > Note: GitHub Actions artifacts are downloaded as `.zip` by design. If you need `boot.img`, download the artifact zip and extract `boot.img` from it.
