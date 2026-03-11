@@ -22,6 +22,7 @@ def main() -> int:
     report = parse_kv(ART / "phase2-report.txt")
     meta = parse_kv(ART / "run-meta.txt")
     valid = parse_kv(ART / "phase2-report-validate.txt")
+    consistency = parse_kv(ART / "decision-consistency.txt")
 
     obj = {
         "run": {
@@ -56,6 +57,12 @@ def main() -> int:
             "next_action": report.get("next_action", "collect-more-data"),
             "runtime_ready": report.get("runtime_ready", "no"),
             "schema_status": valid.get("status", "unknown"),
+        },
+        "consistency": {
+            "status": consistency.get("status", "unknown"),
+            "errors": consistency.get("errors", ""),
+            "expected_runtime_ready": consistency.get("expected_runtime_ready", ""),
+            "expected_focus": consistency.get("expected_focus", ""),
         },
     }
 

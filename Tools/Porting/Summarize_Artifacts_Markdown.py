@@ -21,6 +21,7 @@ def main() -> int:
     r = parse_kv(ART / "phase2-report.txt")
     n = parse_kv(ART / "next-focus.txt")
     c = parse_kv(ART / "artifact-completeness.txt")
+    d = parse_kv(ART / "decision-consistency.txt")
 
     next_action = r.get('next_action', '')
 
@@ -37,10 +38,12 @@ def main() -> int:
         f"- Runtime Ready: `{r.get('runtime_ready', 'no')}`",
         f"- Boot Image: `{r.get('bootimg_status', 'missing')}` ({r.get('bootimg_reason', 'n/a')})",
         f"- Boot Image Build: `{r.get('bootimg_build_status', 'unknown')}` ({r.get('bootimg_build_reason', 'n/a')})",
+        f"- Decision Consistency: `{d.get('status', 'unknown')}`",
         "",
         "## Next Focus",
         f"- Focus: `{n.get('focus', 'collect-more-data')}`",
         f"- Reason: `{n.get('reason', 'n/a')}`",
+        f"- Consistency Errors: `{d.get('errors', '') or 'none'}`",
         "",
         "## Suggested First Files",
         "- `phase2-report.txt`",
