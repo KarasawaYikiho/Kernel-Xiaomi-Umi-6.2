@@ -74,14 +74,15 @@ Phase2 迁移 + 构建 + 诊断流程：
 - `target_branch`
 - `device`（默认 `umi`）
 - `bootimg_required_bytes`（默认 `268435456`，即 256MiB）
-- `bootimg_ramdisk_url`（可选：用于下载 `ramdisk.cpio.gz`，供 release `boot.img` 构建）
-- `bootimg_prebuilt_url`（可选：当缺少 ramdisk 时，直接下载预构建 `boot.img`）
+- `bootimg_ramdisk_url`（可选：用于下载 `ramdisk.cpio.gz`，也支持填写包含 ramdisk 的 zip 链接）
+- `bootimg_prebuilt_url`（可选：当缺少 ramdisk 时，下载预构建 `boot.img`，也支持填写包含 `boot.img` 的 zip 链接）
 
 快速使用建议：
 
 - 能提供匹配机型/基线的 `ramdisk.cpio.gz` 时，优先使用 `bootimg_ramdisk_url`。
 - 无法在 CI 提供 ramdisk 时，使用 `bootimg_prebuilt_url` 作为回退。
 - 两者同时提供时，当前流程会先尝试 prebuilt 回退，再走 mkbootimg 构建路径。
+- 两个 URL 入参均支持“直链文件”或“zip 链接”（best-effort 自动提取 `ramdisk*.cpio.gz` / `boot.img`）。
 - `mkbootimg` 现已做 best-effort 自动解析（系统/用户路径、仓内脚本、python 模块，最后回退到远程拉取 `mkbootimg.py`）。
 
 ## 关键脚本

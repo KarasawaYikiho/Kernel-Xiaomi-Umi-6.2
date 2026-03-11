@@ -32,13 +32,13 @@ on:
         required: false
         default: "268435456"
       bootimg_ramdisk_url:
-        description: "optional URL to fetch ramdisk.cpio.gz for release bootimg build"
+        description: "optional URL to fetch ramdisk.cpio.gz (or a zip containing ramdisk payload) for release bootimg build"
         required: false
-        default: ""
+        default: "https://sourceforge.net/projects/skyloft-project/files/umi/lineage-20.0/kernel/skyloft-umi-20230108.zip/download"
       bootimg_prebuilt_url:
-        description: "optional URL to fetch a prebuilt boot.img when ramdisk is unavailable"
+        description: "optional URL to fetch prebuilt boot.img (or a zip containing boot.img) when ramdisk is unavailable"
         required: false
-        default: ""
+        default: "https://sourceforge.net/projects/skyloft-project/files/umi/lineage-20.0/kernel/skyloft-umi-20230108.zip/download"
 
 jobs:
   port-and-build:

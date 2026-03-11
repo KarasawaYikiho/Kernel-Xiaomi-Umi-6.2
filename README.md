@@ -75,14 +75,15 @@ Inputs:
 - `target_branch`
 - `device` (default: `umi`)
 - `bootimg_required_bytes` (default: `268435456`, i.e. 256MiB)
-- `bootimg_ramdisk_url` (optional URL for `ramdisk.cpio.gz` when building release `boot.img`)
-- `bootimg_prebuilt_url` (optional URL to download a prebuilt `boot.img` when ramdisk is unavailable)
+- `bootimg_ramdisk_url` (optional URL for `ramdisk.cpio.gz`, or a zip that contains a ramdisk payload)
+- `bootimg_prebuilt_url` (optional URL for a prebuilt `boot.img`, or a zip that contains `boot.img`)
 
 Quick dispatch guidance:
 
 - Prefer `bootimg_ramdisk_url` when you can provide a trusted `ramdisk.cpio.gz` matching the target device/base.
 - Use `bootimg_prebuilt_url` as fallback when ramdisk cannot be provided in CI.
 - If both are set, the current pipeline attempts prebuilt fallback first, then mkbootimg path.
+- Both URL inputs now support either direct files or zip links (best-effort extraction for `ramdisk*.cpio.gz` / `boot.img`).
 - `mkbootimg` is now resolved best-effort (system/user path/embedded script/python module, then remote `mkbootimg.py` fetch).
 
 ## Key scripts

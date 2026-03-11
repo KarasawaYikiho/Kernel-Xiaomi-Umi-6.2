@@ -16,6 +16,16 @@ prebuilt_url="${BOOTIMG_PREBUILT_URL:-}"
 dtb_path="${BOOTIMG_DTB_PATH:-}"
 mkbootimg_cmd=""
 
+fetch_file() {
+  local url="$1"; local out="$2"
+  if command -v curl >/dev/null 2>&1; then
+    curl -L --fail --retry 3 "$url" -o "$out" && return 0
+  elif command -v wget >/dev/null 2>&1; then
+    wget -O "$out" "$url" && return 0
+  fi
+  return 1
+}
+
 # kernel
 if [[ -f out/arch/arm64/boot/Image.gz ]]; then
   kernel_path="out/arch/arm64/boot/Image.gz"
@@ -35,10 +45,20 @@ fi
 
 # optional download path for ramdisk
 if [[ -z "$ramdisk_path" && -n "$ramdisk_url" ]]; then
-  if command -v curl >/dev/null 2>&1; then
-    curl -L --fail --retry 3 "$ramdisk_url" -o "$ART/ramdisk.cpio.gz" && ramdisk_path="$ART/ramdisk.cpio.gz" || true
-  elif command -v wget >/dev/null 2>&1; then
-    wget -O "$ART/ramdisk.cpio.gz" "$ramdisk_url" && ramdisk_path="$ART/ramdisk.cpio.gz" || true
+  ramdisk_dl="$ART/ramdisk-download"
+  if fetch_file "$ramdisk_url" "$ramdisk_dl"; then
+    # direct ramdisk file
+    if file "$ramdisk_dl" 2>/dev/null | grep -Eiq 'gzip compressed|cpio archive'; then
+      mv -f "$ramdisk_dl" "$ART/ramdisk.cpio.gz"
+      ramdisk_path="$ART/ramdisk.cpio.gz"
+    # archive fallback: try to extract a ramdisk payload from zip
+    elif [[ "$ramdisk_url" == *.zip* ]] && command -v unzip >/dev/null 2>&1; then
+      if unzip -p "$ramdisk_dl" "*ramdisk*.cpio.gz" > "$ART/ramdisk.cpio.gz" 2>/dev/null; then
+        ramdisk_path="$ART/ramdisk.cpio.gz"
+      elif unzip -p "$ramdisk_dl" "*initramfs*.cpio.gz" > "$ART/ramdisk.cpio.gz" 2>/dev/null; then
+        ramdisk_path="$ART/ramdisk.cpio.gz"
+      fi
+    fi
   fi
 fi
 
@@ -107,10 +127,15 @@ cmdline="${BOOTIMG_CMDLINE:-}"
 # fallback: use a prebuilt boot.img directly when mkbootimg inputs are unavailable
 if [[ -n "$prebuilt_url" ]]; then
   out_boot="$ART/boot.img"
-  if command -v curl >/dev/null 2>&1; then
-    curl -L --fail --retry 3 "$prebuilt_url" -o "$out_boot" || true
-  elif command -v wget >/dev/null 2>&1; then
-    wget -O "$out_boot" "$prebuilt_url" || true
+  prebuilt_dl="$ART/prebuilt-download"
+  if fetch_file "$prebuilt_url" "$prebuilt_dl"; then
+    # direct boot.img
+    if file "$prebuilt_dl" 2>/dev/null | grep -Eiq 'Android bootimg|data'; then
+      mv -f "$prebuilt_dl" "$out_boot"
+    # archive fallback: try to extract boot.img from zip
+    elif [[ "$prebuilt_url" == *.zip* ]] && command -v unzip >/dev/null 2>&1; then
+      unzip -p "$prebuilt_dl" "*boot.img" > "$out_boot" 2>/dev/null || true
+    fi
   fi
   if [[ -f "$out_boot" ]]; then
     size="$(stat -c%s "$out_boot" 2>/dev/null || wc -c < "$out_boot")"
