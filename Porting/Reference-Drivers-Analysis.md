@@ -1,19 +1,19 @@
-# Reference Driver Analysis (UtsavBalar1231 / Strawing)
+# Reference Driver Analysis (Author IDs: UtsavBalar1231 / Strawing)
 
 This report compares additional reference repositories against the current 5+ base driver layout.
 
 ## Sources
-- so_ts drivers: 145
-- base_5plus drivers: 143
-- utsav combined reference drivers: 150
+- so_ts drivers: 0
+- base_5plus drivers: 0
+- utsav combined reference drivers: 15
 
 ## Driver Delta
-- reference-only (missing in base): 27
-- sample: cam_cdm, cam_core, cam_cpas, cam_cust, cam_fd, cam_icp, cam_isp, cam_jpeg, cam_lrme, cam_req_mgr, cam_sensor_module, cam_smmu, cam_sync, cam_utils, esoc, fmc, gnsssirf, ide, lightnvm, oprofile, sensors, sfi, sn, uwb, vlynq, vme, vservices
+- reference-only (missing in base): 15
+- sample: Makefile, cam_cdm, cam_core, cam_cpas, cam_cust, cam_fd, cam_icp, cam_isp, cam_jpeg, cam_lrme, cam_req_mgr, cam_sensor_module, cam_smmu, cam_sync, cam_utils
 
 ## UMI Integration Focus (prioritized buckets)
-- focus count: 3
-- focus buckets: cam_sensor_module, esoc, sensors
+- focus count: 1
+- focus buckets: cam_sensor_module
 
 ## Strawing Discovery
 - matched public repos: 0 (no public kernel/driver repos detected at scan time)

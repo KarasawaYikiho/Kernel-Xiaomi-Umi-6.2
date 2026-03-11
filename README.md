@@ -29,8 +29,9 @@ It is designed to automate Phase2 migration, CI build attempts, diagnostics, and
   - `UtsavBalar1231/display-drivers`
   - `UtsavBalar1231/camera-kernel`
 - Notes:
-  - Additional references are used as donor/comparison inputs for driver adaptation, not as blind drop-in replacements.
-  - `Strawing` account is scanned by tooling; if no public kernel/driver repo is found, the inventory records an empty result with timestamped run context.
+  - `UtsavBalar1231` and `Strawing` are treated as author IDs (account-level discovery), then selected repositories are used as donor/comparison inputs.
+  - Additional references are used for driver adaptation only, not as blind drop-in replacements.
+  - If no public kernel/driver repository is found under an author ID, inventory records an explicit empty result.
 
 ## Workflows
 

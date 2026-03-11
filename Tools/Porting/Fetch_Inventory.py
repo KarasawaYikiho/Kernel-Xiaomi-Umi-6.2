@@ -12,11 +12,13 @@ UA = {"User-Agent": "OpenClaw-Porting"}
 TARGETS = {
     "so_ts": {"repo": "SO-TS/android_kernel_xiaomi_sm8250", "ref": "android16-aptusitu"},
     "base_5plus": {"repo": "yefxx/xiaomi-umi-linux-kernel", "ref": "master"},
-    # Additional reference sources requested for driver-side comparison.
+    # Author-ID sourced references (selected repos under UtsavBalar1231 account).
     "reference_utsav_sm8150": {"repo": "UtsavBalar1231/android_kernel_xiaomi_sm8150", "ref": "master"},
     "reference_utsav_display_drivers": {"repo": "UtsavBalar1231/display-drivers", "ref": "psyche-r-oss"},
     "reference_utsav_camera_kernel": {"repo": "UtsavBalar1231/camera-kernel", "ref": "main"},
 }
+
+AUTHOR_IDS = ["UtsavBalar1231", "Strawing", "strawing"]
 
 PATHS = ["arch/arm64/configs", "arch/arm64/boot/dts", "techpack", "drivers"]
 
@@ -90,18 +92,15 @@ def main():
             out[name][p] = vals
             out[name]["fetch_mode"][p] = mode
 
-    utsav, mode_u = discover_user_repos(
-        "UtsavBalar1231", ["kernel", "driver", "sm8250", "xiaomi", "camera", "display"]
-    )
-    strawing, mode_s = discover_user_repos(
-        "Strawing", ["kernel", "driver", "sm8250", "xiaomi", "camera", "display"]
-    )
+    discovery: dict[str, Any] = {"fetch_mode": {}}
+    for author in AUTHOR_IDS:
+        rows, mode = discover_user_repos(
+            author, ["kernel", "driver", "sm8250", "xiaomi", "camera", "display"]
+        )
+        discovery[author] = rows
+        discovery["fetch_mode"][author] = mode
 
-    out["reference_discovery"] = {
-        "UtsavBalar1231": utsav,
-        "Strawing": strawing,
-        "fetch_mode": {"UtsavBalar1231": mode_u, "Strawing": mode_s},
-    }
+    out["reference_discovery"] = discovery
 
     out["meta"] = {
         "generator": "Tools/Porting/Fetch_Inventory.py",
