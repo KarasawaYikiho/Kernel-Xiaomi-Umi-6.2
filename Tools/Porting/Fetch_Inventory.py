@@ -19,6 +19,7 @@ TARGETS = {
 }
 
 AUTHOR_IDS = ["UtsavBalar1231", "liyafe1997"]
+DISCOVERY_KEYWORDS = ["kernel", "driver", "sm8250", "xiaomi", "camera", "display"]
 
 PATHS = ["arch/arm64/configs", "arch/arm64/boot/dts", "techpack", "drivers"]
 
@@ -93,10 +94,13 @@ def main():
             out[name]["fetch_mode"][p] = mode
 
     discovery: dict[str, Any] = {"fetch_mode": {}}
+    seen_authors: set[str] = set()
     for author in AUTHOR_IDS:
-        rows, mode = discover_user_repos(
-            author, ["kernel", "driver", "sm8250", "xiaomi", "camera", "display"]
-        )
+        key = author.strip().lower()
+        if not key or key in seen_authors:
+            continue
+        seen_authors.add(key)
+        rows, mode = discover_user_repos(author, DISCOVERY_KEYWORDS)
         discovery[author] = rows
         discovery["fetch_mode"][author] = mode
 

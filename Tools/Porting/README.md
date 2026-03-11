@@ -55,7 +55,7 @@ This directory contains the automation chain used by `Phase2-Port-Umi.yml`.
 - **Run metadata orchestration:** `Write_Run_Meta.sh` (records run/input metadata)
 - **Postprocess orchestration:** `Run_Postprocess_Suite.sh` (runs post-build reporting scripts in CI)
 - **Repository sanity checks:** `Repo_Sanity_Check.py` (python compile, workflow script refs, markdown link checks)
-- **Reference discovery/driver analysis:** `Fetch_Inventory.py`, `Analyze_Reference_Drivers.py`
+- **Reference discovery/driver analysis:** `Fetch_Inventory.py`, `Analyze_Reference_Drivers.py` (author-ID scan includes dedup + keyword-based filtering)
 
 ## Key Report Signals
 

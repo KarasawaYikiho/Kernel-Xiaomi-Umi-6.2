@@ -3,13 +3,13 @@
 This report compares additional reference repositories against the current 5+ base driver layout.
 
 ## Sources
-- so_ts drivers: 0
-- base_5plus drivers: 0
+- so_ts drivers: 145
+- base_5plus drivers: 143
 - utsav combined reference drivers: 15
 
 ## Driver Delta
-- reference-only (missing in base): 15
-- sample: Makefile, cam_cdm, cam_core, cam_cpas, cam_cust, cam_fd, cam_icp, cam_isp, cam_jpeg, cam_lrme, cam_req_mgr, cam_sensor_module, cam_smmu, cam_sync, cam_utils
+- reference-only (missing in base): 14
+- sample: cam_cdm, cam_core, cam_cpas, cam_cust, cam_fd, cam_icp, cam_isp, cam_jpeg, cam_lrme, cam_req_mgr, cam_sensor_module, cam_smmu, cam_sync, cam_utils
 
 ## UMI Integration Focus (prioritized buckets)
 - focus count: 1
