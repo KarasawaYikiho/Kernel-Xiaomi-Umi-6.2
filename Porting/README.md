@@ -11,6 +11,7 @@ This directory stores planning, baselines, and progress records for UMI porting.
 - `Inventory.json` — source/target capability inventory (+ additional reference discovery for UtsavBalar1231/Strawing)
 - `Gap-Report.md` — gap analysis summary
 - `Reference-Drivers-Analysis.md` — focused driver delta analysis from external reference sources
+- `OfficialRom-Umi-Os1.0.5.0-Analysis.md` — official MIUI package metadata/hash/partition-op analysis (non-blob integration)
 - `CHANGELOG.md` — concise milestone change history
 
 ## Suggested Reading Order

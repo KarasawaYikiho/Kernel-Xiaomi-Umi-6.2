@@ -56,6 +56,7 @@ This directory contains the automation chain used by `Phase2-Port-Umi.yml`.
 - **Postprocess orchestration:** `Run_Postprocess_Suite.sh` (runs post-build reporting scripts in CI)
 - **Repository sanity checks:** `Repo_Sanity_Check.py` (python compile, workflow script refs, markdown link checks)
 - **Reference discovery/driver analysis:** `Fetch_Inventory.py`, `Analyze_Reference_Drivers.py` (author-ID scan includes dedup + keyword-based filtering)
+- **Official ROM package analysis:** `Analyze_Official_Rom_Package.py` (metadata/hash/partition-op extraction, no proprietary blob import)
 
 ## Key Report Signals
 
@@ -82,6 +83,7 @@ python3 Tools/Porting/Collect_Metrics_Json.py
 python3 Tools/Porting/Build_Action_Validation_Checklist.py
 python3 Tools/Porting/Fetch_Inventory.py
 python3 Tools/Porting/Analyze_Reference_Drivers.py
+python3 Tools/Porting/Analyze_Official_Rom_Package.py
 ```
 
 > These scripts are intentionally tolerant in CI (`|| true` in workflow), so missing optional files should be reported rather than hard-failing.

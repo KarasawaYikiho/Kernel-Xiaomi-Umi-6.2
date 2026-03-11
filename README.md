@@ -33,6 +33,12 @@ It is designed to automate Phase2 migration, CI build attempts, diagnostics, and
   - Additional references are used for driver adaptation only, not as blind drop-in replacements.
   - If no public kernel/driver repository is found under an author ID, inventory records an explicit empty result.
 
+## Official ROM Baseline (Analysis-Only)
+
+- Baseline package analyzed: `D:\GIT\MIUI_UMI_OS1.0.5.0.TJBCNXM_d01651ed86_13.0.zip`
+- Analysis output: `Porting/OfficialRom-Umi-Os1.0.5.0-Analysis.md`
+- Scope: metadata/hash/partition-op evidence only (no proprietary blob import into repository)
+
 ## Workflows
 
 > CI compatibility note: workflows set `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true` to avoid Node20 deprecation issues on GitHub-hosted runners.
