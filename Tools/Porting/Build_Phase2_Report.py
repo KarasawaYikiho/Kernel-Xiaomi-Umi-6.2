@@ -27,6 +27,7 @@ def main() -> int:
     missa = parse_kv(ART / "dtb-miss-analysis.txt")
     bexit = parse_kv(ART / "build-exit.txt")
     complete = parse_kv(ART / "artifact-completeness.txt")
+    driver = parse_kv(ART / "driver-integration-status.txt")
 
     # derive a simple decision hint for next step automation
     flash_status = flash.get('status', 'unknown')
@@ -45,6 +46,7 @@ def main() -> int:
         anykernel_ok=anykernel_ok,
         anykernel_validate_status=anyk_val_status,
         bootimg_status=boot.get('status', 'missing'),
+        driver_integration_status=driver.get('status', 'pending'),
     )
     runtime_ready = derive_runtime_ready(next_action)
 
@@ -83,6 +85,9 @@ def main() -> int:
         f"miss_top_buckets={missa.get('top_buckets', '')}",
         f"artifact_completeness={complete.get('status', 'unknown')}",
         f"required_missing={complete.get('required_missing', 'n/a')}",
+        f"driver_integration_status={driver.get('status', 'pending')}",
+        f"driver_integration_reason={driver.get('reason', 'n/a')}",
+        f"driver_integration_pending={driver.get('pending', '')}",
         f"next_action={next_action}",
         f"runtime_ready={runtime_ready}",
     ]

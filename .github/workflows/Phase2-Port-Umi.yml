@@ -119,6 +119,11 @@ jobs:
         run: |
           python3 Tools/Porting/Validate_Boot_Image.py || true
 
+      - name: Build driver integration status
+        if: always()
+        run: |
+          python3 Tools/Porting/Build_Driver_Integration_Status.py || true
+
       - name: Generate consolidated phase2 report
         if: always()
         run: |

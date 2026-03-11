@@ -19,6 +19,7 @@ OPTIONAL = [
     "anykernel-validate.txt",
     "bootimg-info.txt",
     "bootimg-build.txt",
+    "driver-integration-status.txt",
     "action-validation-checklist.md",
 ]
 

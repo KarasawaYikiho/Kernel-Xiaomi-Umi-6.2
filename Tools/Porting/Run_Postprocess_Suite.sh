@@ -6,6 +6,8 @@ set -euo pipefail
 
 steps=(
   "Check_Artifact_Completeness.py"
+  "Build_Driver_Integration_Status.py"
+  "Build_Phase2_Report.py"
   "Validate_Anykernel_Candidate.py"
   "Validate_Boot_Image.py"
   "Suggest_Next_Focus.py"

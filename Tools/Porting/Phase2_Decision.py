@@ -9,6 +9,7 @@ ALLOWED_NEXT_ACTION: set[str] = {
     "ready-for-action-test",
     "prepare-release-bootimg",
     "fix-anykernel-packaging",
+    "integrate-drivers-phase3",
 }
 
 DEFAULT_BOOTIMG_REQUIRED_BYTES = 134217728
@@ -21,6 +22,7 @@ REPORT_NEXT_TO_FOCUS: dict[str, str] = {
     "fix-anykernel-packaging": "fix-anykernel-packaging",
     "ready-for-action-test": "request-action-validation",
     "prepare-release-bootimg": "prepare-release-bootimg",
+    "integrate-drivers-phase3": "integrate-drivers-phase3",
 }
 
 
@@ -44,6 +46,7 @@ def derive_next_action(
     anykernel_ok: str,
     anykernel_validate_status: str,
     bootimg_status: str,
+    driver_integration_status: str,
 ) -> str:
     next_action = "collect-more-data"
 
@@ -67,6 +70,9 @@ def derive_next_action(
         anykernel_ok != "yes" or anykernel_validate_status not in ("ok", "unknown")
     ):
         next_action = "fix-anykernel-packaging"
+
+    if next_action == "ready-for-action-test" and driver_integration_status != "complete":
+        next_action = "integrate-drivers-phase3"
 
     return next_action
 

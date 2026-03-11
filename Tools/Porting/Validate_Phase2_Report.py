@@ -20,10 +20,12 @@ REQ_KEYS = [
     "bootimg_status",
     "bootimg_required_bytes",
     "bootimg_required_bytes_parse",
+    "driver_integration_status",
 ]
 
 ALLOWED_YES_NO = {"yes", "no"}
 ALLOWED_PARSE = {"exact", "default-empty", "default-invalid", "unknown"}
+ALLOWED_DRIVER_INTEGRATION = {"pending", "partial", "complete", "unknown"}
 
 
 
@@ -49,6 +51,10 @@ def main() -> int:
     required_bytes = rep.get("bootimg_required_bytes", DEFAULT_BOOTIMG_REQUIRED_BYTES_STR)
     if required_bytes and not required_bytes.lstrip("-").isdigit():
         invalid.append(f"bootimg_required_bytes:{required_bytes}")
+
+    driver_integration = rep.get("driver_integration_status", "")
+    if driver_integration and driver_integration not in ALLOWED_DRIVER_INTEGRATION:
+        invalid.append(f"driver_integration_status:{driver_integration}")
 
     status = "ok" if not missing and not invalid else "invalid"
 

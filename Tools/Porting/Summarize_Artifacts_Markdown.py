@@ -28,6 +28,7 @@ def main() -> int:
         f"- Manifest Hit Ratio: `{r.get('manifest_hit_ratio', '0.000')}`",
         f"- Artifact Completeness: `{c.get('status', 'unknown')}`",
         f"- Runtime Ready: `{r.get('runtime_ready', 'no')}`",
+        f"- Driver Integration: `{r.get('driver_integration_status', 'pending')}` ({r.get('driver_integration_reason', 'n/a')})",
         f"- Boot Image: `{r.get('bootimg_status', 'missing')}` ({r.get('bootimg_reason', 'n/a')})",
         f"- Boot Image Build: `{r.get('bootimg_build_status', 'unknown')}` ({r.get('bootimg_build_reason', 'n/a')})",
         f"- Decision Consistency: `{d.get('status', 'unknown')}`",
@@ -50,6 +51,11 @@ def main() -> int:
             "- `bootimg-info.txt`",
             "- `bootimg-build.txt`",
         ])
+
+    if next_action == 'integrate-drivers-phase3':
+        md.append("- `driver-integration-status.txt`")
+        md.append("- `Porting/Reference-Drivers-Analysis.md`")
+        md.append("- `Porting/OfficialRom-Umi-Os1.0.5.0-Analysis.md`")
 
     if r.get('runtime_ready', 'no') == 'yes':
         md.append("- `action-validation-checklist.md`")

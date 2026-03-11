@@ -28,6 +28,8 @@ def main() -> int:
     bootimg_required_parse = report.get("bootimg_required_bytes_parse", "unknown")
     consistency_status = consistency.get("status", "unknown")
     consistency_errors = consistency.get("errors", "")
+    driver_integration_status = report.get("driver_integration_status", "pending")
+    driver_integration_reason = report.get("driver_integration_reason", "n/a")
     blockers = []
     if report.get("defconfig_rc", "n/a") not in ("0", "n/a"):
         blockers.append(f"defconfig_rc={report.get('defconfig_rc', 'n/a')}")
@@ -49,6 +51,8 @@ def main() -> int:
         blockers.append(f"decision_consistency={consistency_status}")
     if consistency_errors:
         blockers.append(f"decision_consistency_errors={consistency_errors}")
+    if driver_integration_status != "complete":
+        blockers.append(f"driver_integration_status={driver_integration_status}")
 
     md = [
         "# Phase2 Runtime Validation Checklist",
@@ -65,10 +69,12 @@ def main() -> int:
         f"- bootimg_required_bytes_parse: `{bootimg_required_parse}`",
         f"- decision_consistency: `{consistency_status}`",
         f"- decision_consistency_errors: `{consistency_errors or 'none'}`",
+        f"- driver_integration_status: `{driver_integration_status}`",
+        f"- driver_integration_reason: `{driver_integration_reason}`",
         "",
         "## Decision",
-        "- [ ] If `runtime_ready=yes` and `decision_consistency=ok`, proceed with device runtime validation now.",
-        "- [ ] If `runtime_ready=no` or `decision_consistency!=ok`, stop and fix report blockers first.",
+        "- [ ] If `runtime_ready=yes`, `decision_consistency=ok`, and `driver_integration_status=complete`, proceed with device runtime validation.",
+        "- [ ] If any of the above is not satisfied, stop and finish driver integration / report blockers first.",
         "",
     ]
 
