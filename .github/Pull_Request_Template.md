@@ -6,7 +6,7 @@
 ## Scope
 
 - [ ] Workflow
-- [ ] Script(s) under `tools/porting/`
+- [ ] Script(s) under `Tools/Porting/`
 - [ ] Docs only
 
 ## Validation

@@ -1,5 +1,5 @@
 blank_issues_enabled: false
 contact_links:
   - name: Porting docs index
-    url: https://github.com/KarasawaYikiho/Kernel-Xiaomi-Umi-6.2/blob/main/porting/README.md
+    url: https://github.com/KarasawaYikiho/Kernel-Xiaomi-Umi-6.2/blob/main/Porting/README.md
     about: Read project docs and troubleshooting context first

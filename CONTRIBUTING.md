@@ -11,12 +11,12 @@ This repository is a **kernel porting orchestrator** (CI workflows + migration/d
 ## Before You Start
 
 1. Read `README.md`
-2. Read `porting/README.md`
-3. Check `PORTING_PLAN.md` and latest `porting/CHANGELOG.md`
+2. Read `Porting/README.md`
+3. Check `PORTING_PLAN.md` and latest `Porting/CHANGELOG.md`
 
 ## Branching
 
-Follow `porting/BRANCHING.md`:
+Follow `Porting/BRANCHING.md`:
 - `port/phase*` for phase work
 - `port/hotfix-*` for urgent fixes
 
@@ -31,11 +31,11 @@ Use the PR template and include:
 
 - Keep docs updated when outputs/behavior change.
 - Prefer reproducible CI outputs over local-only tweaks.
-- For diagnostics, add scripts under `tools/porting/` and document them in `tools/porting/README.md`.
+- For diagnostics, add scripts under `Tools/Porting/` and document them in `Tools/Porting/README.md`.
 
 ## Changelog Policy
 
-- Add concise milestone entries to `porting/CHANGELOG.md`.
+- Add concise milestone entries to `Porting/CHANGELOG.md`.
 - Put verbose historical detail in archive files when needed.
 
 ## Security / Safety

@@ -1,4 +1,4 @@
-# tools/porting - Script Index
+# Tools/porting - Script Index
 
 This directory contains the automation chain used by `Phase2-Port-Umi.yml`.
 
@@ -73,12 +73,12 @@ Most scripts read from `artifacts/` and write back to `artifacts/`.
 A typical local validation flow after obtaining logs/artifacts is:
 
 ```bash
-python3 tools/porting/Validate_Anykernel_Candidate.py
-python3 tools/porting/Build_Phase2_Report.py
-python3 tools/porting/Check_Artifact_Completeness.py
-python3 tools/porting/Extract_Build_Errors.py
-python3 tools/porting/Collect_Metrics_Json.py
-python3 tools/porting/Build_Action_Validation_Checklist.py
+python3 Tools/Porting/Validate_Anykernel_Candidate.py
+python3 Tools/Porting/Build_Phase2_Report.py
+python3 Tools/Porting/Check_Artifact_Completeness.py
+python3 Tools/Porting/Extract_Build_Errors.py
+python3 Tools/Porting/Collect_Metrics_Json.py
+python3 Tools/Porting/Build_Action_Validation_Checklist.py
 ```
 
 > These scripts are intentionally tolerant in CI (`|| true` in workflow), so missing optional files should be reported rather than hard-failing.

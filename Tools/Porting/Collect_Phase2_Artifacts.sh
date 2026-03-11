@@ -7,10 +7,10 @@ set -euo pipefail
 DEVICE="${1:-umi}"
 
 mkdir -p artifacts/umi_bundle
-cp -v target/porting/phase2/summary.txt artifacts/ || true
-cp -v target/porting/phase2/copied_dts.txt artifacts/ || true
-cp -v target/porting/phase2/seed_dts.txt artifacts/ || true
-cp -v target/porting/phase2/included_dts.txt artifacts/ || true
+cp -v target/Porting/phase2/summary.txt artifacts/ || true
+cp -v target/Porting/phase2/copied_dts.txt artifacts/ || true
+cp -v target/Porting/phase2/seed_dts.txt artifacts/ || true
+cp -v target/Porting/phase2/included_dts.txt artifacts/ || true
 cp -v out/.config artifacts/ || true
 cp -v out/arch/arm64/boot/Image artifacts/ || true
 cp -v out/arch/arm64/boot/Image.gz artifacts/ || true
@@ -21,7 +21,7 @@ cp -v out/boot.img artifacts/ || true
 find out/arch/arm64/boot/dts -type f \( -name '*.dtb' -o -name '*.dtbo' \) > artifacts/all_dtb_paths.txt || true
 
 # build manifest from migrated dts list (preferred)
-python3 tools/porting/Build_Dtb_Manifest.py || true
+python3 Tools/Porting/Build_Dtb_Manifest.py || true
 
 # pick paths by manifest first
 : > artifacts/umi_primary_dtb_paths.txt
@@ -32,8 +32,8 @@ if [ -s artifacts/target_dtb_manifest.txt ]; then
   done < artifacts/target_dtb_manifest.txt
 fi
 
-python3 tools/porting/Dtb_Postcheck.py || true
-python3 tools/porting/Analyze_Dtb_Miss.py || true
+python3 Tools/Porting/Dtb_Postcheck.py || true
+python3 Tools/Porting/Analyze_Dtb_Miss.py || true
 
 # fallback 1: strict umi/xiaomi/sm8250 path matching
 if [ ! -s artifacts/umi_primary_dtb_paths.txt ]; then
@@ -49,7 +49,7 @@ fi
 
 cp -v out/arch/arm64/boot/Image artifacts/umi_bundle/ || true
 cp -v out/arch/arm64/boot/Image.gz artifacts/umi_bundle/ || true
-cp -v target/porting/phase2/summary.txt artifacts/umi_bundle/ || true
+cp -v target/Porting/phase2/summary.txt artifacts/umi_bundle/ || true
 
 dtb_count=0
 xiaomi_dtb_count=0
@@ -76,4 +76,4 @@ fi
 } > artifacts/umi_bundle/pack-info.txt
 
 (cd artifacts/umi_bundle && zip -r ../phase2-umi-focused-package.zip .)
-python3 tools/porting/Evaluate_Artifact.py || true
+python3 Tools/Porting/Evaluate_Artifact.py || true

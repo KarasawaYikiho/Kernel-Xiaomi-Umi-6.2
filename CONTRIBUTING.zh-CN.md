@@ -9,12 +9,12 @@
 ## 开始前请先阅读
 
 1. `README.zh-CN.md`（或 `README.md`）
-2. `porting/README.md`
-3. `PORTING_PLAN.md` 与最新的 `porting/CHANGELOG.md`
+2. `Porting/README.md`
+3. `PORTING_PLAN.md` 与最新的 `Porting/CHANGELOG.md`
 
 ## 分支规范
 
-请遵循 `porting/BRANCHING.md`：
+请遵循 `Porting/BRANCHING.md`：
 
 - `port/phase*`：阶段性开发
 - `port/hotfix-*`：紧急修复
@@ -31,11 +31,11 @@
 
 - 输出或行为发生变化时，必须同步更新文档。
 - 优先保证 CI 结果可复现，避免只在本地可运行的改动。
-- 新增诊断工具请放在 `tools/porting/`，并更新 `tools/porting/README.md`。
+- 新增诊断工具请放在 `Tools/Porting/`，并更新 `Tools/Porting/README.md`。
 
 ## Changelog 规范
 
-- 里程碑级更新写入 `porting/CHANGELOG.md`（保持简洁）。
+- 里程碑级更新写入 `Porting/CHANGELOG.md`（保持简洁）。
 - 详细历史可放入归档文件（archive）。
 
 ## 安全与合规

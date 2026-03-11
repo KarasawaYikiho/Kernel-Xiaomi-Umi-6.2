@@ -75,10 +75,10 @@ elif [[ -x "$HOME/.local/bin/mkbootimg" ]]; then
   mkbootimg_cmd="$HOME/.local/bin/mkbootimg"
 elif [[ -x "$HOME/.local/bin/mkbootimg.py" ]]; then
   mkbootimg_cmd="$HOME/.local/bin/mkbootimg.py"
-elif [[ -f source/tools/mkbootimg/mkbootimg.py ]]; then
-  mkbootimg_cmd="python3 source/tools/mkbootimg/mkbootimg.py"
-elif [[ -f target/tools/mkbootimg/mkbootimg.py ]]; then
-  mkbootimg_cmd="python3 target/tools/mkbootimg/mkbootimg.py"
+elif [[ -f source/Tools/mkbootimg/mkbootimg.py ]]; then
+  mkbootimg_cmd="python3 source/Tools/mkbootimg/mkbootimg.py"
+elif [[ -f target/Tools/mkbootimg/mkbootimg.py ]]; then
+  mkbootimg_cmd="python3 target/Tools/mkbootimg/mkbootimg.py"
 elif command -v python3 >/dev/null 2>&1; then
   py_mkbootimg="$(python3 - <<'PY'
 import importlib.util
@@ -95,7 +95,7 @@ if [[ -z "$mkbootimg_cmd" && -x "$(command -v python3 || true)" ]]; then
   fetched="$ART/mkbootimg.py"
   fetch_urls=(
     "https://raw.githubusercontent.com/aosp-mirror/platform_system_tools_mkbootimg/master/mkbootimg.py"
-    "https://android.googlesource.com/platform/system/tools/mkbootimg/+/refs/heads/master/mkbootimg.py?format=TEXT"
+    "https://android.googlesource.com/platform/system/Tools/mkbootimg/+/refs/heads/master/mkbootimg.py?format=TEXT"
   )
   for u in "${fetch_urls[@]}"; do
     if command -v curl >/dev/null 2>&1; then

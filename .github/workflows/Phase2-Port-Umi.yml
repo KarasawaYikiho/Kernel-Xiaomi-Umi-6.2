@@ -56,13 +56,13 @@ jobs:
 
       - name: Install deps
         run: |
-          chmod +x tools/porting/Install_Ci_Deps.sh
-          ./tools/porting/Install_Ci_Deps.sh
+          chmod +x Tools/Porting/Install_Ci_Deps.sh
+          ./Tools/Porting/Install_Ci_Deps.sh
 
       - name: Clone source and target
         run: |
-          chmod +x tools/porting/Prepare_Phase2_Sources.sh
-          ./tools/porting/Prepare_Phase2_Sources.sh \
+          chmod +x Tools/Porting/Prepare_Phase2_Sources.sh
+          ./Tools/Porting/Prepare_Phase2_Sources.sh \
             "${{ github.event.inputs.source_repo }}" \
             "${{ github.event.inputs.source_branch }}" \
             "${{ github.event.inputs.target_repo }}" \
@@ -70,59 +70,59 @@ jobs:
 
       - name: Check target kernel major
         run: |
-          chmod +x tools/porting/Check_Target_Kernel_Version.sh
-          ./tools/porting/Check_Target_Kernel_Version.sh
+          chmod +x Tools/Porting/Check_Target_Kernel_Version.sh
+          ./Tools/Porting/Check_Target_Kernel_Version.sh
 
       - name: Apply Phase2 migration
         run: |
-          chmod +x tools/porting/Apply_Phase2_Migration.sh
-          ./tools/porting/Apply_Phase2_Migration.sh "${{ github.event.inputs.device }}"
+          chmod +x Tools/Porting/Apply_Phase2_Migration.sh
+          ./Tools/Porting/Apply_Phase2_Migration.sh "${{ github.event.inputs.device }}"
 
       - name: Build target kernel (attempt)
         env:
           ARCH: arm64
         run: |
-          chmod +x tools/porting/Run_Phase2_Build.sh
-          ./tools/porting/Run_Phase2_Build.sh "${{ github.event.inputs.device }}"
+          chmod +x Tools/Porting/Run_Phase2_Build.sh
+          ./Tools/Porting/Run_Phase2_Build.sh "${{ github.event.inputs.device }}"
 
       - name: Collect artifacts + umi-focused package
         if: always()
         run: |
-          chmod +x tools/porting/Collect_Phase2_Artifacts.sh
-          ./tools/porting/Collect_Phase2_Artifacts.sh "${{ github.event.inputs.device }}"
+          chmod +x Tools/Porting/Collect_Phase2_Artifacts.sh
+          ./Tools/Porting/Collect_Phase2_Artifacts.sh "${{ github.event.inputs.device }}"
 
       - name: Build AnyKernel candidate zip
         if: always()
         run: |
-          chmod +x tools/porting/Build_Anykernel_Candidate.sh
-          ./tools/porting/Build_Anykernel_Candidate.sh
+          chmod +x Tools/Porting/Build_Anykernel_Candidate.sh
+          ./Tools/Porting/Build_Anykernel_Candidate.sh
 
       - name: Prepare release boot image (best effort)
         if: always()
         run: |
-          chmod +x tools/porting/Prepare_Release_Bootimg.sh
-          ./tools/porting/Prepare_Release_Bootimg.sh
+          chmod +x Tools/Porting/Prepare_Release_Bootimg.sh
+          ./Tools/Porting/Prepare_Release_Bootimg.sh
 
       - name: Validate AnyKernel candidate structure
         if: always()
         run: |
-          python3 tools/porting/Validate_Anykernel_Candidate.py || true
+          python3 Tools/Porting/Validate_Anykernel_Candidate.py || true
 
       - name: Validate boot image constraints
         if: always()
         run: |
-          python3 tools/porting/Validate_Boot_Image.py || true
+          python3 Tools/Porting/Validate_Boot_Image.py || true
 
       - name: Generate consolidated phase2 report
         if: always()
         run: |
-          python3 tools/porting/Build_Phase2_Report.py || true
+          python3 Tools/Porting/Build_Phase2_Report.py || true
 
       - name: Write run metadata
         if: always()
         run: |
-          chmod +x tools/porting/Write_Run_Meta.sh
-          ./tools/porting/Write_Run_Meta.sh \
+          chmod +x Tools/Porting/Write_Run_Meta.sh
+          ./Tools/Porting/Write_Run_Meta.sh \
             "${{ github.run_id }}" \
             "${{ github.run_number }}" \
             "${{ github.sha }}" \
@@ -136,8 +136,8 @@ jobs:
       - name: Run postprocess suite
         if: always()
         run: |
-          chmod +x tools/porting/Run_Postprocess_Suite.sh
-          ./tools/porting/Run_Postprocess_Suite.sh
+          chmod +x Tools/Porting/Run_Postprocess_Suite.sh
+          ./Tools/Porting/Run_Postprocess_Suite.sh
 
       - name: Upload artifacts
         if: always()

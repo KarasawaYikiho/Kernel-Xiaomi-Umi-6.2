@@ -89,19 +89,19 @@ Phase2 迁移 + 构建 + 诊断流程：
 
 核心编排脚本：
 
-- `tools/porting/Install_Ci_Deps.sh`
-- `tools/porting/Prepare_Phase2_Sources.sh`
-- `tools/porting/Check_Target_Kernel_Version.sh`
-- `tools/porting/Apply_Phase2_Migration.sh`
-- `tools/porting/Run_Phase2_Build.sh`
-- `tools/porting/Collect_Phase2_Artifacts.sh`
-- `tools/porting/Build_Anykernel_Candidate.sh`
-- `tools/porting/Write_Run_Meta.sh`
-- `tools/porting/Run_Postprocess_Suite.sh`
+- `Tools/Porting/Install_Ci_Deps.sh`
+- `Tools/Porting/Prepare_Phase2_Sources.sh`
+- `Tools/Porting/Check_Target_Kernel_Version.sh`
+- `Tools/Porting/Apply_Phase2_Migration.sh`
+- `Tools/Porting/Run_Phase2_Build.sh`
+- `Tools/Porting/Collect_Phase2_Artifacts.sh`
+- `Tools/Porting/Build_Anykernel_Candidate.sh`
+- `Tools/Porting/Write_Run_Meta.sh`
+- `Tools/Porting/Run_Postprocess_Suite.sh`
 
 完整脚本索引：
 
-- `tools/porting/README.md`
+- `Tools/Porting/README.md`
 
 ## Phase2 工件速读
 
@@ -126,13 +126,13 @@ Phase2 迁移 + 构建 + 诊断流程：
 ## 仓库结构
 
 - `.github/workflows/`：CI 工作流
-- `tools/porting/`：迁移与诊断工具
-- `porting/`：计划、盘点、报告、变更记录
+- `Tools/Porting/`：迁移与诊断工具
+- `Porting/`：计划、盘点、报告、变更记录
 
 ## 文档入口
 
-- 移植文档索引：`porting/README.md`
-- 脚本索引：`tools/porting/README.md`
+- 移植文档索引：`Porting/README.md`
+- 脚本索引：`Tools/Porting/README.md`
 - 英文文档：`README.md`
 
 ## 贡献

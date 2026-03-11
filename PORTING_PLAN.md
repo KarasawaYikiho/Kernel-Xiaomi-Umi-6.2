@@ -49,4 +49,4 @@
 ## 交付规则
 - 每个阶段至少 1 次可编译提交
 - 每次 push 触发 GitHub Actions
-- 关键变更写入 `porting/CHANGELOG.md`
+- 关键变更写入 `Porting/CHANGELOG.md`

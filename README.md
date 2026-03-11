@@ -90,19 +90,19 @@ Quick dispatch guidance:
 
 Core wrappers / orchestrators:
 
-- `tools/porting/Install_Ci_Deps.sh`
-- `tools/porting/Prepare_Phase2_Sources.sh`
-- `tools/porting/Check_Target_Kernel_Version.sh`
-- `tools/porting/Apply_Phase2_Migration.sh`
-- `tools/porting/Run_Phase2_Build.sh`
-- `tools/porting/Collect_Phase2_Artifacts.sh`
-- `tools/porting/Build_Anykernel_Candidate.sh`
-- `tools/porting/Write_Run_Meta.sh`
-- `tools/porting/Run_Postprocess_Suite.sh`
+- `Tools/Porting/Install_Ci_Deps.sh`
+- `Tools/Porting/Prepare_Phase2_Sources.sh`
+- `Tools/Porting/Check_Target_Kernel_Version.sh`
+- `Tools/Porting/Apply_Phase2_Migration.sh`
+- `Tools/Porting/Run_Phase2_Build.sh`
+- `Tools/Porting/Collect_Phase2_Artifacts.sh`
+- `Tools/Porting/Build_Anykernel_Candidate.sh`
+- `Tools/Porting/Write_Run_Meta.sh`
+- `Tools/Porting/Run_Postprocess_Suite.sh`
 
 Detailed script index:
 
-- `tools/porting/README.md`
+- `Tools/Porting/README.md`
 
 ## Phase2 artifact guide
 
@@ -127,20 +127,20 @@ Additional diagnostics:
 ## Repository layout
 
 - `.github/workflows/` — CI workflows
-- `tools/porting/` — migration/analysis tooling
-- `porting/` — plans, inventory, reports, changelog
+- `Tools/Porting/` — migration/analysis tooling
+- `Porting/` — plans, inventory, reports, changelog
 
 ## Documentation
 
-- Porting docs index: `porting/README.md`
-- Tooling script index: `tools/porting/README.md`
+- Porting docs index: `Porting/README.md`
+- Tooling script index: `Tools/Porting/README.md`
 - Chinese README: `README.zh-CN.md`
 
 ## Repository sanity check
 
 Run:
 
-- `python tools/porting/Repo_Sanity_Check.py`
+- `python Tools/Porting/Repo_Sanity_Check.py`
 
 Checks include Python script compilation, workflow script references, and markdown local-link validity.
 

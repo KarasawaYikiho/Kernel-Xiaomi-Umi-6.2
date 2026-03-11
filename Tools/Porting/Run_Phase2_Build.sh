@@ -16,7 +16,7 @@ make -C target O=$PWD/out LLVM=1 LLVM_IAS=1 -j"$(nproc)" Image.gz modules > arti
 rc2=$?
 
 # Build preferred DTBs from migrated manifest first (non-fatal for phase2 progression)
-python3 tools/porting/Build_Dtb_Manifest.py > artifacts/make-dtb-manifest.log 2>&1
+python3 Tools/Porting/Build_Dtb_Manifest.py > artifacts/make-dtb-manifest.log 2>&1
 rc_manifest=$?
 rc3=0
 : > artifacts/make-target-dtbs.log

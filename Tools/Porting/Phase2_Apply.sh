@@ -11,7 +11,7 @@ DEVICE="${3:-umi}"
 
 log() { echo "[phase2] $*"; }
 
-PORT_DIR="$DST_DIR/porting/phase2"
+PORT_DIR="$DST_DIR/Porting/phase2"
 mkdir -p "$PORT_DIR"
 : > "$PORT_DIR/copied_dts.txt"
 : > "$PORT_DIR/seed_dts.txt"

@@ -75,7 +75,7 @@ def main():
     report.append("- DTS migration should start from sm8250-xiaomi-* subset, not full tree copy.")
     report.append("- Techpack features require subsystem-by-subsystem adaptation into 5+ driver layout.")
 
-    out = Path("porting/Gap-Report.md")
+    out = Path("Porting/Gap-Report.md")
     out.write_text("\n".join(report) + "\n", encoding="utf-8")
     print(f"Wrote {out}")
 

@@ -22,4 +22,4 @@ This directory stores planning, baselines, and progress records for UMI porting.
 ## Maintenance Notes
 
 - Keep milestone-level updates in `CHANGELOG.md`.
-- Avoid duplicating workflow details here; put execution details in `tools/porting/README.md`.
+- Avoid duplicating workflow details here; put execution details in `Tools/Porting/README.md`.

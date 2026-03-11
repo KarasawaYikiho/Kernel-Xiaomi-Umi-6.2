@@ -46,10 +46,10 @@ def main():
         for p in PATHS:
             out[name][p] = list_dir(cfg["repo"], cfg["ref"], p)
 
-    with open("porting/Inventory.json", "w", encoding="utf-8") as f:
+    with open("Porting/Inventory.json", "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=2)
 
-    print("Wrote porting/Inventory.json")
+    print("Wrote Porting/Inventory.json")
 
 
 if __name__ == "__main__":

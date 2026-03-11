@@ -1,8 +1,8 @@
 # Phase 1 Classification (SO-TS 4.19 -> 5+)
 
 Based on:
-- `porting/Inventory.json`
-- `porting/Gap-Report.md`
+- `Porting/Inventory.json`
+- `Porting/Gap-Report.md`
 
 ## A. 可直接移植（先做）
 

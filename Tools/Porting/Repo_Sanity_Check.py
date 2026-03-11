@@ -25,10 +25,10 @@ def check_workflow_script_refs() -> list[str]:
     if not wf.exists():
         return ["missing workflow: .github/workflows/Phase2-Port-Umi.yml"]
     text = wf.read_text(encoding="utf-8")
-    refs = re.findall(r"\./tools/porting/([\w\-]+\.sh)", text)
+    refs = re.findall(r"\./Tools/Porting/([\w\-]+\.sh)", text)
     for r in refs:
         if not (ROOT / "tools" / "porting" / r).exists():
-            errs.append(f"missing script referenced by workflow: tools/porting/{r}")
+            errs.append(f"missing script referenced by workflow: Tools/Porting/{r}")
     return errs
 
 

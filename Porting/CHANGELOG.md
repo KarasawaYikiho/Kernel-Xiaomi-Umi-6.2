@@ -8,7 +8,7 @@
 - Added broad diagnostic/reporting toolchain (phase2 report, miss analysis, run metadata, completeness checks, error summary, index, markdown summary, validation, metrics, status line, checksums).
 - Improved workflow reliability with concurrency control and timeout.
 - Removed quality-gate program path to simplify compile flow and reduce maintenance overhead.
-- Refined repo documentation and added docs indexes (`porting/README.md`, tooling index updates, quick-start/readability cleanup).
+- Refined repo documentation and added docs indexes (`Porting/README.md`, tooling index updates, quick-start/readability cleanup).
 
 ## 2026-03-08
 - Initialized 5+ porting orchestrator skeleton.

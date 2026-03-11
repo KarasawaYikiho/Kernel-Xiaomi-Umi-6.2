@@ -2,7 +2,7 @@
 from pathlib import Path
 import re
 
-COPIED = Path("target/porting/phase2/copied_dts.txt")
+COPIED = Path("target/Porting/phase2/copied_dts.txt")
 OUT = Path("artifacts/target_dtb_manifest.txt")
 TARGET_DTS_ROOTS = [
     Path("target/arch/arm64/boot/dts/qcom"),
