@@ -46,7 +46,7 @@ This directory contains the automation chain used by `Phase2-Port-Umi.yml`.
 - **Source prep orchestration:** `Prepare_Phase2_Sources.sh`, `Check_Target_Kernel_Version.sh`
 - **Migration:** `Apply_Phase2_Migration.sh`, `Phase2_Apply.sh` (includes `vendor/qcom` + `vendor/xiaomi` DTS roots and defconfig fallback strategy)
 - **DTB matching/diagnostics:** `Build_Dtb_Manifest.py`, `Dtb_Postcheck.py`, `Analyze_Dtb_Miss.py`
-- **Readiness/reporting:** `Evaluate_Artifact.py`, `Build_Phase2_Report.py`, `Validate_Phase2_Report.py`, `Validate_Anykernel_Candidate.py`, `Build_Action_Validation_Checklist.py` (includes `runtime_ready` report field)
+- **Readiness/reporting:** `Phase2_Decision.py` (shared next_action/runtime_ready derivation), `Evaluate_Artifact.py`, `Build_Phase2_Report.py`, `Validate_Phase2_Report.py`, `Validate_Anykernel_Candidate.py`, `Build_Action_Validation_Checklist.py` (includes `runtime_ready` report field)
 - **CI artifact UX:** `Build_Artifact_Index.py`, `Summarize_Artifacts_Markdown.py`, `Build_Status_Badge_Line.py`, `Build_Artifact_Checksums.py`
 - **Automation metrics:** `Collect_Metrics_Json.py`, `Check_Artifact_Completeness.py`, `Suggest_Next_Focus.py`, `Extract_Build_Errors.py`
 - **Build orchestration:** `Run_Phase2_Build.sh` (defconfig/build attempt + exit snapshot)

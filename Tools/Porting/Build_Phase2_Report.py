@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 from pathlib import Path
 
+from Phase2_Decision import derive_next_action, derive_runtime_ready
+
 ART = Path("artifacts")
 OUT = ART / "phase2-report.txt"
 
@@ -40,22 +42,16 @@ def main() -> int:
     dtbs_rc = bexit.get('dtbs_rc', 'n/a')
 
     anyk_val_status = anyk_val.get('status', 'unknown')
-    next_action = 'collect-more-data'
-    if def_rc not in ('0', 'n/a'):
-        next_action = 'fix-defconfig-errors'
-    elif build_rc not in ('0', 'n/a'):
-        next_action = 'fix-build-errors'
-    elif dtbs_rc not in ('0', 'n/a'):
-        next_action = 'fix-dtb-build-errors'
-    elif flash_status == 'candidate' and anykernel_ok == 'yes' and anyk_val_status in ('ok', 'unknown'):
-        next_action = 'ready-for-action-test'
-
-    if boot.get('status', 'missing') in ('missing', 'size_mismatch'):
-        next_action = 'prepare-release-bootimg'
-    elif flash_status == 'candidate' and (anykernel_ok != 'yes' or anyk_val_status not in ('ok', 'unknown')):
-        next_action = 'fix-anykernel-packaging'
-
-    runtime_ready = 'yes' if next_action == 'ready-for-action-test' else 'no'
+    next_action = derive_next_action(
+        defconfig_rc=def_rc,
+        build_rc=build_rc,
+        dtbs_rc=dtbs_rc,
+        flash_status=flash_status,
+        anykernel_ok=anykernel_ok,
+        anykernel_validate_status=anyk_val_status,
+        bootimg_status=boot.get('status', 'missing'),
+    )
+    runtime_ready = derive_runtime_ready(next_action)
 
     lines = [
         "phase2_report=1",

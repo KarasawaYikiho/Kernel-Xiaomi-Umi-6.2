@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 from pathlib import Path
 
+from Phase2_Decision import ALLOWED_NEXT_ACTION
+
 ART = Path("artifacts")
 OUT = ART / "phase2-report-validate.txt"
 REQ_KEYS = [
@@ -19,15 +21,6 @@ REQ_KEYS = [
     "bootimg_required_bytes_parse",
 ]
 
-ALLOWED_NEXT_ACTION = {
-    "collect-more-data",
-    "fix-defconfig-errors",
-    "fix-build-errors",
-    "fix-dtb-build-errors",
-    "ready-for-action-test",
-    "prepare-release-bootimg",
-    "fix-anykernel-packaging",
-}
 ALLOWED_YES_NO = {"yes", "no"}
 ALLOWED_PARSE = {"exact", "default-empty", "default-invalid", "unknown"}
 
