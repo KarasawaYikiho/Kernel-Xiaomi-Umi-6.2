@@ -92,10 +92,18 @@ def main() -> int:
         vbmeta_match = "yes" if _sha256(vbmeta_local) == rom_hashes[vbmeta_key] else "no"
 
     # Driver-area evidence (conservative text/path signals)
-    cam_signal = _contains_any(ref_text + "\n" + copied_text, ["camera", "cam_sensor", "cam_isp", "camss"]) 
-    dsp_signal = _contains_any(ref_text + "\n" + copied_text, ["display", "dsi", "drm", "msm_drm"]) 
-    thm_signal = _contains_any(ref_text + "\n" + copied_text, ["thermal", "power", "qcom", "cpufreq"]) 
-    aud_signal = _contains_any(copied_text, ["audio", "snd", "wcd", "q6"]) 
+    joined = ref_text + "\n" + copied_text
+    cam_signal = _contains_any(joined, ["camera", "cam_sensor", "cam_isp", "camss"])
+    cam_isp_signal = _contains_any(joined, ["cam_isp", "camss", "isp", "msm_isp"])
+    dsp_signal = _contains_any(joined, ["display", "dsi", "drm", "msm_drm"])
+    thm_signal = _contains_any(joined, ["thermal", "power", "qcom", "cpufreq"])
+    aud_signal = _contains_any(joined, ["audio", "snd", "wcd", "q6"])
+    xiaomi_signal = _contains_any(joined, ["xiaomi", "umi", "sm8250"])
+
+    ref_camera_alignment = "yes" if cam_signal else "no"
+    ref_display_alignment = "yes" if dsp_signal else "no"
+    ref_thermal_alignment = "yes" if thm_signal else "no"
+    ref_xiaomi_alignment = "yes" if xiaomi_signal else "no"
 
     partition_signal = _contains_any(rom_text, ["dynamic partition", "dynamic_partitions_op_list"])
 
@@ -106,9 +114,14 @@ def main() -> int:
         f"vbmeta_match={vbmeta_match}",
         f"partition_baseline_signal={'yes' if partition_signal else 'no'}",
         f"camera_signal={'yes' if cam_signal else 'no'}",
+        f"camera_isp_signal={'yes' if cam_isp_signal else 'no'}",
         f"display_signal={'yes' if dsp_signal else 'no'}",
         f"thermal_signal={'yes' if thm_signal else 'no'}",
         f"audio_signal={'yes' if aud_signal else 'no'}",
+        f"ref_driver_xiaomi_alignment={ref_xiaomi_alignment}",
+        f"ref_driver_camera_alignment={ref_camera_alignment}",
+        f"ref_driver_display_alignment={ref_display_alignment}",
+        f"ref_driver_thermal_alignment={ref_thermal_alignment}",
         f"boot_local_path={(boot_local.as_posix() if boot_local else '')}",
         f"dtbo_local_path={(dtbo_local.as_posix() if dtbo_local else '')}",
         f"vbmeta_local_path={(vbmeta_local.as_posix() if vbmeta_local else '')}",

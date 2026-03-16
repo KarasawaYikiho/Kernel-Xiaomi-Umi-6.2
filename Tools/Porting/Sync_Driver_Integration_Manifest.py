@@ -124,6 +124,9 @@ def main() -> int:
     if ev.get("camera_signal") == "yes":
         integrated.add("camera_sensor_module")
         evidence_promoted.append("camera_sensor_module")
+    if ev.get("camera_isp_signal") == "yes":
+        integrated.add("camera_isp_path")
+        evidence_promoted.append("camera_isp_path")
     if ev.get("display_signal") == "yes":
         integrated.add("display_pipeline")
         evidence_promoted.append("display_pipeline")
@@ -133,6 +136,19 @@ def main() -> int:
     if ev.get("audio_signal") == "yes":
         integrated.add("audio_stack")
         evidence_promoted.append("audio_stack")
+
+    if ev.get("ref_driver_xiaomi_alignment") == "yes":
+        integrated.add("ref_driver_xiaomi_path_alignment")
+        evidence_promoted.append("ref_driver_xiaomi_path_alignment")
+    if ev.get("ref_driver_camera_alignment") == "yes":
+        integrated.add("ref_driver_camera_path_alignment")
+        evidence_promoted.append("ref_driver_camera_path_alignment")
+    if ev.get("ref_driver_display_alignment") == "yes":
+        integrated.add("ref_driver_display_path_alignment")
+        evidence_promoted.append("ref_driver_display_path_alignment")
+    if ev.get("ref_driver_thermal_alignment") == "yes":
+        integrated.add("ref_driver_thermal_path_alignment")
+        evidence_promoted.append("ref_driver_thermal_path_alignment")
     if ev.get("partition_baseline_signal") == "yes":
         integrated.add("rom_dynamic_partition_baseline")
         evidence_promoted.append("rom_dynamic_partition_baseline")
