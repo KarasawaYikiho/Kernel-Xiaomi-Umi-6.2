@@ -109,6 +109,17 @@ jobs:
           chmod +x Tools/Porting/Prepare_Release_Bootimg.sh
           ./Tools/Porting/Prepare_Release_Bootimg.sh
 
+      - name: Fetch inventory and analyze reference drivers
+        if: always()
+        run: |
+          python3 Tools/Porting/Fetch_Inventory.py || true
+          python3 Tools/Porting/Analyze_Reference_Drivers.py || true
+
+      - name: Analyze official ROM package baseline
+        if: always()
+        run: |
+          python3 Tools/Porting/Analyze_Official_Rom_Package.py || true
+
       - name: Validate AnyKernel candidate structure
         if: always()
         run: |

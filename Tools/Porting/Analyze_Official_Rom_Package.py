@@ -1,9 +1,14 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
 import hashlib
+import os
 import struct
 import zipfile
 from pathlib import Path
 
-ROM_ZIP = Path(r"D:\GIT\MIUI_UMI_OS1.0.5.0.TJBCNXM_d01651ed86_13.0.zip")
+DEFAULT_ROM_PATH = r"D:\GIT\MIUI_UMI_OS1.0.5.0.TJBCNXM_d01651ed86_13.0.zip"
+ROM_ZIP = Path(os.environ.get("OFFICIAL_ROM_ZIP", DEFAULT_ROM_PATH))
 OUT_MD = Path("Porting/OfficialRom-Umi-Os1.0.5.0-Analysis.md")
 
 
@@ -36,9 +41,29 @@ def boot_header_summary(boot: bytes) -> list[str]:
     return lines
 
 
+def write_missing_report(path: Path) -> None:
+    lines: list[str] = []
+    lines.append("# Official ROM Package Analysis (UMI OS1.0.5.0.TJBCNXM)")
+    lines.append("")
+    lines.append("## Status")
+    lines.append("- status: `missing_source_package`")
+    lines.append(f"- expected_source: `{path}`")
+    lines.append("- note: ROM package not found in current environment; generated placeholder report for CI continuity.")
+    lines.append("")
+    lines.append("## Integration Recommendations")
+    lines.append("1. Provide OFFICIAL_ROM_ZIP path in local/CI runtime when ROM baseline validation is required.")
+    lines.append("2. Keep ROM checks as validation-only evidence; do not import proprietary blobs into repository.")
+    lines.append("3. Until ROM package is present, keep ROM consistency items pending in driver integration manifest.")
+    OUT_MD.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def main() -> int:
+    OUT_MD.parent.mkdir(parents=True, exist_ok=True)
+
     if not ROM_ZIP.exists():
-        raise FileNotFoundError(f"ROM zip not found: {ROM_ZIP}")
+        write_missing_report(ROM_ZIP)
+        print(f"Wrote {OUT_MD} (source package missing)")
+        return 0
 
     with zipfile.ZipFile(ROM_ZIP) as zf:
         infos = zf.infolist()
@@ -66,6 +91,8 @@ def main() -> int:
         lines: list[str] = []
         lines.append("# Official ROM Package Analysis (UMI OS1.0.5.0.TJBCNXM)")
         lines.append("")
+        lines.append("## Status")
+        lines.append("- status: `ok`")
         lines.append(f"- Source File: `{ROM_ZIP}`")
         lines.append(f"- Zip Size Bytes: `{ROM_ZIP.stat().st_size}`")
         lines.append(f"- Zip SHA256: `{sha256_bytes(ROM_ZIP.read_bytes())}`")
