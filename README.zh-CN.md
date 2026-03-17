@@ -48,13 +48,15 @@ Kernel-Xiaomi-Umi 是一个面向 Xiaomi 10（`umi`）内核迁移的**编排仓
 先运行 **`Phase2-Port-Umi.yml`** 默认参数，然后按顺序查看：
 
 1. `artifacts/runtime-validation-summary.md`
-2. `artifacts/phase2-report.txt`
-3. `artifacts/status-badge-line.txt`
-4. `artifacts/action-validation-checklist.md`
-5. `artifacts/artifact-summary.md`
-6. `artifacts/next-focus.txt`
-7. `artifacts/build-error-summary.txt`
-8. `artifacts/anykernel-info.txt`
+2. `artifacts/runtime-validation-input.md`
+3. `artifacts/runtime-validation-result.txt`
+4. `artifacts/phase2-report.txt`
+5. `artifacts/status-badge-line.txt`
+6. `artifacts/action-validation-checklist.md`
+7. `artifacts/artifact-summary.md`
+8. `artifacts/next-focus.txt`
+9. `artifacts/build-error-summary.txt`
+10. `artifacts/anykernel-info.txt`
 
 ### `Phase2-Port-Umi.yml`
 
@@ -74,6 +76,10 @@ Kernel-Xiaomi-Umi 是一个面向 Xiaomi 10（`umi`）内核迁移的**编排仓
 - `bootimg_ramdisk_url`（可选）
 - `bootimg_prebuilt_url`（可选回退）
 - `bootimg_required_bytes`（默认 `134217728`，设为 `<=0` 可关闭尺寸校验）
+
+实机验证后：
+- 填写 `artifacts/runtime-validation-input.md`
+- 重新执行 postprocess，即可自动生成 `runtime-validation-result.txt` 并刷新 `phase2-report / next-focus / badge / summary`
 
 ### `Build-Umi-Kernel.yml`
 
