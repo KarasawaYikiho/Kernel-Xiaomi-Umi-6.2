@@ -28,6 +28,7 @@ def main() -> int:
     bexit = parse_kv(ART / "build-exit.txt")
     complete = parse_kv(ART / "artifact-completeness.txt")
     driver = parse_kv(ART / "driver-integration-status.txt")
+    runtime_result = parse_kv(ART / "runtime-validation-result.txt")
 
     # derive a simple decision hint for next step automation
     flash_status = flash.get('status', 'unknown')
@@ -88,6 +89,12 @@ def main() -> int:
         f"driver_integration_status={driver.get('status', 'pending')}",
         f"driver_integration_reason={driver.get('reason', 'n/a')}",
         f"driver_integration_pending={driver.get('pending', '')}",
+        f"runtime_validation_status={runtime_result.get('status', 'missing_input')}",
+        f"runtime_validation_overall={runtime_result.get('overall', 'UNKNOWN')}",
+        f"runtime_validation_failed_step={runtime_result.get('failed_step', '')}",
+        f"runtime_validation_pass_count={runtime_result.get('pass_count', '0')}",
+        f"runtime_validation_fail_count={runtime_result.get('fail_count', '0')}",
+        f"runtime_validation_unknown_count={runtime_result.get('unknown_count', '0')}",
         f"next_action={next_action}",
         f"runtime_ready={runtime_ready}",
     ]

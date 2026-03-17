@@ -14,6 +14,7 @@ def main() -> int:
     n = parse_kv(ART / "next-focus.txt")
     c = parse_kv(ART / "artifact-completeness.txt")
     d = parse_kv(ART / "decision-consistency.txt")
+    rv = parse_kv(ART / "runtime-validation-result.txt")
 
     next_action = r.get('next_action', '')
 
@@ -33,6 +34,8 @@ def main() -> int:
         f"- Runtime Ready: `{r.get('runtime_ready', 'no')}`",
         f"- Driver Integration: `{r.get('driver_integration_status', 'pending')}` ({r.get('driver_integration_reason', 'n/a')})",
         f"- Decision Consistency: `{d.get('status', 'unknown')}`",
+        f"- Runtime Validation Result: `{rv.get('overall', 'UNKNOWN')}` ({rv.get('status', 'missing_input')})",
+        f"- Runtime Validation Failed Step: `{rv.get('failed_step', '') or 'none'}`",
         f"- Boot Image: `{r.get('bootimg_status', 'missing')}` ({r.get('bootimg_reason', 'n/a')}) - release follow-up",
         f"- Boot Image Build: `{r.get('bootimg_build_status', 'unknown')}` ({r.get('bootimg_build_reason', 'n/a')})",
         "",
@@ -43,6 +46,8 @@ def main() -> int:
         "",
         "## Suggested First Files",
         "- `runtime-validation-summary.md`",
+        "- `runtime-validation-input.md`",
+        "- `runtime-validation-result.txt`",
         "- `phase2-report.txt`",
         "- `status-badge-line.txt`",
         "- `action-validation-checklist.md`",

@@ -5,6 +5,8 @@ set -euo pipefail
 # Usage: Run_Postprocess_Suite.sh
 
 steps=(
+  "Build_Runtime_Validation_Template.py"
+  "Parse_Runtime_Validation_Input.py"
   "Check_Artifact_Completeness.py"
   "Init_Driver_Integration_Manifest.py"
   "Validate_Driver_Integration_Manifest.py"

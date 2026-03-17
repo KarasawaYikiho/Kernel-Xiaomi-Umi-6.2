@@ -20,6 +20,7 @@ def main() -> int:
     consistency = parse_kv(ART / "decision-consistency.txt")
     focus = parse_kv(ART / "next-focus.txt")
     meta = parse_kv(ART / "run-meta.txt")
+    runtime_result = parse_kv(ART / "runtime-validation-result.txt")
 
     next_action = report.get("next_action", "collect-more-data")
     runtime_ready = report.get("runtime_ready", "no")
@@ -78,6 +79,8 @@ def main() -> int:
         f"- flash_status: `{report.get('flash_status', 'unknown')}`",
         f"- anykernel: `{report.get('anykernel_ok', 'no')}/{report.get('anykernel_validate_status', 'unknown')}`",
         f"- focus: `{focus.get('focus', '')}` ({focus.get('reason', 'n/a')})",
+        f"- result_overall: `{runtime_result.get('overall', 'UNKNOWN')}`",
+        f"- result_failed_step: `{runtime_result.get('failed_step', '') or 'none'}`",
         "",
     ]
 
@@ -113,7 +116,7 @@ def main() -> int:
         "",
         "## Device-Side Next Step",
         "- Flash `AnyKernel3-umi-candidate.zip` using the prepared validation flow.",
-        "- Run the checklist in `action-validation-checklist.md` and report pass/fail by step.",
+        "- Fill `runtime-validation-input.md` after testing, then run postprocess again.",
         "- If something fails, capture dmesg/logcat and the failing checklist step index.",
         "",
     ])

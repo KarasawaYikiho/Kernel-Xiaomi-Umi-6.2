@@ -16,6 +16,7 @@ def main() -> int:
     meta = parse_kv(ART / "run-meta.txt")
     valid = parse_kv(ART / "phase2-report-validate.txt")
     consistency = parse_kv(ART / "decision-consistency.txt")
+    runtime_result = parse_kv(ART / "runtime-validation-result.txt")
 
     runtime_gate_status = "ready" if report.get("runtime_ready", "no") == "yes" and consistency.get("status", "unknown") in ("ok", "unknown") and report.get("driver_integration_status", "pending") == "complete" else "blocked"
 
@@ -61,6 +62,15 @@ def main() -> int:
             "errors": consistency.get("errors", ""),
             "expected_runtime_ready": consistency.get("expected_runtime_ready", ""),
             "expected_focus": consistency.get("expected_focus", ""),
+        },
+        "runtime_validation": {
+            "status": runtime_result.get("status", "missing_input"),
+            "overall": runtime_result.get("overall", "UNKNOWN"),
+            "failed_step": runtime_result.get("failed_step", ""),
+            "pass_count": runtime_result.get("pass_count", "0"),
+            "fail_count": runtime_result.get("fail_count", "0"),
+            "skip_count": runtime_result.get("skip_count", "0"),
+            "unknown_count": runtime_result.get("unknown_count", "0"),
         },
     }
 

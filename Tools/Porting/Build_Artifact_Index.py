@@ -6,6 +6,8 @@ OUT = ART / "artifact-index.txt"
 
 PRIORITY_ORDER = [
     "runtime-validation-summary.md",
+    "runtime-validation-input.md",
+    "runtime-validation-result.txt",
     "phase2-report.txt",
     "status-badge-line.txt",
     "action-validation-checklist.md",

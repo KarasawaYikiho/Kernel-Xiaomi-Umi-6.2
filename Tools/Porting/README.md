@@ -36,6 +36,7 @@ This directory contains the automation chain used by `Phase2-Port-Umi.yml`.
 - Readiness/reporting: `Phase2_Decision.py`, `Init_Driver_Integration_Manifest.py`, `Sync_Driver_Integration_Manifest.py`, `Validate_Driver_Integration_Manifest.py`, `Build_Driver_Integration_Status.py`, `Build_Phase2_Report.py`, `Validate_Phase2_Report.py`, `Validate_Boot_Image.py`
 - Packaging: `Build_Anykernel_Candidate.sh`, `Validate_Anykernel_Candidate.py`, `Prepare_Release_Bootimg.sh`
 - Artifact UX: `Build_Artifact_Index.py`, `Summarize_Artifacts_Markdown.py`, `Build_Status_Badge_Line.py`, `Build_Artifact_Checksums.py`
+- Runtime validation feedback: `Build_Runtime_Validation_Template.py`, `Parse_Runtime_Validation_Input.py`, `Build_Runtime_Validation_Summary.py`
 - Metrics/consistency: `Collect_Metrics_Json.py`, `Suggest_Next_Focus.py`, `Verify_Decision_Consistency.py`
 - Repo checks: `Repo_Sanity_Check.py`
 
@@ -50,6 +51,8 @@ This directory contains the automation chain used by `Phase2-Port-Umi.yml`.
 - `bootimg_required_bytes_parse` — parse state (`exact`, `default-empty`, `default-invalid`, `unknown`)
 - `decision-consistency.txt` — semantic consistency check across report/focus/runtime
 - `action-validation-checklist.md` — runtime checklist with blocker snapshot
+- `runtime-validation-input.md` — structured template for device-side validation feedback
+- `runtime-validation-result.txt` — parsed runtime validation outcome for report/metrics ingestion
 - `runtime-validation-summary.md` — one-page runtime gate summary + device-side next step
 - `postprocess-status.txt` — per-step postprocess execution status (`ok` / `failed`)
 - `driver-integration-manifest.txt` — driver subsystem checklist (`integrated:<item>` / `pending:<item>`)
