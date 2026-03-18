@@ -73,5 +73,6 @@ Typical local validation:
 
 ```bash
 python Tools/Porting/Repo_Sanity_Check.py
+python Tools/Porting/Selftest_Decision_Flow.py
 python -m compileall Tools/Porting
 ```
