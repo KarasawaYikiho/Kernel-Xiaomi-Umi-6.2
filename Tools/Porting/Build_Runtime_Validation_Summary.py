@@ -47,12 +47,6 @@ def main() -> int:
         runtime_blockers.append(f"dtbs_rc={report.get('dtbs_rc', 'n/a')}")
     if report.get("flash_status", "unknown") != "candidate":
         runtime_blockers.append(f"flash_status={report.get('flash_status', 'unknown')}")
-    if report.get("anykernel_ok", "no") != "yes":
-        runtime_blockers.append("anykernel_ok!=yes")
-    if report.get("anykernel_validate_status", "unknown") not in ("ok", "unknown"):
-        runtime_blockers.append(
-            f"anykernel_validate_status={report.get('anykernel_validate_status', 'unknown')}"
-        )
     if driver_runtime_blockers:
         runtime_blockers.extend(
             [f"driver_integration_pending={x}" for x in driver_runtime_blockers]
@@ -61,9 +55,6 @@ def main() -> int:
         runtime_blockers.append(f"decision_consistency={consistency_status}")
     if consistency_errors:
         runtime_blockers.append(f"decision_consistency_errors={consistency_errors}")
-    if runtime_ready != "yes":
-        runtime_blockers.append(f"runtime_ready={runtime_ready}")
-
     release_followups: list[str] = []
     if bootimg_status != "ok":
         release_followups.append(f"bootimg_status={bootimg_status}")
@@ -89,8 +80,22 @@ def main() -> int:
         and report.get("bootimg_rom_sha256_match", "unknown") == "yes"
     )
 
+    if not magisk_patch_ready:
+        if report.get("anykernel_ok", "no") != "yes":
+            runtime_blockers.append("anykernel_ok!=yes")
+        if report.get("anykernel_validate_status", "unknown") not in ("ok", "unknown"):
+            runtime_blockers.append(
+                f"anykernel_validate_status={report.get('anykernel_validate_status', 'unknown')}"
+            )
+        if runtime_ready != "yes":
+            runtime_blockers.append(f"runtime_ready={runtime_ready}")
+    else:
+        runtime_blockers = [
+            x for x in runtime_blockers if not x.startswith("flash_status=")
+        ]
+
     headline = (
-        "READY FOR DEVICE RUNTIME VALIDATION"
+        "READY FOR MAGISK-PATCHED BOOT VALIDATION"
         if not runtime_blockers
         else "NOT READY FOR DEVICE RUNTIME VALIDATION"
     )
@@ -129,9 +134,9 @@ def main() -> int:
         md.extend(
             [
                 "## Runtime Gate Result",
-                "- Candidate packaging is ready for device-side runtime validation.",
+                "- ROM-aligned boot packaging is ready for device-side Magisk patch validation.",
                 "- Driver integration has no remaining runtime-blocking items.",
-                "- Remaining release/ROM alignment work is tracked separately and does not block AnyKernel-based runtime testing.",
+                "- AnyKernel packaging is no longer the primary gate for the current validation path.",
                 "",
             ]
         )
@@ -146,15 +151,15 @@ def main() -> int:
         )
 
     next_steps = [
-        "- Flash `AnyKernel3-umi-candidate.zip` using the prepared validation flow.",
-        "- Fill `runtime-validation-input.md` after testing, then run postprocess again.",
-        "- If something fails, capture dmesg/logcat and the failing checklist step index.",
+        "- Copy `artifacts/boot.img` to the device and patch it with the Magisk app.",
+        "- Flash the Magisk-patched boot image, then confirm the device still boots cleanly.",
+        "- After the first rooted boot, collect dmesg/logcat and rerun postprocess with the validation result.",
     ]
-    if magisk_patch_ready and anykernel_ok != "yes":
+    if not magisk_patch_ready:
         next_steps = [
-            "- Copy `artifacts/boot.img` to the device and patch it with the Magisk app.",
-            "- Flash the Magisk-patched boot image, then confirm the device still boots cleanly.",
-            "- After the first rooted boot, collect dmesg/logcat and rerun postprocess with the validation result.",
+            "- Finish release boot image preparation before device-side validation.",
+            "- If AnyKernel packaging is available earlier, treat it as secondary evidence rather than the primary path.",
+            "- After packaging is ready, rerun postprocess and continue with the Magisk-patched boot flow.",
         ]
     runtime_overall = runtime_result.get("overall", "UNKNOWN")
     if runtime_overall == "FAIL":

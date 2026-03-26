@@ -53,12 +53,6 @@ def main() -> int:
         blockers.append(f"build_rc={report.get('build_rc', 'n/a')}")
     if report.get("dtbs_rc", "n/a") not in ("0", "n/a"):
         blockers.append(f"dtbs_rc={report.get('dtbs_rc', 'n/a')}")
-    if report.get("anykernel_ok", "no") != "yes":
-        blockers.append("anykernel_ok!=yes")
-    if report.get("anykernel_validate_status", "unknown") not in ("ok", "unknown"):
-        blockers.append(
-            f"anykernel_validate_status={report.get('anykernel_validate_status', 'unknown')}"
-        )
     if consistency_status not in ("ok", "unknown"):
         blockers.append(f"decision_consistency={consistency_status}")
     if consistency_errors:
@@ -67,7 +61,18 @@ def main() -> int:
         blockers.extend(
             [f"driver_integration_pending={x}" for x in driver_runtime_blockers]
         )
-    if runtime_ready != "yes":
+    if not magisk_patch_ready and report.get("anykernel_ok", "no") != "yes":
+        blockers.append("anykernel_ok!=yes")
+    if not magisk_patch_ready and report.get(
+        "anykernel_validate_status", "unknown"
+    ) not in (
+        "ok",
+        "unknown",
+    ):
+        blockers.append(
+            f"anykernel_validate_status={report.get('anykernel_validate_status', 'unknown')}"
+        )
+    if not magisk_patch_ready and runtime_ready != "yes":
         blockers.append(f"runtime_ready={runtime_ready}")
 
     release_followups: list[str] = []
@@ -111,9 +116,9 @@ def main() -> int:
         f"- driver_integration_reason: `{driver_integration_reason}`",
         "",
         "## Decision",
-        "- [ ] If `runtime_ready=yes` and `decision_consistency=ok`, proceed with device runtime validation.",
-        "- [ ] `driver_integration_status` may remain `partial` when the only pending items are ROM/release alignment checks that do not block AnyKernel-based runtime validation.",
-        "- [ ] `bootimg_status` is tracked separately for release delivery and does not block AnyKernel-based runtime validation by itself.",
+        "- [ ] If `magisk_patch_ready=yes` and `decision_consistency=ok`, use the Magisk-patched boot path as the primary device validation route.",
+        "- [ ] `driver_integration_status` may remain `partial` only when the pending items are release follow-ups that do not block the Magisk-patched boot flow.",
+        "- [ ] AnyKernel packaging is secondary for this validation stage and should not override a ready ROM-aligned `artifacts/boot.img`.",
         "- [ ] If runtime gate is not satisfied, stop and finish the listed runtime blockers first.",
         "",
     ]
@@ -144,8 +149,8 @@ def main() -> int:
             "- [ ] Keep previous known-good boot image for rollback.",
             "",
             "## Flash & Boot",
-            "- [ ] If `magisk_patch_ready=yes`, patch `artifacts/boot.img` with Magisk and prepare the patched boot image for flashing.",
-            "- [ ] Otherwise flash `AnyKernel3-umi-candidate.zip` in recovery/fastboot flow.",
+            "- [ ] Patch `artifacts/boot.img` with Magisk and prepare the patched boot image for flashing when `magisk_patch_ready=yes`.",
+            "- [ ] Use AnyKernel only as a fallback experiment if the Magisk path is unavailable.",
             "- [ ] First boot completes without bootloop (wait 3-5 min).",
             "- [ ] `adb shell uname -a` returns expected kernel build.",
             "",

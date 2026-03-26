@@ -15,6 +15,7 @@
 - Added `target_dtb_manifest_debug.txt` so DTB candidate inference is traceable from source path to generated alias, and surfaced DTB debug artifacts in summary/index outputs.
 - Tightened driver-integration progress so ROM boot/dtbo/vbmeta consistency stays pending until actually verified, and shifted runtime guidance toward Magisk patching when the ROM-aligned `artifacts/boot.img` is already ready.
 - Extract official ROM `dtbo.img` and `vbmeta.img` into `artifacts/` alongside the ROM-aligned `boot.img`, so postprocess can close ROM consistency follow-ups with local evidence instead of leaving them perpetually pending.
+- Recentered runtime guidance on the Magisk-patched `artifacts/boot.img` path so AnyKernel packaging no longer dominates device validation messaging once the ROM-aligned boot image is ready.
 
 ## 2026-03-11
 

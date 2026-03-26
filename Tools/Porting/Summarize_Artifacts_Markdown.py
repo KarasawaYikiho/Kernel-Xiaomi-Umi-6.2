@@ -49,6 +49,7 @@ def main() -> int:
         f"- Boot Image: `{r.get('bootimg_status', 'missing')}` ({r.get('bootimg_reason', 'n/a')}) - release follow-up",
         f"- Boot Image ROM Match: `size={r.get('bootimg_rom_size_match', 'unknown')}` `sha256={r.get('bootimg_rom_sha256_match', 'unknown')}`",
         f"- Boot Image Build: `{r.get('bootimg_build_status', 'unknown')}` ({r.get('bootimg_build_reason', 'n/a')})",
+        f"- Magisk Patch Path: `{'ready' if r.get('release_status', 'unknown') == 'ready' and r.get('bootimg_status', 'missing') == 'ok' and r.get('bootimg_rom_size_match', 'unknown') == 'yes' and r.get('bootimg_rom_sha256_match', 'unknown') == 'yes' else 'blocked'}`",
         "",
         "## Next Focus",
         f"- Focus: `{n.get('focus', 'collect-more-data')}`",
@@ -63,7 +64,7 @@ def main() -> int:
         "- `status-badge-line.txt`",
         "- `action-validation-checklist.md`",
         "- `build-error-summary.txt`",
-        "- `anykernel-info.txt`",
+        "- `bootimg-info.txt`",
     ]
 
     if next_action == "prepare-release-bootimg":
