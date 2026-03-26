@@ -16,6 +16,7 @@
 - Tightened driver-integration progress so ROM boot/dtbo/vbmeta consistency stays pending until actually verified, and shifted runtime guidance toward Magisk patching when the ROM-aligned `artifacts/boot.img` is already ready.
 - Extract official ROM `dtbo.img` and `vbmeta.img` into `artifacts/` alongside the ROM-aligned `boot.img`, so postprocess can close ROM consistency follow-ups with local evidence instead of leaving them perpetually pending.
 - Recentered runtime guidance on the Magisk-patched `artifacts/boot.img` path so AnyKernel packaging no longer dominates device validation messaging once the ROM-aligned boot image is ready.
+- Tightened the runtime feedback loop by recording the Magisk-patched boot filename/method in `runtime-validation-input.md` and marking untouched device-check templates as `awaiting_device_validation` instead of a generic success state.
 
 ## 2026-03-11
 

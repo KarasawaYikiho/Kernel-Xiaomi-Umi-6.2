@@ -103,6 +103,8 @@ def main() -> int:
         f"driver_integration_pending={driver.get('pending', '')}",
         f"runtime_validation_status={runtime_result.get('status', 'missing_input')}",
         f"runtime_validation_overall={runtime_result.get('overall', 'UNKNOWN')}",
+        f"runtime_validation_boot_method={runtime_result.get('boot_method', 'unknown')}",
+        f"runtime_validation_patched_boot_image={runtime_result.get('patched_boot_image', '')}",
         f"runtime_validation_failed_step={runtime_result.get('failed_step', '')}",
         f"runtime_validation_pass_count={runtime_result.get('pass_count', '0')}",
         f"runtime_validation_fail_count={runtime_result.get('fail_count', '0')}",

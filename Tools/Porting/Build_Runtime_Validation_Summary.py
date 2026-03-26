@@ -118,6 +118,8 @@ def main() -> int:
         f"- magisk_patch_ready: `{'yes' if magisk_patch_ready else 'no'}`",
         f"- focus: `{focus.get('focus', '')}` ({focus.get('reason', 'n/a')})",
         f"- result_overall: `{runtime_result.get('overall', 'UNKNOWN')}`",
+        f"- boot_method: `{runtime_result.get('boot_method', 'unknown')}`",
+        f"- patched_boot_image: `{runtime_result.get('patched_boot_image', '') or 'not_recorded'}`",
         f"- result_failed_step: `{runtime_result.get('failed_step', '') or 'none'}`",
         "",
     ]
@@ -162,6 +164,13 @@ def main() -> int:
             "- After packaging is ready, rerun postprocess and continue with the Magisk-patched boot flow.",
         ]
     runtime_overall = runtime_result.get("overall", "UNKNOWN")
+    runtime_status = runtime_result.get("status", "missing_input")
+    if runtime_status == "awaiting_device_validation":
+        next_steps = [
+            "- Patch `artifacts/boot.img` with Magisk and note the patched image filename in `meta.patched_boot_image`.",
+            "- Flash the patched boot image, complete the checklist items, then change the `check.*` lines from `UNKNOWN`.",
+            "- After the first device run, attach dmesg/logcat references in the same input file and rerun postprocess.",
+        ]
     if runtime_overall == "FAIL":
         next_steps = [
             "- Inspect `runtime-validation-result.txt` and `phase2-report.txt` for the failing step.",
