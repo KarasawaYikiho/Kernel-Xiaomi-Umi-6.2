@@ -165,7 +165,6 @@ def derive_next_focus(
         artifact_completeness == "partial"
         or build_context_present == "no"
         or flash_status == "unknown"
-        or flash_status == "not_ready"
     ) and (
         manifest_hit_ratio <= 0.0
         and anykernel_ok != "yes"

@@ -26,6 +26,8 @@ def main() -> int:
 
     expected_focus, _ = derive_next_focus(
         report_next_action=next_action,
+        artifact_completeness=report.get("artifact_completeness", "unknown"),
+        build_context_present=report.get("build_context_present", "unknown"),
         build_rc=report.get("build_rc", "n/a"),
         dtbs_rc=report.get("dtbs_rc", "n/a"),
         flash_status=report.get("flash_status", "unknown"),
@@ -45,15 +47,18 @@ def main() -> int:
 
     status = "ok" if not errors else "invalid"
     OUT.write_text(
-        "\n".join([
-            f"status={status}",
-            f"next_action={next_action}",
-            f"runtime_ready={runtime_ready}",
-            f"expected_runtime_ready={expected_runtime}",
-            f"focus={actual_focus}",
-            f"expected_focus={expected_focus}",
-            f"errors={','.join(errors)}",
-        ]) + "\n",
+        "\n".join(
+            [
+                f"status={status}",
+                f"next_action={next_action}",
+                f"runtime_ready={runtime_ready}",
+                f"expected_runtime_ready={expected_runtime}",
+                f"focus={actual_focus}",
+                f"expected_focus={expected_focus}",
+                f"errors={','.join(errors)}",
+            ]
+        )
+        + "\n",
         encoding="utf-8",
     )
     print(f"wrote {OUT}: {status}")
