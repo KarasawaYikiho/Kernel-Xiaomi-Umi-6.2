@@ -4,6 +4,7 @@ import re
 
 COPIED = Path("target/Porting/phase2/copied_dts.txt")
 OUT = Path("artifacts/target_dtb_manifest.txt")
+DEBUG_OUT = Path("artifacts/target_dtb_manifest_debug.txt")
 TARGET_DTS_ROOTS = [
     Path("target/arch/arm64/boot/dts/qcom"),
     Path("target/arch/arm64/boot/dts/vendor/qcom"),
@@ -69,38 +70,52 @@ def rank_name(name: str) -> int:
     return len(PREFER)
 
 
-def collect_from_copied() -> list[str]:
+def collect_from_copied() -> tuple[list[str], list[str]]:
     if not COPIED.exists():
-        return []
+        return [], []
     names: list[str] = []
+    debug: list[str] = []
     for line in COPIED.read_text(encoding="utf-8", errors="ignore").splitlines():
+        raw = line.strip()
+        if not raw:
+            continue
         n = to_dtb_name(line)
         if n:
             names.append(n)
-        names.extend(alias_names(line))
-    return names
+            debug.append(f"copied_dts\tprimary\t{raw}\t{n}")
+        aliases = alias_names(line)
+        names.extend(aliases)
+        for alias in aliases:
+            debug.append(f"copied_dts\talias\t{raw}\t{alias}")
+    return names, debug
 
 
-def collect_from_target_tree() -> list[str]:
+def collect_from_target_tree() -> tuple[list[str], list[str]]:
     names: list[str] = []
+    debug: list[str] = []
     for root in TARGET_DTS_ROOTS:
         if not root.exists():
             continue
         for p in root.rglob("*.dts"):
-            n = to_dtb_name(str(p))
+            raw = str(p)
+            n = to_dtb_name(raw)
             if n:
                 names.append(n)
-            names.extend(alias_names(str(p)))
-    return names
+                debug.append(f"target_tree\tprimary\t{raw}\t{n}")
+            aliases = alias_names(raw)
+            names.extend(aliases)
+            for alias in aliases:
+                debug.append(f"target_tree\talias\t{raw}\t{alias}")
+    return names, debug
 
 
 def main():
     OUT.parent.mkdir(parents=True, exist_ok=True)
 
-    names = collect_from_copied()
+    names, debug = collect_from_copied()
     source = "copied_dts"
     if not names:
-        names = collect_from_target_tree()
+        names, debug = collect_from_target_tree()
         source = "target_dts_scan"
 
     # dedupe while preserving order
@@ -115,7 +130,16 @@ def main():
     uniq.sort(key=lambda x: (rank_name(x), x))
 
     OUT.write_text("\n".join(uniq) + ("\n" if uniq else ""), encoding="utf-8")
+    debug_lines = [
+        f"source={source}",
+        f"candidate_total={len(names)}",
+        f"unique_total={len(uniq)}",
+        "format=origin<TAB>kind<TAB>input<TAB>candidate",
+    ]
+    debug_lines.extend(debug)
+    DEBUG_OUT.write_text("\n".join(debug_lines) + "\n", encoding="utf-8")
     print(f"wrote {OUT} ({len(uniq)} names, source={source})")
+    print(f"wrote {DEBUG_OUT}")
 
 
 if __name__ == "__main__":

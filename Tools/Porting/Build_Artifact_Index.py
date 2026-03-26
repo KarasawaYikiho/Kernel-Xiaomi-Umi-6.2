@@ -17,6 +17,7 @@ PRIORITY_ORDER = [
     "anykernel-info.txt",
     "bootimg-info.txt",
     "bootimg-build.txt",
+    "target_dtb_manifest_debug.txt",
 ]
 
 

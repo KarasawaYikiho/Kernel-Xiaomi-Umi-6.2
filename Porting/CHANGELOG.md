@@ -12,6 +12,7 @@
 - Added local postprocess fallback metadata and downgraded artifact completeness to `partial` when Phase2-only build artifacts are absent, preventing misleading DTB-focused next-step recommendations on ROM-only validation runs.
 - Made DTB manifest collection and artifact packaging more resilient for weak/local environments by keeping empty DTB outputs explicit, enriching AnyKernel reasons, and skipping zip packaging gracefully when the host lacks `zip`.
 - Improved AnyKernel candidate diagnostics to reuse existing templates, fall back to `artifacts/Image.gz`, and surface the exact packaging blocker in reports, badges, and metrics.
+- Added `target_dtb_manifest_debug.txt` so DTB candidate inference is traceable from source path to generated alias, and surfaced DTB debug artifacts in summary/index outputs.
 
 ## 2026-03-11
 

@@ -45,6 +45,9 @@ def main() -> int:
         "dtb": {
             "hit_ratio": report.get("manifest_hit_ratio", "0.000"),
             "miss_bucket_total": report.get("miss_bucket_total", "0"),
+            "manifest_wanted": report.get("manifest_wanted", "0"),
+            "manifest_hit": report.get("manifest_hit", "0"),
+            "manifest_miss": report.get("manifest_miss", "0"),
         },
         "packaging": {
             "flash_status": report.get("flash_status", "unknown"),

@@ -83,6 +83,16 @@ def main() -> int:
             ]
         )
 
+    if n.get("focus", "") == "improve-dtb-manifest-mapping":
+        md.extend(
+            [
+                "- `target_dtb_manifest.txt`",
+                "- `target_dtb_manifest_debug.txt`",
+                "- `dtb-postcheck.txt`",
+                "- `dtb-miss-analysis.txt`",
+            ]
+        )
+
     if r.get("runtime_ready", "no") == "yes":
         md.extend(
             [
