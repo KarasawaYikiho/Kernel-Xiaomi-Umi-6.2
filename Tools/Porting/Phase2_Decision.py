@@ -33,6 +33,7 @@ RUNTIME_SAFE_DRIVER_PENDING: set[str] = {
     "rom_vbmeta_consistency",
     "rom_dynamic_partition_baseline",
     "partition_baseline_not_confirmed",
+    "target_tree_missing_for_driver_validation",
 }
 
 

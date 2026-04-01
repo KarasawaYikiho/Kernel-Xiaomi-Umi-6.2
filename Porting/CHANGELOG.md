@@ -18,6 +18,7 @@
 - Recentered runtime guidance on the Magisk-patched `artifacts/boot.img` path so AnyKernel packaging no longer dominates device validation messaging once the ROM-aligned boot image is ready.
 - Tightened the runtime feedback loop by recording the Magisk-patched boot filename/method in `runtime-validation-input.md` and marking untouched device-check templates as `awaiting_device_validation` instead of a generic success state.
 - Propagated `awaiting_device_validation`, Magisk readiness, and patched-boot metadata into badges and metrics so every top-level status view reflects the same device-test state.
+- Tightened driver-integration evidence to distinguish real target-tree driver presence from inventory/reference hints, and now keep `target_tree_missing_for_driver_validation` explicit when local driver integration cannot actually be verified.
 
 ## 2026-03-11
 

@@ -12,6 +12,7 @@ ROM_REPORT = Path("Porting/OfficialRom-Umi-Os1.0.5.0-Analysis.md")
 REF_REPORT = Path("Porting/Reference-Drivers-Analysis.md")
 INVENTORY = Path("Porting/Inventory.json")
 COPIED_DTS = ART / "copied_dts.txt"
+TARGET = Path("target")
 
 
 def _sha256(path: Path) -> str:
@@ -31,7 +32,9 @@ def _load_text(path: Path) -> str:
 def _extract_rom_hashes(text: str) -> dict[str, str]:
     out: dict[str, str] = {}
     # Matches lines like: - `boot.img`: size=`...` sha256=`...`
-    pattern = re.compile(r"`([^`]+)`:\s*size=`\d+`\s*sha256=`([0-9a-f]{64})`", re.IGNORECASE)
+    pattern = re.compile(
+        r"`([^`]+)`:\s*size=`\d+`\s*sha256=`([0-9a-f]{64})`", re.IGNORECASE
+    )
     for m in pattern.finditer(text):
         out[m.group(1).strip()] = m.group(2).lower()
     return out
@@ -59,6 +62,10 @@ def _contains_any(text: str, keys: list[str]) -> bool:
     return any(k.lower() in low for k in keys)
 
 
+def _path_exists(root: Path, rel: str) -> bool:
+    return (root / rel).exists()
+
+
 def _load_inventory() -> dict:
     if not INVENTORY.exists():
         return {}
@@ -76,7 +83,12 @@ def _collect_inventory_tokens(inventory: dict) -> str:
         repo = str(payload.get("repo", ""))
         ref = str(payload.get("ref", ""))
         chunks.extend([repo_name, repo, ref])
-        for section in ("arch/arm64/configs", "arch/arm64/boot/dts", "techpack", "drivers"):
+        for section in (
+            "arch/arm64/configs",
+            "arch/arm64/boot/dts",
+            "techpack",
+            "drivers",
+        ):
             value = payload.get(section, [])
             if isinstance(value, list):
                 chunks.extend(str(x) for x in value)
@@ -105,15 +117,21 @@ def main() -> int:
     rom_hashes = _extract_rom_hashes(rom_text)
 
     # Boot chain consistency checks
-    boot_local = _find_first_existing([
-        ART / "boot.img",
-        ART / "umi_bundle" / "boot.img",
-        Path("out/boot.img"),
-        Path("out/arch/arm64/boot/boot.img"),
-    ])
+    boot_local = _find_first_existing(
+        [
+            ART / "boot.img",
+            ART / "umi_bundle" / "boot.img",
+            Path("out/boot.img"),
+            Path("out/arch/arm64/boot/boot.img"),
+        ]
+    )
 
-    dtbo_local = _find_candidate_by_name(ART, ["dtbo.img"]) or _find_candidate_by_name(Path("out"), ["dtbo.img"])
-    vbmeta_local = _find_candidate_by_name(ART, ["vbmeta.img"]) or _find_candidate_by_name(Path("out"), ["vbmeta.img"])
+    dtbo_local = _find_candidate_by_name(ART, ["dtbo.img"]) or _find_candidate_by_name(
+        Path("out"), ["dtbo.img"]
+    )
+    vbmeta_local = _find_candidate_by_name(
+        ART, ["vbmeta.img"]
+    ) or _find_candidate_by_name(Path("out"), ["vbmeta.img"])
 
     boot_match = "no"
     dtbo_match = "no"
@@ -123,32 +141,106 @@ def main() -> int:
         boot_match = "yes" if _sha256(boot_local) == rom_hashes["boot.img"] else "no"
 
     if dtbo_local and "firmware-update/dtbo.img" in rom_hashes:
-        dtbo_match = "yes" if _sha256(dtbo_local) == rom_hashes["firmware-update/dtbo.img"] else "no"
+        dtbo_match = (
+            "yes"
+            if _sha256(dtbo_local) == rom_hashes["firmware-update/dtbo.img"]
+            else "no"
+        )
 
     vbmeta_key = "firmware-update/vbmeta.img"
     if vbmeta_local and vbmeta_key in rom_hashes:
-        vbmeta_match = "yes" if _sha256(vbmeta_local) == rom_hashes[vbmeta_key] else "no"
+        vbmeta_match = (
+            "yes" if _sha256(vbmeta_local) == rom_hashes[vbmeta_key] else "no"
+        )
 
-    # Driver-area evidence (conservative text/path signals + inventory structure signals)
+    # Driver-area evidence
     joined = ref_text + "\n" + copied_text + "\n" + inventory_text
     so_ts_techpack = set(_inventory_list(inventory, "so_ts", "techpack"))
     so_ts_drivers = set(_inventory_list(inventory, "so_ts", "drivers"))
-    camera_ref_drivers = set(_inventory_list(inventory, "reference_utsav_camera_kernel", "drivers"))
-    display_ref_repo = str(inventory.get("reference_utsav_display_drivers", {}).get("repo", "")).lower() if isinstance(inventory.get("reference_utsav_display_drivers", {}), dict) else ""
+    camera_ref_drivers = set(
+        _inventory_list(inventory, "reference_utsav_camera_kernel", "drivers")
+    )
+    display_ref_repo = (
+        str(
+            inventory.get("reference_utsav_display_drivers", {}).get("repo", "")
+        ).lower()
+        if isinstance(inventory.get("reference_utsav_display_drivers", {}), dict)
+        else ""
+    )
 
-    cam_signal = _contains_any(joined, ["camera", "cam_sensor", "cam_isp", "camss", "camera-kernel"]) or bool(camera_ref_drivers)
-    cam_isp_signal = _contains_any(joined, ["cam_isp", "camss", "isp", "msm_isp"]) or ("cam_isp" in camera_ref_drivers)
-    dsp_signal = _contains_any(joined, ["display", "dsi", "drm", "msm_drm"]) or ("display" in so_ts_techpack) or (display_ref_repo == "utsavbalar1231/display-drivers")
-    thm_signal = _contains_any(joined, ["thermal", "power", "qcom", "cpufreq"]) or ("thermal" in so_ts_drivers)
-    aud_signal = _contains_any(joined, ["audio", "snd", "wcd", "q6", "soundwire", "slimbus"]) or ("audio" in so_ts_techpack) or ("soundwire" in so_ts_drivers) or ("slimbus" in so_ts_drivers)
+    target_present = TARGET.exists()
+    local_camera_paths = [
+        "techpack/camera",
+        "techpack/camera-xiaomi",
+        "drivers/media/platform/msm/camera",
+        "drivers/media/platform/qcom/camera",
+    ]
+    local_display_paths = [
+        "techpack/display",
+        "drivers/gpu/drm/msm",
+        "drivers/gpu/drm",
+    ]
+    local_audio_paths = [
+        "techpack/audio",
+        "drivers/soundwire",
+        "drivers/slimbus",
+        "sound",
+    ]
+    local_thermal_paths = [
+        "drivers/thermal",
+        "drivers/power",
+        "drivers/cpufreq",
+    ]
+
+    local_camera_signal = target_present and any(
+        _path_exists(TARGET, p) for p in local_camera_paths
+    )
+    local_cam_isp_signal = target_present and (
+        _path_exists(TARGET, "techpack/camera")
+        or _path_exists(TARGET, "drivers/media/platform/msm/camera")
+        or _path_exists(TARGET, "drivers/media/platform/qcom/camera")
+    )
+    local_display_signal = target_present and any(
+        _path_exists(TARGET, p) for p in local_display_paths
+    )
+    local_audio_signal = target_present and any(
+        _path_exists(TARGET, p) for p in local_audio_paths
+    )
+    local_thermal_signal = target_present and any(
+        _path_exists(TARGET, p) for p in local_thermal_paths
+    )
+
+    cam_signal = local_camera_signal or _contains_any(
+        copied_text, ["camera", "cam_sensor", "cam_isp", "camss"]
+    )
+    cam_isp_signal = local_cam_isp_signal or _contains_any(
+        copied_text, ["cam_isp", "camss", "isp", "msm_isp"]
+    )
+    dsp_signal = local_display_signal or _contains_any(
+        copied_text, ["display", "dsi", "drm", "msm_drm"]
+    )
+    thm_signal = local_thermal_signal or _contains_any(
+        copied_text, ["thermal", "power", "qcom", "cpufreq"]
+    )
+    aud_signal = local_audio_signal or _contains_any(
+        copied_text, ["audio", "snd", "wcd", "q6", "soundwire", "slimbus"]
+    )
     xiaomi_signal = _contains_any(joined, ["xiaomi", "umi", "sm8250"])
 
-    ref_camera_alignment = "yes" if cam_signal else "no"
-    ref_display_alignment = "yes" if dsp_signal else "no"
-    ref_thermal_alignment = "yes" if thm_signal else "no"
+    ref_camera_alignment = (
+        "yes" if (bool(camera_ref_drivers) and xiaomi_signal) else "no"
+    )
+    ref_display_alignment = (
+        "yes" if display_ref_repo == "utsavbalar1231/display-drivers" else "no"
+    )
+    ref_thermal_alignment = (
+        "yes" if (("thermal" in so_ts_drivers) and xiaomi_signal) else "no"
+    )
     ref_xiaomi_alignment = "yes" if xiaomi_signal else "no"
 
-    partition_signal = _contains_any(rom_text, ["dynamic partition", "dynamic_partitions_op_list"])
+    partition_signal = _contains_any(
+        rom_text, ["dynamic partition", "dynamic_partitions_op_list"]
+    )
 
     lines = [
         "status=ok",
@@ -156,6 +248,12 @@ def main() -> int:
         f"dtbo_match={dtbo_match}",
         f"vbmeta_match={vbmeta_match}",
         f"partition_baseline_signal={'yes' if partition_signal else 'no'}",
+        f"target_tree_present={'yes' if target_present else 'no'}",
+        f"local_camera_signal={'yes' if local_camera_signal else 'no'}",
+        f"local_camera_isp_signal={'yes' if local_cam_isp_signal else 'no'}",
+        f"local_display_signal={'yes' if local_display_signal else 'no'}",
+        f"local_audio_signal={'yes' if local_audio_signal else 'no'}",
+        f"local_thermal_signal={'yes' if local_thermal_signal else 'no'}",
         f"camera_signal={'yes' if cam_signal else 'no'}",
         f"camera_isp_signal={'yes' if cam_isp_signal else 'no'}",
         f"display_signal={'yes' if dsp_signal else 'no'}",

@@ -22,6 +22,7 @@ def main() -> int:
     rom_report = Path("Porting/OfficialRom-Umi-Os1.0.5.0-Analysis.md")
     manifest = ART / "driver-integration-manifest.txt"
     manifest_validate = parse_kv(ART / "driver-integration-manifest-validate.txt")
+    evidence = parse_kv(ART / "driver-integration-evidence.txt")
 
     reference_ready = reference_report.exists()
     rom_ready = rom_report.exists()
@@ -51,6 +52,8 @@ def main() -> int:
         pending.append("camera_focus_not_confirmed")
     if rom_ready and not has_partition_baseline:
         pending.append("partition_baseline_not_confirmed")
+    if evidence.get("target_tree_present", "no") != "yes":
+        pending.append("target_tree_missing_for_driver_validation")
 
     manifest_validate_status = manifest_validate.get("status", "unknown")
     if manifest_validate_status not in ("ok", "unknown"):
