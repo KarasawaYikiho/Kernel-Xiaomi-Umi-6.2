@@ -6,18 +6,8 @@ set -euo pipefail
 
 DEVICE="${1:-umi}"
 
-python_cmd=""
-for cand in python3 python; do
-  if command -v "$cand" >/dev/null 2>&1 && "$cand" -V >/dev/null 2>&1; then
-    python_cmd="$cand"
-    break
-  fi
-done
-
-if [[ -z "$python_cmd" ]]; then
-  echo "python interpreter not found" >&2
-  exit 1
-fi
+source "Tools/Porting/Common.sh"
+python_cmd="$(require_python_cmd)" || exit 1
 
 mkdir -p artifacts/umi_bundle
 : > artifacts/all_dtb_paths.txt

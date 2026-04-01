@@ -1,17 +1,11 @@
 #!/usr/bin/env python3
 from pathlib import Path
 
-from Kv_Utils import parse_kv
+from Kv_Utils import parse_kv, split_csv
 from Phase2_Decision import driver_integration_runtime_blockers
 
 ART = Path("artifacts")
 OUT = ART / "runtime-validation-summary.md"
-
-
-def _split_csv(value: str) -> list[str]:
-    if not value:
-        return []
-    return [x.strip() for x in value.split(",") if x.strip()]
 
 
 def main() -> int:
@@ -62,13 +56,13 @@ def main() -> int:
         release_followups.append(f"bootimg_build_status={bootimg_build_status}")
     if bootimg_build_missing:
         release_followups.extend(
-            [f"bootimg_build_missing={x}" for x in _split_csv(bootimg_build_missing)]
+            [f"bootimg_build_missing={x}" for x in split_csv(bootimg_build_missing)]
         )
     if driver_pending:
         release_followups.extend(
             [
                 f"driver_followup={x}"
-                for x in _split_csv(driver_pending)
+                for x in split_csv(driver_pending)
                 if x not in driver_runtime_blockers
             ]
         )

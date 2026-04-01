@@ -4,6 +4,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from Kv_Utils import parse_kv
+from Manifest import parse_driver_manifest
 
 ART = Path("artifacts")
 OUT = ART / "driver-integration-status.txt"
@@ -31,18 +32,9 @@ def main() -> int:
         rom_report, "dynamic partitions"
     )
 
-    integrated_count = 0
-    pending = []
-
-    if manifest.exists():
-        for raw in manifest.read_text(encoding="utf-8", errors="ignore").splitlines():
-            line = raw.strip()
-            if not line or line.startswith("#"):
-                continue
-            if line.startswith("integrated:"):
-                integrated_count += 1
-            elif line.startswith("pending:"):
-                pending.append(line.split(":", 1)[1].strip())
+    _, integrated, manifest_pending, _ = parse_driver_manifest(manifest)
+    integrated_count = len(integrated)
+    pending = sorted(manifest_pending)
 
     if not reference_ready:
         pending.append("missing_reference_driver_analysis")

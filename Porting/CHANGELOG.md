@@ -19,6 +19,7 @@
 - Tightened the runtime feedback loop by recording the Magisk-patched boot filename/method in `runtime-validation-input.md` and marking untouched device-check templates as `awaiting_device_validation` instead of a generic success state.
 - Propagated `awaiting_device_validation`, Magisk readiness, and patched-boot metadata into badges and metrics so every top-level status view reflects the same device-test state.
 - Tightened driver-integration evidence to distinguish real target-tree driver presence from inventory/reference hints, and now keep `target_tree_missing_for_driver_validation` explicit when local driver integration cannot actually be verified.
+- Reduced script duplication by centralizing shell Python detection in `Tools/Porting/Common.sh`, reusing CSV parsing from `Tools/Porting/Kv_Utils.py`, and sharing driver-manifest parsing through `Tools/Porting/Manifest.py`.
 
 ## 2026-03-11
 

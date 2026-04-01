@@ -19,6 +19,8 @@ mkbootimg_cmd=""
 official_rom_zip="${OFFICIAL_ROM_ZIP:-$DEFAULT_OFFICIAL_ROM_ZIP}"
 python_cmd=""
 
+source "Tools/Porting/Common.sh"
+
 fetch_file() {
   local url="$1"; local out="$2"
   if command -v curl >/dev/null 2>&1; then
@@ -46,14 +48,8 @@ is_zip_file() {
 }
 
 detect_python() {
-  local cand
-  for cand in python3 python; do
-    if command -v "$cand" >/dev/null 2>&1 && "$cand" -V >/dev/null 2>&1; then
-      python_cmd="$cand"
-      return 0
-    fi
-  done
-  return 1
+  python_cmd="$(resolve_python_cmd || true)"
+  [[ -n "$python_cmd" ]]
 }
 
 resolve_mkbootimg() {

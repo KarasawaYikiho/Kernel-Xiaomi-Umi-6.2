@@ -9,18 +9,8 @@ SRC_DIR="${1:?source dir required}"
 DST_DIR="${2:?target dir required}"
 DEVICE="${3:-umi}"
 
-python_cmd=""
-for cand in python3 python; do
-  if command -v "$cand" >/dev/null 2>&1 && "$cand" -V >/dev/null 2>&1; then
-    python_cmd="$cand"
-    break
-  fi
-done
-
-if [[ -z "$python_cmd" ]]; then
-  echo "[phase2] ERROR: python interpreter not found" >&2
-  exit 1
-fi
+source "Tools/Porting/Common.sh"
+python_cmd="$(require_python_cmd "[phase2] ERROR: python interpreter not found")" || exit 1
 
 log() { echo "[phase2] $*"; }
 

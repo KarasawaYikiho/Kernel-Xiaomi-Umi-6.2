@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+from Kv_Utils import split_csv
+
 ALLOWED_NEXT_ACTION: set[str] = {
     "collect-more-data",
     "fix-defconfig-errors",
@@ -46,12 +48,6 @@ def parse_float(value: str, default: float = 0.0) -> float:
         return float(value)
     except (TypeError, ValueError):
         return default
-
-
-def split_csv(value: str) -> list[str]:
-    if not value:
-        return []
-    return [x.strip() for x in value.split(",") if x.strip()]
 
 
 def driver_integration_runtime_blockers(

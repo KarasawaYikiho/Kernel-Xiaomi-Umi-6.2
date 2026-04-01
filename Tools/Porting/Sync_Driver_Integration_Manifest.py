@@ -3,6 +3,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from Kv_Utils import parse_kv
+from Manifest import normalize_item, parse_driver_manifest
+
 ART = Path("artifacts")
 MANIFEST = ART / "driver-integration-manifest.txt"
 OUT = ART / "driver-integration-manifest-sync.txt"
@@ -37,42 +40,6 @@ ROM_OPTIONAL_COMPARE = [
 ]
 
 
-def _normalize_item(s: str) -> str:
-    return s.strip().lower().replace(" ", "_")
-
-
-def _read_manifest() -> tuple[list[str], set[str], set[str], set[str]]:
-    comments: list[str] = []
-    integrated: set[str] = set()
-    pending: set[str] = set()
-    unknown: set[str] = set()
-
-    if not MANIFEST.exists():
-        return comments, integrated, pending, unknown
-
-    for raw in MANIFEST.read_text(encoding="utf-8", errors="ignore").splitlines():
-        line = raw.strip()
-        if not line:
-            comments.append("")
-            continue
-        if line.startswith("#"):
-            comments.append(line)
-            continue
-        if line.startswith("integrated:"):
-            item = _normalize_item(line.split(":", 1)[1])
-            if item:
-                integrated.add(item)
-            continue
-        if line.startswith("pending:"):
-            item = _normalize_item(line.split(":", 1)[1])
-            if item:
-                pending.add(item)
-            continue
-        unknown.add(line)
-
-    return comments, integrated, pending, unknown
-
-
 def _has_text(path: Path, needle: str) -> bool:
     if not path.exists():
         return False
@@ -87,25 +54,12 @@ def _detect_dynamic_partition_signal() -> bool:
     )
 
 
-def _parse_kv(path: Path) -> dict[str, str]:
-    out: dict[str, str] = {}
-    if not path.exists():
-        return out
-    for raw in path.read_text(encoding="utf-8", errors="ignore").splitlines():
-        line = raw.strip()
-        if not line or line.startswith("#") or "=" not in line:
-            continue
-        k, v = line.split("=", 1)
-        out[k.strip()] = v.strip()
-    return out
-
-
 def main() -> int:
     ART.mkdir(parents=True, exist_ok=True)
 
-    comments, integrated, pending, unknown = _read_manifest()
+    comments, integrated, pending, unknown = parse_driver_manifest(MANIFEST)
 
-    required = {_normalize_item(x) for x in BASE_REQUIRED + REF_REQUIRED + ROM_REQUIRED}
+    required = {normalize_item(x) for x in BASE_REQUIRED + REF_REQUIRED + ROM_REQUIRED}
 
     # If reports are missing, keep related tasks pending explicitly.
     reference_ready = REFERENCE_REPORT.exists()
@@ -121,12 +75,12 @@ def main() -> int:
         required.add("rom_dynamic_partition_baseline")
 
     # Evidence-driven auto integration (conservative signals only).
-    ev = _parse_kv(EVIDENCE)
+    ev = parse_kv(EVIDENCE)
     evidence_promoted: list[str] = []
 
     compare_required: set[str] = set()
     if rom_ready:
-        compare_required.update({_normalize_item(x) for x in ROM_OPTIONAL_COMPARE})
+        compare_required.update({normalize_item(x) for x in ROM_OPTIONAL_COMPARE})
     if ev.get("boot_local_path"):
         compare_required.add("rom_boot_chain_consistency")
     if ev.get("dtbo_local_path"):
@@ -193,19 +147,19 @@ def main() -> int:
     )
     out_lines.append("")
     out_lines.append("# Core integration backlog")
-    for item in sorted({_normalize_item(x) for x in BASE_REQUIRED}):
+    for item in sorted({normalize_item(x) for x in BASE_REQUIRED}):
         prefix = "integrated" if item in integrated else "pending"
         out_lines.append(f"{prefix}:{item}")
 
     out_lines.append("")
     out_lines.append("# Reference driver alignment backlog")
-    for item in sorted({_normalize_item(x) for x in REF_REQUIRED}):
+    for item in sorted({normalize_item(x) for x in REF_REQUIRED}):
         prefix = "integrated" if item in integrated else "pending"
         out_lines.append(f"{prefix}:{item}")
 
     out_lines.append("")
     out_lines.append("# Official ROM validation backlog")
-    for item in sorted({_normalize_item(x) for x in ROM_REQUIRED} | compare_required):
+    for item in sorted({normalize_item(x) for x in ROM_REQUIRED} | compare_required):
         prefix = "integrated" if item in integrated else "pending"
         out_lines.append(f"{prefix}:{item}")
 

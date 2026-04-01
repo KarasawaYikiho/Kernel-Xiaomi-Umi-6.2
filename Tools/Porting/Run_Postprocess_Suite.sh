@@ -4,18 +4,8 @@ set -euo pipefail
 # Run post-processing suite for phase2 artifacts.
 # Usage: Run_Postprocess_Suite.sh
 
-python_cmd=""
-for cand in python3 python; do
-  if command -v "$cand" >/dev/null 2>&1 && "$cand" -V >/dev/null 2>&1; then
-    python_cmd="$cand"
-    break
-  fi
-done
-
-if [[ -z "$python_cmd" ]]; then
-  echo "python interpreter not found" >&2
-  exit 1
-fi
+source "Tools/Porting/Common.sh"
+python_cmd="$(require_python_cmd)" || exit 1
 
 if [[ ! -f artifacts/run-meta.txt ]]; then
   git_sha=""

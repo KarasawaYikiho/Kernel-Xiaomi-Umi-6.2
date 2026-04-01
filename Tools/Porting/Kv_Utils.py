@@ -14,3 +14,9 @@ def parse_kv(path: Path) -> dict[str, str]:
             key = key.strip().lstrip("\ufeff")
             kv[key] = value.strip()
     return kv
+
+
+def split_csv(value: str) -> list[str]:
+    if not value:
+        return []
+    return [item.strip() for item in value.split(",") if item.strip()]

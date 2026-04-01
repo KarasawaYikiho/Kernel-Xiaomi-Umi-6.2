@@ -6,13 +6,8 @@ set -euo pipefail
 
 DEVICE="${1:-umi}"
 
-python_cmd=""
-for cand in python3 python; do
-  if command -v "$cand" >/dev/null 2>&1 && "$cand" -V >/dev/null 2>&1; then
-    python_cmd="$cand"
-    break
-  fi
-done
+source "Tools/Porting/Common.sh"
+python_cmd="$(resolve_python_cmd || true)"
 
 if [[ -z "$python_cmd" ]]; then
   echo "python interpreter not found" > artifacts/make-dtb-manifest.log
