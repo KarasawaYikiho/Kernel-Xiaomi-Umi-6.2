@@ -103,6 +103,15 @@ def derive_next_action(
     ):
         next_action = "ready-for-action-test"
 
+    # The primary runtime path can be a ROM-aligned boot image patched by Magisk,
+    # even when AnyKernel packaging or build-context artifacts are absent.
+    if (
+        next_action == "collect-more-data"
+        and bootimg_status == "ok"
+        and runtime_validation_overall == "UNKNOWN"
+    ):
+        next_action = "ready-for-action-test"
+
     if flash_status == "candidate" and (
         anykernel_ok != "yes" or anykernel_validate_status not in ("ok", "unknown")
     ):
@@ -158,6 +167,10 @@ def derive_next_focus(
         failed = runtime_validation_failed_step or "runtime-validation"
         return "analyze-runtime-failure", f"runtime_validation_failed:{failed}"
 
+    mapped = REPORT_NEXT_TO_FOCUS.get(report_next_action)
+    if mapped:
+        return mapped, "report_next_action"
+
     if (
         artifact_completeness == "partial"
         or build_context_present == "no"
@@ -170,10 +183,6 @@ def derive_next_focus(
         and not is_nonzero_rc(dtbs_rc)
     ):
         return "collect-more-data", "missing_phase2_artifacts"
-
-    mapped = REPORT_NEXT_TO_FOCUS.get(report_next_action)
-    if mapped:
-        return mapped, "report_next_action"
 
     if is_nonzero_rc(build_rc):
         return "fix-build-errors", "core_build_failed"

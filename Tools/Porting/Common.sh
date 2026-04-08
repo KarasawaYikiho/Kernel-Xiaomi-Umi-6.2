@@ -2,8 +2,8 @@
 
 resolve_python_cmd() {
   local cand
-  for cand in python3 python; do
-    if command -v "$cand" >/dev/null 2>&1 && "$cand" -V >/dev/null 2>&1; then
+  for cand in python python3; do
+    if command -v "$cand" >/dev/null 2>&1 && "$cand" -c 'import sys' >/dev/null 2>&1; then
       printf '%s\n' "$cand"
       return 0
     fi
