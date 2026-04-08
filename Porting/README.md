@@ -9,7 +9,7 @@ This directory stores planning/baseline/analysis records for UMI porting.
 - `BRANCHING.md` — branch naming and merge rules
 - `ClassificationPhase1.md` — phase-1 migration classification
 - `Inventory.json` — source/target capability inventory
-- `Gap-Report.md` — high-level gap summary
+- `GapReport.md` — high-level gap summary
 - `ReferenceDriversAnalysis.md` — donor-reference driver analysis
 - `OfficialRomAnalysis.md` — official ROM metadata-only analysis
 - `CHANGELOG.md` — milestone history
@@ -20,7 +20,7 @@ This directory stores planning/baseline/analysis records for UMI porting.
 2. `BRANCHING.md`
 3. Latest section in `CHANGELOG.md`
 4. `ClassificationPhase1.md`
-5. `Gap-Report.md`
+5. `GapReport.md`
 6. `ReferenceDriversAnalysis.md`
 
 ## Maintenance Rules

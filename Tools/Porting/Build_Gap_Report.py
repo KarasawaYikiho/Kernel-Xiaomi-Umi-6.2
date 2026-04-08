@@ -35,15 +35,67 @@ def main():
     so_cfg = names(SO_REPO, SO_REF, "arch/arm64/configs")
     base_cfg = names(BASE_REPO, BASE_REF, "arch/arm64/configs")
 
-    so_umi_like = sorted([x for x in so_cfg if x.endswith("_defconfig") and any(k in x for k in ["umi", "lmi", "cmi", "apollo", "alioth", "thyme"])])
-    base_umi_like = sorted([x for x in base_cfg if x.endswith("_defconfig") and any(k in x for k in ["umi", "lmi", "cmi", "apollo", "alioth", "thyme"])])
+    so_umi_like = sorted(
+        [
+            x
+            for x in so_cfg
+            if x.endswith("_defconfig")
+            and any(k in x for k in ["umi", "lmi", "cmi", "apollo", "alioth", "thyme"])
+        ]
+    )
+    base_umi_like = sorted(
+        [
+            x
+            for x in base_cfg
+            if x.endswith("_defconfig")
+            and any(k in x for k in ["umi", "lmi", "cmi", "apollo", "alioth", "thyme"])
+        ]
+    )
 
     # SO-TS primarily keeps Qualcomm device trees under dts/vendor/qcom
     so_qcom = names(SO_REPO, SO_REF, "arch/arm64/boot/dts/vendor/qcom")
     base_qcom = names(BASE_REPO, BASE_REF, "arch/arm64/boot/dts/qcom")
 
-    so_umi_dts = sorted([x for x in so_qcom if any(k in x for k in ["sm8250", "umi", "xiaomi", "kona", "lmi", "cmi", "apollo", "alioth", "thyme"])])
-    base_umi_dts = sorted([x for x in base_qcom if any(k in x for k in ["sm8250", "umi", "xiaomi", "kona", "lmi", "cmi", "apollo", "alioth", "thyme"])])
+    so_umi_dts = sorted(
+        [
+            x
+            for x in so_qcom
+            if any(
+                k in x
+                for k in [
+                    "sm8250",
+                    "umi",
+                    "xiaomi",
+                    "kona",
+                    "lmi",
+                    "cmi",
+                    "apollo",
+                    "alioth",
+                    "thyme",
+                ]
+            )
+        ]
+    )
+    base_umi_dts = sorted(
+        [
+            x
+            for x in base_qcom
+            if any(
+                k in x
+                for k in [
+                    "sm8250",
+                    "umi",
+                    "xiaomi",
+                    "kona",
+                    "lmi",
+                    "cmi",
+                    "apollo",
+                    "alioth",
+                    "thyme",
+                ]
+            )
+        ]
+    )
 
     so_techpack = names(SO_REPO, SO_REF, "techpack")
     base_techpack = names(BASE_REPO, BASE_REF, "techpack")
@@ -53,14 +105,24 @@ def main():
     report.append("## Defconfig\n")
     report.append(f"- SO-TS umi-like defconfigs: {len(so_umi_like)}")
     report.append(f"- 5+ base umi-like defconfigs: {len(base_umi_like)}")
-    report.append("- SO-TS list: " + (", ".join(so_umi_like) if so_umi_like else "(none)"))
-    report.append("- 5+ list: " + (", ".join(base_umi_like) if base_umi_like else "(none)"))
+    report.append(
+        "- SO-TS list: " + (", ".join(so_umi_like) if so_umi_like else "(none)")
+    )
+    report.append(
+        "- 5+ list: " + (", ".join(base_umi_like) if base_umi_like else "(none)")
+    )
 
     report.append("\n## DTS/QCOM focus\n")
     report.append(f"- SO-TS qcom umi/sm8250/xiaomi related files: {len(so_umi_dts)}")
-    report.append(f"- 5+ base qcom umi/sm8250/xiaomi related files: {len(base_umi_dts)}")
-    report.append("- SO-TS sample: " + (", ".join(so_umi_dts[:20]) if so_umi_dts else "(none)"))
-    report.append("- 5+ sample: " + (", ".join(base_umi_dts[:20]) if base_umi_dts else "(none)"))
+    report.append(
+        f"- 5+ base qcom umi/sm8250/xiaomi related files: {len(base_umi_dts)}"
+    )
+    report.append(
+        "- SO-TS sample: " + (", ".join(so_umi_dts[:20]) if so_umi_dts else "(none)")
+    )
+    report.append(
+        "- 5+ sample: " + (", ".join(base_umi_dts[:20]) if base_umi_dts else "(none)")
+    )
 
     report.append("\n## Techpack\n")
     report.append(f"- SO-TS techpack entries: {len(so_techpack)}")
@@ -68,14 +130,22 @@ def main():
     if so_techpack:
         report.append("- SO-TS techpack dirs: " + ", ".join(so_techpack))
     if not base_techpack:
-        report.append("- 5+ base has no top-level techpack (expected: mainline-style drivers split).")
+        report.append(
+            "- 5+ base has no top-level techpack (expected: mainline-style drivers split)."
+        )
 
     report.append("\n## Migration implication\n")
-    report.append("- Need to create/port umi defconfig in 5+ base before feature migration.")
-    report.append("- DTS migration should start from sm8250-xiaomi-* subset, not full tree copy.")
-    report.append("- Techpack features require subsystem-by-subsystem adaptation into 5+ driver layout.")
+    report.append(
+        "- Need to create/port umi defconfig in 5+ base before feature migration."
+    )
+    report.append(
+        "- DTS migration should start from sm8250-xiaomi-* subset, not full tree copy."
+    )
+    report.append(
+        "- Techpack features require subsystem-by-subsystem adaptation into 5+ driver layout."
+    )
 
-    out = Path("Porting/Gap-Report.md")
+    out = Path("Porting/GapReport.md")
     out.write_text("\n".join(report) + "\n", encoding="utf-8")
     print(f"Wrote {out}")
 
