@@ -24,7 +24,7 @@ def fmt_list(items: Iterable[str], limit: int = 30) -> str:
 
 def main() -> int:
     if not INVENTORY.exists():
-        print("inventory missing; run Tools/Porting/Fetch_Inventory.py first")
+        print("inventory missing; run Tools/Porting/FetchInventory.py first")
         return 1
 
     data = json.loads(INVENTORY.read_text(encoding="utf-8"))

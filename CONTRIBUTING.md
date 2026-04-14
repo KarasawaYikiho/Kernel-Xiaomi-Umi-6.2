@@ -1,62 +1,46 @@
 # Contributing
 
-[中文贡献指南（CONTRIBUTING.zh-CN.md）](./CONTRIBUTING.zh-CN.md)
-
-Thanks for improving **Kernel-Xiaomi-Umi**.
+Thanks for improving Kernel-Xiaomi-Umi.
 
 ## Scope
 
-This repository is a **porting orchestrator** (workflow + scripts + diagnostics), not a full kernel source tree.
+Porting orchestrator (workflow + scripts + diagnostics), not kernel source.
 
 ## Before You Start
 
 1. Read `README.md`
-2. Read `Porting/README.md`
-3. Read `Tools/Porting/README.md`
-4. Check latest `PortingPlan.md` and `Porting/CHANGELOG.md`
+2. Read `PortingPlan.md`
+3. Check `Porting/CHANGELOG.md`
 
 ## Branch Strategy
 
-Follow `Porting/BRANCHING.md`:
+- `port/phase*` — Phase work
+- `port/hotfix-*` — Urgent fixes
 
-- `port/phase*` for phase work
-- `port/hotfix-*` for urgent fixes
-
-## Pull Request Requirements
-
-Use the PR template and include:
+## PR Requirements
 
 - What changed and why
-- Validation evidence (run/artifacts/local sanity check)
-- Risk and rollback notes for workflow/script changes
+- Validation evidence
+- Risk notes for workflow/script changes
 
-## Reference Source Policy
+## Reference Sources
 
-Approved external references:
-
-- `SO-TS/android_kernel_xiaomi_sm8250`
-- `yefxx/xiaomi-umi-linux-kernel`
-- `UtsavBalar1231/android_kernel_xiaomi_sm8150`
-- `UtsavBalar1231/display-drivers`
-- `UtsavBalar1231/camera-kernel`
-- Author-ID discovery source: `liyafe1997` (Strawing)
+- SO-TS: `android_kernel_xiaomi_sm8250`
+- 5+ baseline: `yefxx/xiaomi-umi-linux-kernel`
+- Driver refs: `UtsavBalar1231/*`
 
 Rules:
+- Author IDs are discovery inputs
+- No blind subtree copy
+- No proprietary blob import
 
-- Treat author IDs as discovery inputs; select concrete repos before integration.
-- Use references as donor/comparison inputs only.
-- No blind subtree copy.
-- No proprietary ROM blob import.
+## Quality
 
-## Quality Expectations
-
-- Update docs when behavior/outputs change.
-- Prefer reproducible CI changes over local-only tweaks.
-- Place new diagnostics under `Tools/Porting/` and document them.
-- Keep `Porting/CHANGELOG.md` milestone-focused and concise.
+- Update docs when behavior changes
+- Require CI evidence
+- Keep `CHANGELOG.md` concise
 
 ## Security
 
-- Do not commit secrets/tokens.
-- Keep `.gitignore` clean.
-- Treat generated artifacts as disposable unless intentionally tracked.
+- No secrets in commit
+- Keep `.gitignore` clean

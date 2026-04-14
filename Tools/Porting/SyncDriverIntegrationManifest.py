@@ -142,9 +142,7 @@ def main() -> int:
     out_lines.append("# Driver integration manifest")
     out_lines.append("# Mark completed work with: integrated:<item>")
     out_lines.append("# Keep unfinished work as: pending:<item>")
-    out_lines.append(
-        "# Auto-synced by Tools/Porting/Sync_Driver_Integration_Manifest.py"
-    )
+    out_lines.append("# Auto-synced by Tools/Porting/SyncDriverIntegrationManifest.py")
     out_lines.append("")
     out_lines.append("# Core integration backlog")
     for item in sorted({normalize_item(x) for x in BASE_REQUIRED}):
