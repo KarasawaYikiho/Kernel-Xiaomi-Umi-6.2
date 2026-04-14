@@ -5,21 +5,16 @@
 
 ## Scope
 
-- [ ] Workflow (`.github/workflows/*`)
-- [ ] Scripts (`Tools/Porting/*`)
-- [ ] Documentation only
+- [ ] Workflow
+- [ ] Scripts
+- [ ] Documentation
 
 ## Validation
 
-- [ ] Local sanity check completed (if applicable)
-- [ ] Workflow run validated (or explain why skipped)
-- [ ] Reviewed key artifacts (`phase2-report`, `build-exit`, `build-error-summary`)
+- [ ] Local sanity check
+- [ ] Workflow run validated
 
-## Risk & Rollback
+## Risk
 
-- Potential regression points:
+- Potential regression:
 - Rollback plan:
-
-## Context
-
-- Related issue / run / discussion:

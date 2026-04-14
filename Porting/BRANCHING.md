@@ -1,16 +1,15 @@
 # Branching Strategy
 
-- `main`: integration branch
-- `port/phase0-*`: baseline lock/planning
-- `port/phase1-*`: inventory/gap/classification
-- `port/phase2-*`: migration/build/packaging pipeline
-- `port/phase3-*`: subsystem feature ports
-- `port/hotfix-*`: urgent CI/script fixes
+- `main` — Integration branch
+- `port/phase0-*` — Baseline lock
+- `port/phase1-*` — Inventory/gap analysis
+- `port/phase2-*` — Migration/build
+- `port/phase3-*` — Feature completion
+- `port/hotfix-*` — Urgent fixes
 
-## Merge Gate Checklist
+## Merge Checklist
 
-- [ ] Workflow run completed with uploaded artifacts
-- [ ] `phase2-report.txt` exists and is readable
-- [ ] `build-exit.txt` status matches expected phase outcome
-- [ ] Meaningful change noted in `CHANGELOG.md`
-- [ ] README/docs updated when behavior changed
+- [ ] Workflow run with artifacts
+- [ ] phase2-report.txt exists
+- [ ] CHANGELOG updated
+- [ ] Docs updated

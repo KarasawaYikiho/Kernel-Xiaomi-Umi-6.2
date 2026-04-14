@@ -82,32 +82,32 @@ jobs:
       - name: Apply Phase2 migration
         run: |
           chmod +x Tools/Porting/ApplyPhase2Migration.sh
-          ./Tools/Porting/Apply_Phase2_Migration.sh "${{ github.event.inputs.device }}"
+          ./Tools/Porting/ApplyPhase2Migration.sh "${{ github.event.inputs.device }}"
 
       - name: Build target kernel (attempt)
         env:
           ARCH: arm64
         run: |
           chmod +x Tools/Porting/RunPhase2Build.sh
-          ./Tools/Porting/Run_Phase2_Build.sh "${{ github.event.inputs.device }}"
+          ./Tools/Porting/RunPhase2Build.sh "${{ github.event.inputs.device }}"
 
       - name: Collect artifacts + umi-focused package
         if: always()
         run: |
           chmod +x Tools/Porting/CollectPhase2Artifacts.sh
-          ./Tools/Porting/Collect_Phase2_Artifacts.sh "${{ github.event.inputs.device }}"
+          ./Tools/Porting/CollectPhase2Artifacts.sh "${{ github.event.inputs.device }}"
 
       - name: Build AnyKernel candidate zip
         if: always()
         run: |
           chmod +x Tools/Porting/BuildAnykernelCandidate.sh
-          ./Tools/Porting/Build_Anykernel_Candidate.sh
+          ./Tools/Porting/BuildAnykernelCandidate.sh
 
       - name: Prepare release boot image (best effort)
         if: always()
         run: |
           chmod +x Tools/Porting/PrepareReleaseBootimg.sh
-          ./Tools/Porting/Prepare_Release_Bootimg.sh
+          ./Tools/Porting/PrepareReleaseBootimg.sh
 
       - name: Fetch inventory and analyze reference drivers
         if: always()
@@ -164,7 +164,7 @@ jobs:
         if: always()
         run: |
           chmod +x Tools/Porting/WriteRunMeta.sh
-          ./Tools/Porting/Write_Run_Meta.sh \
+          ./Tools/Porting/WriteRunMeta.sh \
             "${{ github.run_id }}" \
             "${{ github.run_number }}" \
             "${{ github.sha }}" \
@@ -179,7 +179,7 @@ jobs:
         if: always()
         run: |
           chmod +x Tools/Porting/RunPostprocessSuite.sh
-          ./Tools/Porting/Run_Postprocess_Suite.sh
+          ./Tools/Porting/RunPostprocessSuite.sh
 
       - name: Upload artifacts
         if: always()

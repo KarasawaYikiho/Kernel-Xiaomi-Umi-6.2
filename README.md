@@ -1,111 +1,45 @@
 # Kernel-Xiaomi-Umi
 
-[中文文档（README.zh-CN.md）](./README.zh-CN.md)
+Kernel porting orchestrator for Xiaomi 10 (`umi`). CI-driven migration from SO-TS 4.19 to 5+ baseline.
 
-Kernel-Xiaomi-Umi is a **porting orchestrator** for Xiaomi 10 (`umi`) kernel migration.
-It focuses on CI workflow automation, diagnostics, and reproducible delivery artifacts.
+> This repo is **not** a kernel source tree.
 
-> This repository is **not** a full kernel source tree.
+## Scope
 
-## Repository Scope
+- Phase2 migration automation via GitHub Actions
+- Structured diagnostics and metrics
+- Flash-ready artifact delivery
 
-- Run CI-based porting/build workflows
-- Execute Phase2 migration from SO-TS 4.19 toward a 5+ baseline
-- Produce structured diagnostics (`phase2-report`, `next-focus`, metrics, consistency checks)
-- Produce flash candidates (`AnyKernel3-umi-candidate.zip`) and release-oriented `boot.img` readiness outputs
+## Quick Start
 
-## Final Delivery Target
+Run **`Phase2-Port-Umi.yml`** workflow, then inspect:
 
-1. Generate a **release-grade, directly flashable `boot.img`** for Xiaomi 10 (`umi`).
-2. Keep **same-model reproducibility in GitHub Actions** (same inputs -> same deterministic output category).
-3. Preserve full CI evidence for every run (report, errors, metrics, checklist).
+1. `artifacts/phase2-report.txt`
+2. `artifacts/next-focus.txt`
+3. `artifacts/runtime-validation-summary.md`
+4. `artifacts/anykernel-info.txt`
 
-## Upstream / Reference Inputs
+## Inputs
 
-- SO-TS source reference: <https://github.com/SO-TS/android_kernel_xiaomi_sm8250>
-- Additional donor/comparison references:
-  - `UtsavBalar1231/android_kernel_xiaomi_sm8150`
-  - `UtsavBalar1231/display-drivers`
-  - `UtsavBalar1231/camera-kernel`
-  - `liyafe1997` (Strawing author-ID discovery source)
+| Input | Default | Description |
+|-------|---------|-------------|
+| `device` | `umi` | Device codename |
+| `source_repo` | SO-TS 4.19 repo | Source kernel |
+| `target_repo` | yefxx 5+ repo | Target kernel |
+| `bootimg_required_bytes` | `134217728` | Target boot.img size |
+| `bootimg_ramdisk_url` | (optional) | Custom ramdisk |
+| `bootimg_prebuilt_url` | (optional) | Fallback boot.img |
 
-Rules:
-- Author IDs are discovery inputs; repositories must be explicitly selected before integration.
-- References are used for targeted adaptation, **never** blind subtree copy.
-- No proprietary ROM blobs are imported into this repo.
+## Workflows
 
-## Official ROM Baseline (Analysis Only)
+- **`Phase2-Port-Umi.yml`** — Main migration workflow
+- **`Build-Umi-Kernel.yml`** — Reference cloud build
 
-- Baseline package: `D:\GIT\MIUI_UMI_OS1.0.5.0.TJBCNXM_d01651ed86_13.0.zip`
-- Analysis file: `Porting/OfficialRomAnalysis.md`
-- Scope: metadata/hash/partition-op evidence only
+## Reference Sources
 
-## Main Workflows
-
-> CI compatibility: workflows set `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true`.
-
-### Quick Start (Recommended)
-
-Run **`Phase2-Port-Umi.yml`** with default inputs, then inspect artifacts in this order:
-
-1. `artifacts/runtime-validation-summary.md`
-2. `artifacts/runtime-validation-input.md`
-3. `artifacts/runtime-validation-result.txt`
-4. `artifacts/phase2-report.txt`
-5. `artifacts/status-badge-line.txt`
-6. `artifacts/action-validation-checklist.md`
-7. `artifacts/artifact-summary.md`
-8. `artifacts/next-focus.txt`
-9. `artifacts/build-error-summary.txt`
-10. `artifacts/anykernel-info.txt`
-
-Runtime gate note:
-- `driver_integration_status=partial` does **not** automatically block device runtime validation.
-- If `next_action=ready-for-action-test` and `runtime_ready=yes`, remaining `driver_integration_pending` items are treated as release / ROM-alignment follow-ups unless they appear in the runtime blocker list.
-
-### `Phase2-Port-Umi.yml`
-
-Core migration workflow. Typical stages:
-
-1. Dependency/tool bootstrap
-2. Source + target prep
-3. Phase2 migration apply
-4. Kernel build attempt
-5. Artifact collection + packaging
-6. Postprocess (report/metrics/consistency/checklist)
-
-Important inputs:
-
-- `device` (default `umi`)
-- `source_repo` / `target_repo`
-- `bootimg_ramdisk_url` (optional)
-- `bootimg_prebuilt_url` (optional fallback)
-- `bootimg_required_bytes` (default `134217728`; set `<=0` to disable size check)
-
-After device runtime validation:
-- Fill `artifacts/runtime-validation-input.md`
-- Re-run postprocess to refresh `runtime-validation-result.txt`, `phase2-report.txt`, `next-focus.txt`, badge, metrics, and summaries
-- If runtime validation passes, the decision flow automatically shifts from `ready-for-action-test` into release hardening (`prepare-release-bootimg`) or remaining ROM / driver alignment follow-up (`integrate-drivers-phase3`)
-- For final delivery, `boot.img` must pass header/format validation; a ZIP or other non-Android payload is reported as `bootimg_status=invalid_format` and is not release-ready even if size checks pass
-- For local rule changes, run `python Tools/Porting/Selftest_Decision_Flow.py` before pushing
-
-### `Build-Umi-Kernel.yml`
-
-Reference cloud build path:
-
-1. Install deps / ccache
-2. Fetch toolchain
-3. Clone target repo
-4. Run `build.sh`
-5. Upload artifacts
-
-## Documentation Map
-
-- `PortingPlan.md` — roadmap and phase status
-- `Porting/README.md` — planning/baseline docs index
-- `Tools/Porting/README.md` — script index and CI pipeline details
-- `CONTRIBUTING.md` — contribution policy
-- `SECURITY.md` — vulnerability reporting policy
+- SO-TS: `android_kernel_xiaomi_sm8250` (4.19)
+- 5+ baseline: `yefxx/xiaomi-umi-linux-kernel`
+- Driver refs: `UtsavBalar1231/*`
 
 ## License
 

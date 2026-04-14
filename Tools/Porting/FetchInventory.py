@@ -10,12 +10,24 @@ from typing import Any
 UA = {"User-Agent": "OpenClaw-Porting"}
 
 TARGETS = {
-    "so_ts": {"repo": "SO-TS/android_kernel_xiaomi_sm8250", "ref": "android16-aptusitu"},
+    "so_ts": {
+        "repo": "SO-TS/android_kernel_xiaomi_sm8250",
+        "ref": "android16-aptusitu",
+    },
     "base_5plus": {"repo": "yefxx/xiaomi-umi-linux-kernel", "ref": "master"},
     # Author-ID sourced references (selected repos under UtsavBalar1231 account).
-    "reference_utsav_sm8150": {"repo": "UtsavBalar1231/android_kernel_xiaomi_sm8150", "ref": "master"},
-    "reference_utsav_display_drivers": {"repo": "UtsavBalar1231/display-drivers", "ref": "psyche-r-oss"},
-    "reference_utsav_camera_kernel": {"repo": "UtsavBalar1231/camera-kernel", "ref": "main"},
+    "reference_utsav_sm8150": {
+        "repo": "UtsavBalar1231/android_kernel_xiaomi_sm8150",
+        "ref": "master",
+    },
+    "reference_utsav_display_drivers": {
+        "repo": "UtsavBalar1231/display-drivers",
+        "ref": "psyche-r-oss",
+    },
+    "reference_utsav_camera_kernel": {
+        "repo": "UtsavBalar1231/camera-kernel",
+        "ref": "main",
+    },
 }
 
 AUTHOR_IDS = ["UtsavBalar1231", "liyafe1997"]
@@ -36,7 +48,17 @@ def list_dir_via_git(repo: str, ref: str, path: str) -> list[str]:
         url = f"https://github.com/{repo}.git"
         try:
             subprocess.check_call(
-                ["git", "clone", "--depth", "1", "--branch", ref, "--filter=blob:none", url, td],
+                [
+                    "git",
+                    "clone",
+                    "--depth",
+                    "1",
+                    "--branch",
+                    ref,
+                    "--filter=blob:none",
+                    url,
+                    td,
+                ],
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
             )
@@ -59,7 +81,9 @@ def list_dir(repo: str, ref: str, path: str):
         return list_dir_via_git(repo, ref, path), "git-fallback"
 
 
-def discover_user_repos(user: str, keyword_filters: list[str]) -> tuple[list[dict[str, str]], str]:
+def discover_user_repos(
+    user: str, keyword_filters: list[str]
+) -> tuple[list[dict[str, str]], str]:
     """Best-effort account scan used to document whether a requested user has relevant public repos."""
     url = f"https://api.github.com/users/{urllib.parse.quote(user)}/repos?per_page=100"
     try:
@@ -107,7 +131,7 @@ def main():
     out["reference_discovery"] = discovery
 
     out["meta"] = {
-        "generator": "Tools/Porting/Fetch_Inventory.py",
+        "generator": "Tools/Porting/FetchInventory.py",
         "cwd": os.getcwd(),
     }
 

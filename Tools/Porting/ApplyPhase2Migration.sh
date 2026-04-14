@@ -6,5 +6,5 @@ set -euo pipefail
 
 DEVICE="${1:-umi}"
 
-chmod +x Tools/Porting/Phase2_Apply.sh
-./Tools/Porting/Phase2_Apply.sh "$PWD/source" "$PWD/target" "$DEVICE"
+chmod +x Tools/Porting/Phase2Apply.sh
+  ./Tools/Porting/Phase2Apply.sh "$PWD/source" "$PWD/target" "$DEVICE"
