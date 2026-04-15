@@ -30,7 +30,7 @@ Run **`ROM-Aligned-Umi-Port.yml`** workflow, then inspect:
 | `target_repo` | yefxx 5+ repo | Target kernel |
 | `bootimg_required_bytes` | `134217728` | Target boot.img size |
 | `bootimg_ramdisk_url` | (optional) | Custom ramdisk |
-| `bootimg_prebuilt_url` | (optional) | Fallback boot.img |
+| `bootimg_prebuilt_url` | (optional) | Fallback boot.img URL, preferred over committing stock boot.img |
 | `official_rom_zip` | (optional) | Official ROM zip path or URL for alignment baseline |
 
 ## Workflows

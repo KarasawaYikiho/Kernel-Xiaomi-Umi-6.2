@@ -26,6 +26,7 @@ python_cmd=""
 official_bootimg_path=""
 rom_source_used=""
 rom_baseline_bootimg_path=""
+rom_baseline_bootimg_url=""
 
 source "Tools/Porting/Common.sh"
 
@@ -388,6 +389,11 @@ baseline_header_version="$(read_baseline_env_value BOOTIMG_HEADER_VERSION 2>/dev
 baseline_boot_size="$(read_baseline_env_value BOOTIMG_REQUIRED_BYTES 2>/dev/null || true)"
 baseline_base="$(read_baseline_env_value BOOTIMG_BASE 2>/dev/null || true)"
 baseline_pagesize="$(read_baseline_env_value BOOTIMG_PAGESIZE 2>/dev/null || true)"
+rom_baseline_bootimg_url="$(read_baseline_env_value ROM_BOOTIMG_URL 2>/dev/null || true)"
+
+if [[ -z "$rom_source_used" && -n "$rom_baseline_bootimg_url" ]]; then
+  rom_source_used="$rom_baseline_bootimg_url"
+fi
 
 rom_header_version="$(read_rom_analysis_value header_version_guess 2>/dev/null || true)"
 rom_boot_size="$(read_rom_analysis_value boot_size 2>/dev/null || true)"
@@ -398,8 +404,17 @@ pagesize="${BOOTIMG_PAGESIZE:-${baseline_pagesize:-4096}}"
 cmdline="${BOOTIMG_CMDLINE:-}"
 required_bytes="${BOOTIMG_REQUIRED_BYTES:-${baseline_boot_size:-${rom_boot_size:-134217728}}}"
 
-# preferred ROM-aligned fallback: use local official ROM package when available
+# Preferred ROM-aligned fallback order:
+# 1. Local/external official ROM package or extracted ROM directory
+# 2. Local repository-side boot baseline when manually present outside git
+# 3. External boot baseline URL pinned in BootImageBaseline.env
 if [[ -n "$rom_source_used" ]]; then
+  if [[ "$rom_source_used" == *"://"* ]]; then
+    official_rom_dl="$ART/official-rom-baseline.img"
+    if fetch_file "$rom_source_used" "$official_rom_dl"; then
+      prepare_prebuilt_bootimg "$official_rom_dl" "baseline_url" "$rom_source_used"
+    fi
+  fi
   extract_rom_support_images "$rom_source_used"
   prepare_official_rom_bootimg
 fi
@@ -452,6 +467,7 @@ if [[ ${#missing[@]} -gt 0 ]]; then
     echo "header_version=$header_version"
     echo "base=$base"
     echo "pagesize=$pagesize"
+    echo "baseline_bootimg_url=$rom_baseline_bootimg_url"
   } > "$OUT"
   echo "bootimg build blocked: $(IFS=,; echo "${missing[*]}")"
   exit 0
