@@ -32,21 +32,25 @@ on:
         required: false
         default: "134217728"
       official_rom_zip:
-        description: "optional path or URL to the official UMI ROM zip used as alignment baseline"
+        description: "optional local path to the official UMI ROM zip used as alignment baseline"
         required: false
         default: ""
-      official_bootimg_url:
-        description: "optional direct URL to the official stock boot.img used as the primary boot baseline"
+      official_rom_dir:
+        description: "optional local path to an extracted official UMI ROM directory used as alignment baseline"
         required: false
         default: ""
-      bootimg_ramdisk_url:
-        description: "optional URL to fetch ramdisk.cpio.gz (or a zip containing ramdisk payload) for release bootimg build"
+      official_bootimg_path:
+        description: "optional local path to the official stock boot.img used as the primary boot baseline"
         required: false
-        default: "https://sourceforge.net/projects/skyloft-project/files/umi/lineage-20.0/kernel/skyloft-umi-20230108.zip/download"
-      bootimg_prebuilt_url:
-        description: "optional URL to fetch prebuilt boot.img (or a zip containing boot.img) when ramdisk is unavailable"
+        default: ""
+      bootimg_ramdisk_path:
+        description: "optional local path to ramdisk.cpio.gz (or a zip containing ramdisk payload) for release bootimg build"
         required: false
-        default: "https://sourceforge.net/projects/skyloft-project/files/umi/lineage-20.0/kernel/skyloft-umi-20230108.zip/download"
+        default: ""
+      bootimg_prebuilt_path:
+        description: "optional local path to a prebuilt boot.img (or a zip containing boot.img) when ramdisk is unavailable"
+        required: false
+        default: ""
 
 jobs:
   port-and-build:
@@ -55,9 +59,10 @@ jobs:
     env:
       BOOTIMG_REQUIRED_BYTES: ${{ github.event.inputs.bootimg_required_bytes || '134217728' }}
       OFFICIAL_ROM_ZIP: ${{ github.event.inputs.official_rom_zip || '' }}
-      OFFICIAL_BOOTIMG_URL: ${{ github.event.inputs.official_bootimg_url || '' }}
-      BOOTIMG_RAMDISK_URL: ${{ github.event.inputs.bootimg_ramdisk_url || '' }}
-      BOOTIMG_PREBUILT_URL: ${{ github.event.inputs.bootimg_prebuilt_url || '' }}
+      OFFICIAL_ROM_DIR: ${{ github.event.inputs.official_rom_dir || '' }}
+      OFFICIAL_BOOTIMG_PATH: ${{ github.event.inputs.official_bootimg_path || '' }}
+      BOOTIMG_RAMDISK_PATH: ${{ github.event.inputs.bootimg_ramdisk_path || '' }}
+      BOOTIMG_PREBUILT_PATH: ${{ github.event.inputs.bootimg_prebuilt_path || '' }}
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       PATH: /home/runner/.local/bin:/usr/local/bin:/usr/bin:/bin
     steps:

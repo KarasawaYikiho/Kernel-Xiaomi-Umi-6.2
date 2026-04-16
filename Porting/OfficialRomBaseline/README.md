@@ -20,14 +20,14 @@ The purpose of these files is to make ROM alignment reproducible inside CI witho
 - `vbmeta.img` — repository-local vbmeta baseline used for alignment evidence
 - `vbmeta_system.img` — repository-local vbmeta_system baseline used for alignment evidence
 
-`boot.img` is intentionally not checked into git because the stock image exceeds GitHub's file size limit. Its pinned size, hash, and header hints are stored in `Manifest.json` and `BootImageBaseline.env`, while local workflows can still consume an external ROM zip or extracted ROM directory.
+`boot.img` is intentionally not checked into git because the stock image exceeds GitHub's file size limit. Its pinned size, hash, and header hints are stored in `Manifest.json` and `BootImageBaseline.env`, while local workflows can still consume a local ROM zip or extracted ROM directory.
 
 When you need a stock boot baseline, prefer this order:
 
-1. `OFFICIAL_ROM_ZIP` or `OFFICIAL_ROM_DIR`
+1. `OFFICIAL_ROM_DIR` or `OFFICIAL_ROM_ZIP`
 2. Local non-git `Porting/OfficialRomBaseline/boot.img`
-3. `ROM_BOOTIMG_URL` in `BootImageBaseline.env`
-4. Workflow input `bootimg_prebuilt_url`
+3. `ROM_BOOTIMG_PATH` in `BootImageBaseline.env`
+4. Workflow input `bootimg_prebuilt_path`
 
 ## Current Binary Inputs
 
@@ -38,3 +38,5 @@ The repository currently carries only compact official ROM baseline binaries for
 - `vbmeta_system.img`
 
 Workflow inputs or local extracted ROM directories are still supported, but repo-local baseline files now provide a stable fallback for CI and local validation.
+
+For local work on this machine, prefer `OFFICIAL_ROM_DIR=D:\GIT\MIUI_UMI` so the official `boot.img` stays outside git while scripts can still consume it directly.

@@ -29,15 +29,26 @@ Run **`ROM-Aligned-Umi-Port.yml`** workflow, then inspect:
 | `source_repo` | SO-TS 4.19 repo | Source kernel |
 | `target_repo` | yefxx 5+ repo | Target kernel |
 | `bootimg_required_bytes` | `134217728` | Target boot.img size |
-| `official_bootimg_url` | (optional) | Direct official stock boot.img URL used as the primary boot baseline |
-| `bootimg_ramdisk_url` | (optional) | Custom ramdisk |
-| `bootimg_prebuilt_url` | (optional) | Fallback boot.img URL, preferred over committing stock boot.img |
-| `official_rom_zip` | (optional) | Official ROM zip path or URL for alignment baseline |
+| `official_bootimg_path` | (optional) | Local path to the official stock `boot.img` used as the primary boot baseline |
+| `bootimg_ramdisk_path` | (optional) | Local path to `ramdisk.cpio.gz` or a zip containing the ramdisk payload |
+| `bootimg_prebuilt_path` | (optional) | Local path to a fallback `boot.img` or a zip containing it |
+| `official_rom_zip` | (optional) | Local path to the official ROM zip used as the alignment baseline |
+| `official_rom_dir` | (optional) | Local path to an extracted official ROM directory such as `D:\GIT\MIUI_UMI` |
 
 ## Workflows
 
 - **`ROM-Aligned-Umi-Port.yml`** — Main ROM-aware migration workflow
 - **`Build-Umi-Kernel.yml`** — Reference cloud build
+
+## Local Boot Baseline
+
+For the shortest Windows path on this machine, run:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File "Tools/Porting/RunLocalOfficialRomBaseline.ps1"
+```
+
+It defaults to `D:\GIT\MIUI_UMI`, keeps the official `boot.img` out of git, and uses `Tools/Porting/README.md` as the single source of truth for refreshed outputs and local validation details.
 
 ## Repository Hygiene
 

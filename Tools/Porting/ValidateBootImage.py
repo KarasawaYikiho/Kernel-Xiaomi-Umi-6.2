@@ -122,8 +122,8 @@ def main() -> int:
     baseline_json = _load_json(OFFICIAL_ROM_BASELINE)
     boot_build = _load_env_kv(BOOT_BUILD)
     expected_header_version = baseline_env.get("BOOTIMG_HEADER_VERSION", "")
-    baseline_url = baseline_env.get("ROM_BOOTIMG_URL", "")
-    official_bootimg_url = os.getenv("OFFICIAL_BOOTIMG_URL", "").strip()
+    baseline_path = baseline_env.get("ROM_BOOTIMG_PATH", "")
+    official_bootimg_path = os.getenv("OFFICIAL_BOOTIMG_PATH", "").strip()
     baseline_source_file = str(baseline_json.get("source_file", "") or "")
     source = boot_build.get("source", "")
     source_ref = boot_build.get("source_ref", "")
@@ -147,9 +147,9 @@ def main() -> int:
                 f"rom_expected_header_version={expected_header_version}",
                 f"bootimg_build_source={source}",
                 f"bootimg_build_source_ref={source_ref}",
-                f"official_bootimg_url={official_bootimg_url}",
-                f"baseline_bootimg_url={baseline_url}",
-                f"official_reference_present={'yes' if (rom_expected_size or rom_expected_sha or expected_header_version or official_bootimg_url or baseline_url or baseline_source_file) else 'no'}",
+                f"official_bootimg_path={official_bootimg_path}",
+                f"baseline_bootimg_path={baseline_path}",
+                f"official_reference_present={'yes' if (rom_expected_size or rom_expected_sha or expected_header_version or official_bootimg_path or baseline_path or baseline_source_file) else 'no'}",
                 "rom_size_match=unknown",
                 "rom_sha256_match=unknown",
                 "rom_header_version_match=unknown",
@@ -184,8 +184,8 @@ def main() -> int:
             rom_expected_size
             or rom_expected_sha
             or expected_header_version
-            or official_bootimg_url
-            or baseline_url
+            or official_bootimg_path
+            or baseline_path
             or baseline_source_file
         )
         else "no"
@@ -200,8 +200,7 @@ def main() -> int:
         gate_reasons.append("boot_build_source_missing")
     elif source and source not in {
         "official_rom_baseline",
-        "baseline_url",
-        "prebuilt_url",
+        "prebuilt_path",
         "mkbootimg",
     }:
         official_reference_gate = "no"
@@ -265,8 +264,8 @@ def main() -> int:
             f"rom_header_version_match={rom_header_match}",
             f"bootimg_build_source={source}",
             f"bootimg_build_source_ref={source_ref}",
-            f"official_bootimg_url={official_bootimg_url}",
-            f"baseline_bootimg_url={baseline_url}",
+            f"official_bootimg_path={official_bootimg_path}",
+            f"baseline_bootimg_path={baseline_path}",
             f"official_reference_present={official_reference_present}",
             f"official_reference_gate={official_reference_gate}",
             "official_reference_gate_reasons=" + ",".join(gate_reasons),

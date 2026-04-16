@@ -31,15 +31,26 @@ Xiaomi 10 (`umi`) 内核迁移编排仓库。CI 驱动从 SO-TS 4.19 迁移到 5
 | `source_repo` | SO-TS 4.19 仓库 | 源内核 |
 | `target_repo` | yefxx 5+ 仓库 | 目标内核 |
 | `bootimg_required_bytes` | `134217728` | 目标 boot.img 大小 |
-| `official_bootimg_url` | (可选) | 作为主 Boot 基线的官方 stock boot.img 直链 |
-| `bootimg_ramdisk_url` | (可选) | 自定义 ramdisk |
-| `bootimg_prebuilt_url` | (可选) | 回退 boot.img URL，优先于提交 stock boot.img 到仓库 |
-| `official_rom_zip` | (可选) | 用于对齐基线的官方 ROM zip 路径或 URL |
+| `official_bootimg_path` | (可选) | 作为主 Boot 基线的官方 stock `boot.img` 本地路径 |
+| `bootimg_ramdisk_path` | (可选) | `ramdisk.cpio.gz` 或包含 ramdisk 的 zip 本地路径 |
+| `bootimg_prebuilt_path` | (可选) | 回退 `boot.img` 或包含它的 zip 本地路径 |
+| `official_rom_zip` | (可选) | 用于对齐基线的官方 ROM zip 本地路径 |
+| `official_rom_dir` | (可选) | 解包后的官方 ROM 目录本地路径，例如 `D:\GIT\MIUI_UMI` |
 
 ## 工作流
 
 - **`ROM-Aligned-Umi-Port.yml`** — 主 ROM 对齐迁移流程
 - **`Build-Umi-Kernel.yml`** — 参考云端构建
+
+## 本地 Boot 基线
+
+在这台机器上，最短 Windows 入口是：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File "Tools/Porting/RunLocalOfficialRomBaseline.ps1"
+```
+
+它默认使用 `D:\GIT\MIUI_UMI`，无需把官方 `boot.img` 提交进 Git；刷新产物和本地校验细节统一收敛到 `Tools/Porting/README.md`，避免多处重复维护。
 
 ## 仓库清洁约定
 
