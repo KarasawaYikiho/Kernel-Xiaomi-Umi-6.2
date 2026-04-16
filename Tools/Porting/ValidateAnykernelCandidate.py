@@ -3,7 +3,7 @@ from pathlib import Path
 import zipfile
 
 ART = Path("artifacts")
-ZIP_PATH = ART / "AnyKernel3-umi-candidate.zip"
+ZIP_PATH = ART / "AnyKernel3-candidate.zip"
 OUT = ART / "anykernel-validate.txt"
 
 REQUIRED_ENTRIES = [
@@ -19,15 +19,17 @@ def write(lines: list[str]) -> None:
 
 def main() -> int:
     if not ZIP_PATH.exists():
-        write([
-            "status=missing",
-            "reason=candidate-zip-not-found",
-            "has_anykernel_sh=no",
-            "has_imagegz=no",
-            "has_dtb=no",
-            "entry_count=0",
-            "missing_required=anykernel.sh,Image.gz",
-        ])
+        write(
+            [
+                "status=missing",
+                "reason=candidate-zip-not-found",
+                "has_anykernel_sh=no",
+                "has_imagegz=no",
+                "has_dtb=no",
+                "entry_count=0",
+                "missing_required=anykernel.sh,Image.gz",
+            ]
+        )
         print(f"wrote {OUT}: missing")
         return 0
 
@@ -35,15 +37,17 @@ def main() -> int:
         with zipfile.ZipFile(ZIP_PATH, "r") as zf:
             names = set(zf.namelist())
     except zipfile.BadZipFile:
-        write([
-            "status=invalid",
-            "reason=bad-zip",
-            "has_anykernel_sh=no",
-            "has_imagegz=no",
-            "has_dtb=no",
-            "entry_count=0",
-            "missing_required=anykernel.sh,Image.gz",
-        ])
+        write(
+            [
+                "status=invalid",
+                "reason=bad-zip",
+                "has_anykernel_sh=no",
+                "has_imagegz=no",
+                "has_dtb=no",
+                "entry_count=0",
+                "missing_required=anykernel.sh,Image.gz",
+            ]
+        )
         print(f"wrote {OUT}: invalid")
         return 0
 
@@ -53,15 +57,17 @@ def main() -> int:
     status = "ok" if not missing else "incomplete"
     reason = "structure-ok" if not missing else "missing-required-entries"
 
-    write([
-        f"status={status}",
-        f"reason={reason}",
-        f"has_anykernel_sh={'yes' if 'anykernel.sh' in names else 'no'}",
-        f"has_imagegz={'yes' if 'Image.gz' in names else 'no'}",
-        f"has_dtb={has_dtb}",
-        f"entry_count={len(names)}",
-        "missing_required=" + ",".join(missing),
-    ])
+    write(
+        [
+            f"status={status}",
+            f"reason={reason}",
+            f"has_anykernel_sh={'yes' if 'anykernel.sh' in names else 'no'}",
+            f"has_imagegz={'yes' if 'Image.gz' in names else 'no'}",
+            f"has_dtb={has_dtb}",
+            f"entry_count={len(names)}",
+            "missing_required=" + ",".join(missing),
+        ]
+    )
     print(f"wrote {OUT}: {status}")
     return 0
 

@@ -7,7 +7,7 @@ set -euo pipefail
 mkdir -p artifacts
 
 {
-  echo "workflow=phase2-port-umi"
+  echo "workflow=${PORT_WORKFLOW_NAME:-phase2-port-sm8250-reference}"
   echo "run_id=${1:-}"
   echo "run_number=${2:-}"
   echo "sha=${3:-}"

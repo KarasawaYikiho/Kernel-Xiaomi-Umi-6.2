@@ -1,8 +1,8 @@
-# UMI Kernel Porting Plan
+# SM8250 Kernel Porting Plan
 
 ## Mission
 
-Migrate Xiaomi 10 (`umi`) from SO-TS 4.19 to 5+ baseline with CI reproducibility.
+Migrate Xiaomi SM8250-family kernels from SO-TS 4.19 to a 5+ baseline with CI reproducibility, using `umi` as the current reference baseline.
 
 ## Goal
 
@@ -11,7 +11,7 @@ Migrate Xiaomi 10 (`umi`) from SO-TS 4.19 to 5+ baseline with CI reproducibility
 
 ## Official ROM Alignment Principle
 
-This project targets a 6+ kernel baseline built from source for `umi`.
+This project targets a 6+ kernel baseline built from source for Xiaomi SM8250-family devices, with `umi` serving as today’s reference ROM-alignment sample.
 
 The official Xiaomi ROM is used as a reference extraction source and validation baseline for:
 - `boot.img` size and packaging constraints

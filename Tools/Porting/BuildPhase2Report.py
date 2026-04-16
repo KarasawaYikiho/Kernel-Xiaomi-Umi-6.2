@@ -7,6 +7,7 @@ from Phase2Decision import (
     derive_next_action,
     derive_runtime_ready,
 )
+from PortConfig import get_nested, load_port_config
 
 ART = Path("artifacts")
 OUT = ART / "phase2-report.txt"
@@ -16,7 +17,7 @@ def main() -> int:
     ART.mkdir(parents=True, exist_ok=True)
 
     summary = parse_kv(ART / "summary.txt")
-    pack = parse_kv(ART / "umi_bundle" / "pack-info.txt")
+    pack = parse_kv(ART / "device_bundle" / "pack-info.txt")
     flash = parse_kv(ART / "flash-readiness.txt")
     dtb = parse_kv(ART / "dtb-postcheck.txt")
     anyk = parse_kv(ART / "anykernel-info.txt")
@@ -28,7 +29,22 @@ def main() -> int:
     complete = parse_kv(ART / "artifact-completeness.txt")
     driver = parse_kv(ART / "driver-integration-status.txt")
     rom_align = parse_kv(ART / "rom-alignment-status.txt")
+    plan = parse_kv(ART / "plan-progress.txt")
     runtime_result = parse_kv(ART / "runtime-validation-result.txt")
+    meta = parse_kv(ART / "run-meta.txt")
+    manifest_debug = parse_kv(ART / "target_dtb_manifest_debug.txt")
+    config = load_port_config()
+    meta_device = meta.get("device", "").strip()
+    if meta_device.lower() in {"", "unknown", "?", "n/a"}:
+        meta_device = ""
+    report_device = pack.get(
+        "device",
+        summary.get(
+            "device",
+            meta_device
+            or get_nested(config, "reference_baseline_device", default="unknown"),
+        ),
+    )
 
     # derive a simple decision hint for next step automation
     flash_status = flash.get("status", "unknown")
@@ -57,14 +73,14 @@ def main() -> int:
 
     lines = [
         "phase2_report=1",
-        f"device={pack.get('device', summary.get('device', 'unknown'))}",
+        f"device={report_device}",
         f"defconfig_rc={bexit.get('defconfig_rc', 'n/a')}",
         f"build_rc={bexit.get('build_rc', 'n/a')}",
         f"dtbs_rc={bexit.get('dtbs_rc', 'n/a')}",
         f"dts_copied={summary.get('dts_copied', '0')}",
         f"dts_only_copied={summary.get('dts_only_copied', '0')}",
         f"dtsi_only_copied={summary.get('dtsi_only_copied', '0')}",
-        f"umi_bundle_xiaomi_dtb_count={pack.get('umi_bundle_xiaomi_dtb_count', '0')}",
+        f"bundle_xiaomi_dtb_count={pack.get('bundle_xiaomi_dtb_count', '0')}",
         f"flash_status={flash.get('status', 'unknown')}",
         f"flash_reason={flash.get('reason', 'n/a')}",
         f"release_status={flash.get('release_status', 'unknown')}",
@@ -73,6 +89,8 @@ def main() -> int:
         f"manifest_hit={dtb.get('hit', '0')}",
         f"manifest_miss={dtb.get('miss', '0')}",
         f"manifest_hit_ratio={hit_ratio}",
+        f"manifest_source={manifest_debug.get('source', '')}",
+        f"manifest_unique_total={manifest_debug.get('unique_total', '0')}",
         f"anykernel_ok={anykernel_ok}",
         f"anykernel_reason={anyk.get('reason', 'n/a')}",
         f"anykernel_has_imagegz={anyk.get('has_imagegz', 'no')}",
@@ -114,6 +132,16 @@ def main() -> int:
         f"rom_alignment_status={rom_align.get('status', 'pending')}",
         f"rom_alignment_reason={rom_align.get('reason', 'n/a')}",
         f"rom_alignment_pending={rom_align.get('pending', '')}",
+        f"plan_present={plan.get('plan_present', 'no')}",
+        f"plan_phase_0_status={plan.get('phase_0_status', 'unknown')}",
+        f"plan_phase_1_status={plan.get('phase_1_status', 'unknown')}",
+        f"plan_phase_2_status={plan.get('phase_2_status', 'unknown')}",
+        f"plan_phase_3_status={plan.get('phase_3_status', 'unknown')}",
+        f"plan_phase_4_status={plan.get('phase_4_status', 'unknown')}",
+        f"plan_phase_2_checklist_total={plan.get('phase_2_checklist_total', '0')}",
+        f"plan_phase_2_checklist_completed={plan.get('phase_2_checklist_completed', '0')}",
+        f"plan_phase_2_checklist_remaining={plan.get('phase_2_checklist_remaining', '0')}",
+        f"plan_phase_2_next_gap={plan.get('phase_2_next_gap', '')}",
         f"runtime_validation_status={runtime_result.get('status', 'missing_input')}",
         f"runtime_validation_overall={runtime_result.get('overall', 'UNKNOWN')}",
         f"runtime_validation_boot_method={runtime_result.get('boot_method', 'unknown')}",

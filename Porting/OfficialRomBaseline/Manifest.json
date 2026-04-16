@@ -12,7 +12,13 @@
     "sha256": "95f61211e885d05047f152977077d2019e361390b635342b91f6fa8cebd56dca",
     "header_version_guess": 2,
     "pagesize": 4096,
-    "base": "0x00000000"
+    "base": "0x00000000",
+    "parts": {
+      "dir": "Porting/OfficialRomBaseline/BootImgParts",
+      "chunk_size": 8388608,
+      "count": 16,
+      "filename_prefix": "BootImgPart"
+    }
   },
   "firmware": {
     "dtbo.img": {

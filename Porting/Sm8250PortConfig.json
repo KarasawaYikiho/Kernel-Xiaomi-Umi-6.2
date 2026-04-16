@@ -1,0 +1,42 @@
+{
+  "port_name": "sm8250_rom_alignment",
+  "workflow_name": "phase2-port-sm8250-reference",
+  "reference_baseline_device": "umi",
+  "supported_devices": [
+    "alioth",
+    "apollo",
+    "cas",
+    "cmi",
+    "dagu",
+    "elish",
+    "enuma",
+    "lmi",
+    "munch",
+    "pipa",
+    "psyche",
+    "thyme",
+    "umi"
+  ],
+  "source": {
+    "repo": "https://github.com/SO-TS/android_kernel_xiaomi_sm8250.git",
+    "branch": "android16-aptusitu"
+  },
+  "target": {
+    "repo": "https://github.com/yefxx/xiaomi-umi-linux-kernel.git",
+    "branch": "master"
+  },
+  "toolchain": {
+    "name": "zyc-clang-15",
+    "url": "https://github.com/ZyCromerZ/Clang/releases/download/15.0.7-20251111-release/Clang-15.0.7-20251111.tar.gz",
+    "archive": "Clang-15.0.7-20251111.tar.gz",
+    "install_dir": "$HOME/zyc-clang"
+  },
+  "official_rom": {
+    "default_bootimg": "D:\\GIT\\MIUI_UMI\\boot.img",
+    "default_dir": "D:\\GIT\\MIUI_UMI",
+    "default_zip": "D:\\GIT\\MIUI_UMI_OS1.0.5.0.TJBCNXM_d01651ed86_13.0.zip",
+    "baseline_dir": "Porting/OfficialRomBaseline",
+    "manifest": "Porting/OfficialRomBaseline/Manifest.json",
+    "env": "Porting/OfficialRomBaseline/BootImageBaseline.env"
+  }
+}

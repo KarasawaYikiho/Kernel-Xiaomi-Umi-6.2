@@ -8,38 +8,91 @@ set -euo pipefail
 ART=artifacts
 mkdir -p "$ART"
 OUT="$ART/bootimg-build.txt"
-DEFAULT_OFFICIAL_ROM_ZIP='D:\GIT\MIUI_UMI_OS1.0.5.0.TJBCNXM_d01651ed86_13.0.zip'
-DEFAULT_OFFICIAL_ROM_DIR='D:\GIT\MIUI_UMI'
+DEFAULT_OFFICIAL_ROM_ZIP=''
+DEFAULT_OFFICIAL_ROM_DIR=''
 ROM_ANALYSIS='Porting/OfficialRomAnalysis.md'
 ROM_BASELINE_ENV='Porting/OfficialRomBaseline/BootImageBaseline.env'
 ROM_BASELINE_DIR='Porting/OfficialRomBaseline'
 
 kernel_path=""
 ramdisk_path="${BOOTIMG_RAMDISK_PATH:-}"
-ramdisk_url="${BOOTIMG_RAMDISK_URL:-}"
-prebuilt_url="${BOOTIMG_PREBUILT_URL:-}"
+prebuilt_path="${BOOTIMG_PREBUILT_PATH:-}"
 dtb_path="${BOOTIMG_DTB_PATH:-}"
 mkbootimg_cmd=""
-official_rom_zip="${OFFICIAL_ROM_ZIP:-$DEFAULT_OFFICIAL_ROM_ZIP}"
-official_bootimg_url="${OFFICIAL_BOOTIMG_URL:-}"
-official_rom_dir="${OFFICIAL_ROM_DIR:-$DEFAULT_OFFICIAL_ROM_DIR}"
+official_rom_zip="${OFFICIAL_ROM_ZIP:-}"
+official_bootimg_path="${OFFICIAL_BOOTIMG_PATH:-}"
+official_rom_dir="${OFFICIAL_ROM_DIR:-}"
 python_cmd=""
-official_bootimg_path=""
 rom_source_used=""
 rom_baseline_bootimg_path=""
-rom_baseline_bootimg_url=""
+materialized_bootimg_path=""
 
 source "Tools/Porting/Common.sh"
 
-fetch_file() {
-  local url="$1"; local out="$2"
-  if command -v curl >/dev/null 2>&1; then
-    curl -L --fail --retry 3 "$url" -o "$out" && return 0
-  elif command -v wget >/dev/null 2>&1; then
-    wget -O "$out" "$url" && return 0
-  fi
-  return 1
+load_port_defaults() {
+  local config_lines
+  config_lines="$(python_cmd="$(resolve_python_cmd || true)"; if [[ -n "$python_cmd" ]]; then "$python_cmd" Tools/Porting/ExportPortConfig.py 2>/dev/null; fi)"
+  [[ -n "$config_lines" ]] || return 0
+  while IFS='=' read -r key value; do
+    case "$key" in
+      OFFICIAL_ROM_DIR_DEFAULT)
+        [[ -n "$value" ]] && DEFAULT_OFFICIAL_ROM_DIR="$value"
+        ;;
+      OFFICIAL_ROM_ZIP_DEFAULT)
+        [[ -n "$value" ]] && DEFAULT_OFFICIAL_ROM_ZIP="$value"
+        ;;
+      OFFICIAL_ROM_BASELINE_DIR)
+        [[ -n "$value" ]] && ROM_BASELINE_DIR="$value"
+        ;;
+      OFFICIAL_ROM_ENV)
+        [[ -n "$value" ]] && ROM_BASELINE_ENV="$value"
+        ;;
+    esac
+  done <<< "$config_lines"
 }
+
+load_port_defaults
+
+if [[ -z "$official_rom_zip" ]]; then
+  official_rom_zip="$DEFAULT_OFFICIAL_ROM_ZIP"
+fi
+if [[ -z "$official_rom_dir" ]]; then
+  official_rom_dir="$DEFAULT_OFFICIAL_ROM_DIR"
+fi
+
+normalize_input_path() {
+  local value="$1"
+  local drive rest candidate_mnt candidate_drive
+  [[ -n "$value" ]] || return 0
+  if [[ "$value" =~ ^[A-Za-z]:[\\/].* ]]; then
+    if command -v cygpath >/dev/null 2>&1; then
+      cygpath -u "$value" 2>/dev/null && return 0
+    fi
+    drive="${value:0:1}"
+    rest="${value:2}"
+    rest="${rest//\\//}"
+    candidate_mnt="/mnt/${drive,,}${rest}"
+    candidate_drive="/${drive,,}${rest}"
+    if [[ -e "$candidate_mnt" || -d "$candidate_mnt" ]]; then
+      printf '%s\n' "$candidate_mnt"
+      return 0
+    fi
+    if [[ -e "$candidate_drive" || -d "$candidate_drive" ]]; then
+      printf '%s\n' "$candidate_drive"
+      return 0
+    fi
+    printf '%s\n' "$candidate_mnt"
+    return 0
+  fi
+  printf '%s\n' "$value"
+}
+
+ramdisk_path="$(normalize_input_path "$ramdisk_path")"
+prebuilt_path="$(normalize_input_path "$prebuilt_path")"
+dtb_path="$(normalize_input_path "$dtb_path")"
+official_rom_zip="$(normalize_input_path "$official_rom_zip")"
+official_bootimg_path="$(normalize_input_path "$official_bootimg_path")"
+official_rom_dir="$(normalize_input_path "$official_rom_dir")"
 
 is_android_boot_image() {
   local path="$1"
@@ -86,33 +139,6 @@ PY
     fi
   fi
 
-  if [[ -z "$mkbootimg_cmd" && -n "$python_cmd" ]]; then
-    fetched="$ART/mkbootimg.py"
-    fetch_urls=(
-      "https://raw.githubusercontent.com/aosp-mirror/platform_system_tools_mkbootimg/master/mkbootimg.py"
-      "https://android.googlesource.com/platform/system/Tools/mkbootimg/+/refs/heads/master/mkbootimg.py?format=TEXT"
-    )
-    for u in "${fetch_urls[@]}"; do
-      if command -v curl >/dev/null 2>&1; then
-        if [[ "$u" == *"format=TEXT"* ]]; then
-          curl -L --fail --retry 2 "$u" | base64 -d > "$fetched" 2>/dev/null || true
-        else
-          curl -L --fail --retry 2 "$u" -o "$fetched" || true
-        fi
-      elif command -v wget >/dev/null 2>&1; then
-        if [[ "$u" == *"format=TEXT"* ]]; then
-          wget -qO- "$u" | base64 -d > "$fetched" 2>/dev/null || true
-        else
-          wget -O "$fetched" "$u" || true
-        fi
-      fi
-      if [[ -s "$fetched" ]]; then
-        chmod +x "$fetched" || true
-        mkbootimg_cmd="$python_cmd $fetched"
-        break
-      fi
-    done
-  fi
 }
 
 read_rom_analysis_value() {
@@ -239,6 +265,7 @@ extract_rom_support_images() {
     fi
     return 0
   fi
+  is_zip_file "$rom_ref" || return 0
   extract_named_from_zip "$rom_ref" "firmware-update/dtbo.img" "$ART/dtbo.img" "$tmp_dtbo" || true
   extract_named_from_zip "$rom_ref" "firmware-update/vbmeta.img" "$ART/vbmeta.img" "$tmp_vbmeta" || true
   extract_named_from_zip "$rom_ref" "firmware-update/vbmeta_system.img" "$ART/vbmeta_system.img" "$tmp_vbmeta_system" || true
@@ -266,7 +293,7 @@ write_bootimg_ok() {
     echo "required_bytes=$required_bytes"
     echo "source=$source_name"
     echo "source_ref=$source_ref"
-    echo "official_bootimg_url=$official_bootimg_url"
+    echo "official_bootimg_path=$official_bootimg_path"
   } > "$OUT"
 }
 
@@ -339,28 +366,25 @@ if [[ -z "$ramdisk_path" ]]; then
   done
 fi
 
-# optional download path for ramdisk
-if [[ -z "$ramdisk_path" && -n "$ramdisk_url" ]]; then
-  ramdisk_dl="$ART/ramdisk-download"
-  if fetch_file "$ramdisk_url" "$ramdisk_dl"; then
-    # direct ramdisk file
-    if file "$ramdisk_dl" 2>/dev/null | grep -Eiq 'gzip compressed|cpio archive'; then
-      mv -f "$ramdisk_dl" "$ART/ramdisk.cpio.gz"
-      ramdisk_path="$ART/ramdisk.cpio.gz"
-    # archive fallback: try to extract a ramdisk payload from zip
-    elif [[ "$ramdisk_url" == *.zip* ]] && command -v unzip >/dev/null 2>&1; then
-      if unzip -p "$ramdisk_dl" "*ramdisk*.cpio.gz" > "$ART/ramdisk.cpio.gz" 2>/dev/null; then
-        ramdisk_path="$ART/ramdisk.cpio.gz"
-      elif unzip -p "$ramdisk_dl" "*initramfs*.cpio.gz" > "$ART/ramdisk.cpio.gz" 2>/dev/null; then
-        ramdisk_path="$ART/ramdisk.cpio.gz"
-      fi
+if [[ -n "$ramdisk_path" && -f "$ramdisk_path" ]] && is_zip_file "$ramdisk_path"; then
+  extracted_ramdisk="$ART/ramdisk.cpio.gz"
+  rm -f "$extracted_ramdisk"
+  if command -v unzip >/dev/null 2>&1; then
+    if unzip -p "$ramdisk_path" "*ramdisk*.cpio.gz" > "$extracted_ramdisk" 2>/dev/null; then
+      ramdisk_path="$extracted_ramdisk"
+    elif unzip -p "$ramdisk_path" "*initramfs*.cpio.gz" > "$extracted_ramdisk" 2>/dev/null; then
+      ramdisk_path="$extracted_ramdisk"
+    else
+      ramdisk_path=""
     fi
+  else
+    ramdisk_path=""
   fi
 fi
 
 # dtb (optional for newer header versions but preferred)
-if [[ -z "$dtb_path" && -s "$ART/umi_primary_dtb_paths.txt" ]]; then
-  cand="$(head -n1 "$ART/umi_primary_dtb_paths.txt" || true)"
+if [[ -z "$dtb_path" && -s "$ART/primary_dtb_paths.txt" ]]; then
+  cand="$(head -n1 "$ART/primary_dtb_paths.txt" || true)"
   [[ -f "$cand" ]] && dtb_path="$cand"
 fi
 
@@ -370,18 +394,11 @@ if [[ -f "$ROM_BASELINE_DIR/boot.img" ]]; then
   rom_baseline_bootimg_path="$ROM_BASELINE_DIR/boot.img"
 fi
 
-if [[ -n "$official_rom_zip" && "$official_rom_zip" == *"://"* ]]; then
-  official_rom_dl="$ART/official-rom-download.zip"
-  if fetch_file "$official_rom_zip" "$official_rom_dl"; then
-    official_rom_zip="$official_rom_dl"
-  fi
-fi
-
 if [[ -f "$official_rom_zip" ]]; then
   rom_source_used="$official_rom_zip"
   official_bootimg_path=""
-elif [[ -n "$official_bootimg_url" ]]; then
-  rom_source_used="$official_bootimg_url"
+elif [[ -n "$official_bootimg_path" && -f "$official_bootimg_path" ]]; then
+  rom_source_used="$official_bootimg_path"
 elif [[ -f "$official_rom_dir/boot.img" ]]; then
   rom_source_used="$official_rom_dir"
   official_bootimg_path="$official_rom_dir/boot.img"
@@ -393,10 +410,19 @@ baseline_header_version="$(read_baseline_env_value BOOTIMG_HEADER_VERSION 2>/dev
 baseline_boot_size="$(read_baseline_env_value BOOTIMG_REQUIRED_BYTES 2>/dev/null || true)"
 baseline_base="$(read_baseline_env_value BOOTIMG_BASE 2>/dev/null || true)"
 baseline_pagesize="$(read_baseline_env_value BOOTIMG_PAGESIZE 2>/dev/null || true)"
-rom_baseline_bootimg_url="$(read_baseline_env_value ROM_BOOTIMG_URL 2>/dev/null || true)"
+rom_baseline_bootimg_path="$(read_baseline_env_value ROM_BOOTIMG_PATH 2>/dev/null || true)"
+rom_baseline_bootimg_path="$(normalize_input_path "$rom_baseline_bootimg_path")"
 
-if [[ -z "$rom_source_used" && -n "$rom_baseline_bootimg_url" ]]; then
-  rom_source_used="$rom_baseline_bootimg_url"
+if [[ -z "$rom_baseline_bootimg_path" && -n "$python_cmd" && -f Tools/Porting/MaterializeOfficialBootimg.py ]]; then
+  materialized_bootimg_path="$($python_cmd Tools/Porting/MaterializeOfficialBootimg.py 2>/dev/null || true)"
+  materialized_bootimg_path="$(normalize_input_path "$materialized_bootimg_path")"
+  if [[ -n "$materialized_bootimg_path" && -f "$materialized_bootimg_path" ]]; then
+    rom_baseline_bootimg_path="$materialized_bootimg_path"
+  fi
+fi
+
+if [[ -z "$rom_source_used" && -n "$rom_baseline_bootimg_path" && -f "$rom_baseline_bootimg_path" ]]; then
+  rom_source_used="$rom_baseline_bootimg_path"
 fi
 
 rom_header_version="$(read_rom_analysis_value header_version_guess 2>/dev/null || true)"
@@ -409,47 +435,17 @@ cmdline="${BOOTIMG_CMDLINE:-}"
 required_bytes="${BOOTIMG_REQUIRED_BYTES:-${baseline_boot_size:-${rom_boot_size:-134217728}}}"
 
 # Preferred ROM-aligned fallback order:
-# 1. Local/external official ROM package or extracted ROM directory
+# 1. Local official ROM package or extracted ROM directory
 # 2. Local repository-side boot baseline when manually present outside git
-# 3. External boot baseline URL pinned in BootImageBaseline.env
+# 3. Local boot baseline path pinned in BootImageBaseline.env
 if [[ -n "$rom_source_used" ]]; then
-  if [[ "$rom_source_used" == *"://"* ]]; then
-    official_rom_dl="$ART/official-rom-baseline.img"
-    if fetch_file "$rom_source_used" "$official_rom_dl"; then
-      prepare_prebuilt_bootimg "$official_rom_dl" "baseline_url" "$rom_source_used"
-    fi
-  fi
   extract_rom_support_images "$rom_source_used"
   prepare_official_rom_bootimg
 fi
 
 # fallback: use a prebuilt boot.img directly when mkbootimg inputs are unavailable
-if [[ -n "$prebuilt_url" ]]; then
-  out_boot="$ART/boot.img"
-  prebuilt_dl="$ART/prebuilt-download"
-  tmp_boot="$ART/prebuilt-boot.img"
-  rm -f "$out_boot" "$tmp_boot"
-  if fetch_file "$prebuilt_url" "$prebuilt_dl"; then
-    prepare_prebuilt_bootimg "$prebuilt_dl" "prebuilt_url" "$prebuilt_url"
-  fi
-  if [[ -f "$prebuilt_dl" ]]; then
-    {
-      echo "status=blocked"
-      echo "reason=prebuilt-not-android-bootimg"
-      echo "missing=valid_prebuilt_bootimg"
-      echo "kernel_path=$kernel_path"
-      echo "ramdisk_path=$ramdisk_path"
-      echo "dtb_path=$dtb_path"
-      echo "mkbootimg_cmd=$mkbootimg_cmd"
-      echo "header_version=$header_version"
-      echo "base=$base"
-      echo "pagesize=$pagesize"
-      echo "source=prebuilt_url"
-      echo "prebuilt_url=$prebuilt_url"
-    } > "$OUT"
-    echo "bootimg build blocked: prebuilt payload is not a valid Android boot image"
-    exit 0
-  fi
+if [[ -n "$prebuilt_path" && -f "$prebuilt_path" ]]; then
+  prepare_prebuilt_bootimg "$prebuilt_path" "prebuilt_path" "$prebuilt_path"
 fi
 
 resolve_mkbootimg
@@ -471,7 +467,7 @@ if [[ ${#missing[@]} -gt 0 ]]; then
     echo "header_version=$header_version"
     echo "base=$base"
     echo "pagesize=$pagesize"
-    echo "baseline_bootimg_url=$rom_baseline_bootimg_url"
+    echo "baseline_bootimg_path=$rom_baseline_bootimg_path"
   } > "$OUT"
   echo "bootimg build blocked: $(IFS=,; echo "${missing[*]}")"
   exit 0

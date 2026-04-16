@@ -152,20 +152,8 @@ def main() -> int:
         "- Flash the Magisk-patched boot image, then confirm the device still boots cleanly.",
         "- After the first rooted boot, collect dmesg/logcat and rerun postprocess with the validation result.",
     ]
-    if not magisk_patch_ready:
-        next_steps = [
-            "- Finish release boot image preparation before device-side validation.",
-            "- If AnyKernel packaging is available earlier, treat it as secondary evidence rather than the primary path.",
-            "- After packaging is ready, rerun postprocess and continue with the Magisk-patched boot flow.",
-        ]
     runtime_overall = runtime_result.get("overall", "UNKNOWN")
     runtime_status = runtime_result.get("status", "missing_input")
-    if runtime_status == "awaiting_device_validation":
-        next_steps = [
-            "- Patch `artifacts/boot.img` with Magisk and note the patched image filename in `meta.patched_boot_image`.",
-            "- Flash the patched boot image, complete the checklist items, then change the `check.*` lines from `UNKNOWN`.",
-            "- After the first device run, attach dmesg/logcat references in the same input file and rerun postprocess.",
-        ]
     if runtime_overall == "FAIL":
         next_steps = [
             "- Inspect `runtime-validation-result.txt` and `phase2-report.txt` for the failing step.",
@@ -177,6 +165,27 @@ def main() -> int:
             "- Runtime validation passed; switch focus from device smoke test to release hardening.",
             "- If `bootimg_status` is not `ok`, continue with release `boot.img` preparation.",
             "- If release packaging is already green, close remaining ROM / driver alignment follow-ups.",
+        ]
+    elif runtime_blockers:
+        if magisk_patch_ready:
+            next_steps = [
+                "- Release boot image is already ready; keep the Magisk-patched boot path as the target validation route.",
+                "- Clear the listed runtime blockers before asking for another device-side validation pass.",
+                "- Treat AnyKernel packaging as secondary evidence rather than the primary path.",
+                "- After the blockers are cleared, rerun postprocess and continue with the Magisk-patched boot flow.",
+            ]
+        else:
+            next_steps = [
+                "- Finish release boot image preparation before device-side validation.",
+                "- Clear the listed runtime blockers before asking for another device-side validation pass.",
+                "- If AnyKernel packaging is available earlier, treat it as secondary evidence rather than the primary path.",
+                "- After packaging is ready, rerun postprocess and continue with the Magisk-patched boot flow.",
+            ]
+    elif runtime_status == "awaiting_device_validation":
+        next_steps = [
+            "- Patch `artifacts/boot.img` with Magisk and note the patched image filename in `meta.patched_boot_image`.",
+            "- Flash the patched boot image, complete the checklist items, then change the `check.*` lines from `UNKNOWN`.",
+            "- After the first device run, attach dmesg/logcat references in the same input file and rerun postprocess.",
         ]
 
     md.extend(

@@ -1,16 +1,8 @@
-name: Build Xiaomi 10 (umi) Kernel (Reference-style)
+name: Build SM8250 Kernel (Reference-style)
 
 on:
   workflow_dispatch:
     inputs:
-      kernel_repo:
-        description: "Kernel source repo URL (GitHub)"
-        required: true
-        default: "https://github.com/SO-TS/android_kernel_xiaomi_sm8250.git"
-      kernel_branch:
-        description: "Kernel branch"
-        required: true
-        default: "android16-aptusitu"
       device:
         description: "Target Device Codename"
         required: true
@@ -61,6 +53,16 @@ jobs:
           sudo apt-get install -y build-essential git curl wget bison flex zip bc cpio libssl-dev ccache python-is-python3
           sudo apt-get install -y gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi
 
+      - name: Load port config
+        run: |
+          python3 Tools/Porting/ExportPortConfig.py >> "$GITHUB_ENV"
+          echo "KERNEL_REPO=$SOURCE_REPO" >> "$GITHUB_ENV"
+          echo "KERNEL_BRANCH=$SOURCE_BRANCH" >> "$GITHUB_ENV"
+
+      - name: Validate device against SM8250 config
+        run: |
+          python3 Tools/Porting/ValidatePortDevice.py "${{ github.event.inputs.device }}"
+
       - name: Setup cache (ccache)
         uses: actions/cache@v4
         with:
@@ -72,14 +74,12 @@ jobs:
 
       - name: Setup Toolchain (ZyC-Clang 15)
         run: |
-          mkdir -p $HOME/zyc-clang
-          cd $HOME/zyc-clang
-          wget -q https://github.com/ZyCromerZ/Clang/releases/download/15.0.7-20251111-release/Clang-15.0.7-20251111.tar.gz
-          tar -zxf Clang-15.0.7-20251111.tar.gz
+          chmod +x Tools/Porting/SetupKernelToolchain.sh
+          ./Tools/Porting/SetupKernelToolchain.sh
 
       - name: Clone kernel source
         run: |
-          git clone --depth=1 --branch "${{ github.event.inputs.kernel_branch }}" "${{ github.event.inputs.kernel_repo }}" kernel
+          git clone --depth=1 --branch "$KERNEL_BRANCH" "$KERNEL_REPO" kernel
 
       - name: Build kernel
         working-directory: kernel

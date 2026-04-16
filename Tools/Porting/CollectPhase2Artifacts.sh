@@ -4,14 +4,16 @@ set -euo pipefail
 # Usage:
 #   Collect_Phase2_Artifacts.sh <device>
 
-DEVICE="${1:-umi}"
+DEVICE="${1:-${DEVICE:-unknown}}"
+BUNDLE_DIR="artifacts/device_bundle"
+PRIMARY_DTB_PATHS="artifacts/primary_dtb_paths.txt"
 
 source "Tools/Porting/Common.sh"
 python_cmd="$(require_python_cmd)" || exit 1
 
-mkdir -p artifacts/umi_bundle
+mkdir -p "$BUNDLE_DIR"
 : > artifacts/all_dtb_paths.txt
-: > artifacts/umi_primary_dtb_paths.txt
+: > "$PRIMARY_DTB_PATHS"
 cp -v target/Porting/phase2/summary.txt artifacts/ || true
 cp -v target/Porting/phase2/copied_dts.txt artifacts/ || true
 cp -v target/Porting/phase2/seed_dts.txt artifacts/ || true
@@ -34,7 +36,7 @@ fi
 if [ -s artifacts/target_dtb_manifest.txt ]; then
   while IFS= read -r dtb; do
     [ -n "$dtb" ] || continue
-    grep -E "/${dtb}$" artifacts/all_dtb_paths.txt >> artifacts/umi_primary_dtb_paths.txt || true
+    grep -E "/${dtb}$" artifacts/all_dtb_paths.txt >> "$PRIMARY_DTB_PATHS" || true
   done < artifacts/target_dtb_manifest.txt
 fi
 
@@ -42,37 +44,37 @@ fi
 "$python_cmd" Tools/Porting/AnalyzeDtbMiss.py || true
 
 # fallback 1: strict umi/xiaomi/sm8250 path matching
-if [ ! -s artifacts/umi_primary_dtb_paths.txt ]; then
+if [ ! -s "$PRIMARY_DTB_PATHS" ]; then
   grep -Ei '/.*(sm8250-xiaomi|umi-sm8250|xiaomi-sm8250-common).*(\.dtb|\.dtbo)$' artifacts/all_dtb_paths.txt \
-    | grep -Eiv 'rumi|lumia|sony' > artifacts/umi_primary_dtb_paths.txt || true
+    | grep -Eiv 'rumi|lumia|sony' > "$PRIMARY_DTB_PATHS" || true
 fi
 
 # fallback 1.5: explicit umi aliases by basename
-if [ ! -s artifacts/umi_primary_dtb_paths.txt ]; then
+if [ ! -s "$PRIMARY_DTB_PATHS" ]; then
   grep -Ei '/(sm8250-xiaomi-umi|umi-sm8250|xiaomi-sm8250-common)([^/]*\.(dtb|dtbo))$' artifacts/all_dtb_paths.txt \
-    | grep -Eiv 'rumi|lumia|sony|hdk|mtp' > artifacts/umi_primary_dtb_paths.txt || true
+    | grep -Eiv 'rumi|lumia|sony|hdk|mtp' > "$PRIMARY_DTB_PATHS" || true
 fi
 
 # fallback 2: keep it strict to avoid false positives from unrelated boards
-if [ ! -s artifacts/umi_primary_dtb_paths.txt ]; then
+if [ ! -s "$PRIMARY_DTB_PATHS" ]; then
   grep -Ei '(sm8250-xiaomi|umi-sm8250|xiaomi-sm8250-common).*(\.dtb|\.dtbo)$' artifacts/all_dtb_paths.txt \
-    | grep -Eiv 'rumi|lumia|sony|hdk|mtp' > artifacts/umi_primary_dtb_paths.txt || true
+    | grep -Eiv 'rumi|lumia|sony|hdk|mtp' > "$PRIMARY_DTB_PATHS" || true
 fi
 
-cp -v out/arch/arm64/boot/Image artifacts/umi_bundle/ || true
-cp -v out/arch/arm64/boot/Image.gz artifacts/umi_bundle/ || true
-cp -v target/Porting/phase2/summary.txt artifacts/umi_bundle/ || true
+cp -v out/arch/arm64/boot/Image "$BUNDLE_DIR"/ || true
+cp -v out/arch/arm64/boot/Image.gz "$BUNDLE_DIR"/ || true
+cp -v target/Porting/phase2/summary.txt "$BUNDLE_DIR"/ || true
 
 dtb_count=0
 xiaomi_dtb_count=0
-if [ -s artifacts/umi_primary_dtb_paths.txt ]; then
+if [ -s "$PRIMARY_DTB_PATHS" ]; then
   while IFS= read -r f; do
     [ -f "$f" ] || continue
     cp -v "$f" artifacts/ || true
-    cp -v "$f" artifacts/umi_bundle/ || true
+    cp -v "$f" "$BUNDLE_DIR"/ || true
     dtb_count=$((dtb_count+1))
     echo "$f" | grep -Eiq 'xiaomi|umi|sm8250' && xiaomi_dtb_count=$((xiaomi_dtb_count+1)) || true
-  done < artifacts/umi_primary_dtb_paths.txt
+  done < "$PRIMARY_DTB_PATHS"
 fi
 
 flash_ready="no"
@@ -82,12 +84,12 @@ fi
 
 {
   echo "device=$DEVICE"
-  echo "umi_bundle_dtb_count=$dtb_count"
-  echo "umi_bundle_xiaomi_dtb_count=$xiaomi_dtb_count"
+  echo "bundle_dtb_count=$dtb_count"
+  echo "bundle_xiaomi_dtb_count=$xiaomi_dtb_count"
   echo "flash_ready_hint=$flash_ready"
-} > artifacts/umi_bundle/pack-info.txt
+} > "$BUNDLE_DIR"/pack-info.txt
 
 if command -v zip >/dev/null 2>&1; then
-  (cd artifacts/umi_bundle && zip -r ../phase2-umi-focused-package.zip .) || true
+  (cd "$BUNDLE_DIR" && zip -r ../phase2-device-package.zip .) || true
 fi
 "$python_cmd" Tools/Porting/EvaluateArtifact.py || true

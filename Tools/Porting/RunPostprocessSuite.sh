@@ -20,7 +20,7 @@ if [[ ! -f artifacts/run-meta.txt ]]; then
     echo "run_number=local"
     echo "sha=${git_sha}"
     echo "ref=${git_ref}"
-    echo "device=umi"
+    echo "device=${DEVICE:-unknown}"
     echo "source_repo=local"
     echo "source_branch="
     echo "target_repo=local"
@@ -33,7 +33,12 @@ steps=(
   "ParseRuntimeValidationInput.py"
   "InitDriverIntegrationManifest.py"
   "InitRomAlignmentManifest.py"
+  "BuildAnykernelCandidate.sh"
   "BuildDriverIntegrationEvidence.py"
+  "BuildDtbManifest.py"
+  "ListBuiltDtbPaths.py"
+  "DtbPostcheck.py"
+  "AnalyzeDtbMiss.py"
   "SyncDriverIntegrationManifest.py"
   "ValidateDriverIntegrationManifest.py"
   "ValidateAnykernelCandidate.py"
@@ -44,6 +49,7 @@ steps=(
   "CheckArtifactCompleteness.py"
   "BuildDriverIntegrationStatus.py"
   "BuildRomAlignmentStatus.py"
+  "BuildPlanProgress.py"
   "BuildPhase2Report.py"
   "SuggestNextFocus.py"
   "VerifyDecisionConsistency.py"
@@ -64,7 +70,22 @@ mkdir -p "artifacts"
 
 for step in "${steps[@]}"; do
   script="Tools/Porting/${step}"
-  if "$python_cmd" "$script"; then
+  if [[ "$script" == *.sh ]]; then
+    chmod +x "$script"
+    if "$script"; then
+      step_rc=0
+    else
+      step_rc=$?
+    fi
+  else
+    if "$python_cmd" "$script"; then
+      step_rc=0
+    else
+      step_rc=$?
+    fi
+  fi
+
+  if [[ "$step_rc" -eq 0 ]]; then
     echo "${step}=ok" | tee -a "$status_file"
   else
     echo "${step}=failed" | tee -a "$status_file"

@@ -4,7 +4,7 @@ set -euo pipefail
 # Usage:
 #   Run_Phase2_Build.sh <device>
 
-DEVICE="${1:-umi}"
+DEVICE="${1:-${DEVICE:-umi}}"
 
 source "Tools/Porting/Common.sh"
 python_cmd="$(resolve_python_cmd || true)"

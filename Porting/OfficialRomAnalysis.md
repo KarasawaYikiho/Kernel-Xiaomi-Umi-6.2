@@ -2,9 +2,8 @@
 
 ## Status
 - status: `ok`
-- Source File: `D:\GIT\MIUI_UMI_OS1.0.5.0.TJBCNXM_d01651ed86_13.0.zip`
-- Zip Size Bytes: `4413290022`
-- Zip SHA256: `1e6f5eba43219dfeead7395387c0e2eba9ff49c310917b9cf22092963f7adba1`
+- Source Kind: `directory`
+- Source File: `D:\GIT\MIUI_UMI`
 - Entry Count: `48`
 - Top-Level Entries: `META-INF, boot.img, dynamic_partitions_op_list, firmware-update, mi_ext.new.dat.br, mi_ext.patch.dat, mi_ext.transfer.list, odm.new.dat.br, odm.patch.dat, odm.transfer.list, product.new.dat.br, product.patch.dat, product.transfer.list, system.new.dat.br, system.patch.dat, system.transfer.list, system_ext.new.dat.br, system_ext.patch.dat, system_ext.transfer.list, vendor.new.dat.br, vendor.patch.dat, vendor.transfer.list`
 
@@ -181,32 +180,4 @@ set_progress(1.000000);
 1. Treat this package as baseline evidence only; do not directly import proprietary blobs into the repository.
 2. Keep using extracted metadata + partition ops + hash evidence for reproducibility and regression tracking.
 3. Compare boot/dtbo/vbmeta hashes against CI-generated artifacts to validate release-chain consistency.
-4. Continue kernel-side integration via open-source references; use official ROM package as validation target, not code donor.
-
-## Project Alignment Note
-
-This project targets a 6+ kernel baseline built from source rather than reproducing Xiaomi's stock 4.19 kernel.
-
-The official UMI ROM package is used as a reference extraction source and validation baseline for:
-- boot chain expectations
-- `boot.img` size and packaging constraints
-- `dtbo` / `vbmeta` / dynamic partition baseline
-- runtime validation against official userspace
-
-The official ROM is not treated as a code donor and is not the target kernel version for this repository. Kernel-side work continues on the 6+ source baseline, while official ROM artifacts remain reference evidence for compatibility and release gating.
-
-## Current Alignment Gap
-
-Compared with the official ROM baseline, the latest Phase2 action artifact still has the following release-chain gaps:
-- release-grade `boot.img` generation is not complete
-- ROM-aligned boot chain consistency is not yet confirmed
-- DTB coverage is incomplete against the current target manifest
-- device-side runtime validation remains pending
-
-## Task Guidance
-
-1. Keep the kernel baseline on 6+ and do not regress toward stock 4.19.
-2. Use the official ROM only as reference evidence for `boot` / `dtbo` / `vbmeta` / partition expectations.
-3. Prioritize release boot image reproducibility and ROM boot-chain alignment before expanding feature scope.
-4. Resolve DTB manifest-to-build mismatches so required target entries are either buildable or reclassified correctly.
-5. Complete device-side runtime validation against the official ROM environment.
+4. Continue kernel-side integration via open-source references; use the official ROM package, extracted directory, or repo baseline as validation target, not code donor.

@@ -121,7 +121,7 @@ def main() -> int:
     boot_local = _find_first_existing(
         [
             ART / "boot.img",
-            ART / "umi_bundle" / "boot.img",
+            ART / "device_bundle" / "boot.img",
             Path("out/boot.img"),
             Path("out/arch/arm64/boot/boot.img"),
             ROM_BASELINE_DIR / "boot.img",

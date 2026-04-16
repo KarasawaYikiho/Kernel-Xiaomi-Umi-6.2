@@ -17,7 +17,7 @@ def main() -> int:
     meta = parse_kv(ART / "run-meta.txt")
     consistency = parse_kv(ART / "decision-consistency.txt")
 
-    device = report.get("device", meta.get("device", "umi"))
+    device = report.get("device", meta.get("device", "unknown"))
     run_no = meta.get("run_number", "?")
     sha = meta.get("sha", "")
     next_action = report.get("next_action", "collect-more-data")

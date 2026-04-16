@@ -7,7 +7,7 @@ from pathlib import Path
 from KvUtils import parse_kv
 
 ART = Path("artifacts")
-PACK_INFO = ART / "umi_bundle" / "pack-info.txt"
+PACK_INFO = ART / "device_bundle" / "pack-info.txt"
 OUT = ART / "flash-readiness.txt"
 
 
@@ -21,18 +21,13 @@ def is_candidate_hint(value: str) -> bool:
 
 def main() -> int:
     ART.mkdir(parents=True, exist_ok=True)
-    if not PACK_INFO.exists():
-        OUT.write_text("status=unknown\nreason=pack-info-missing\n", encoding="utf-8")
-        print("pack-info missing")
-        return 0
-
     pack = parse_kv(PACK_INFO)
     dtb = parse_kv(ART / "dtb-postcheck.txt")
     anykernel = parse_kv(ART / "anykernel-info.txt")
     anykernel_validate = parse_kv(ART / "anykernel-validate.txt")
     bootimg = parse_kv(ART / "bootimg-info.txt")
 
-    xiaomi_dtb_count = parse_count(pack.get("umi_bundle_xiaomi_dtb_count", "0"))
+    xiaomi_dtb_count = parse_count(pack.get("bundle_xiaomi_dtb_count", "0"))
     hint = pack.get("flash_ready_hint", "no")
     manifest_hit = parse_count(dtb.get("hit", "0"))
     anykernel_ok = anykernel.get("anykernel_ok", "no") == "yes"
@@ -49,7 +44,10 @@ def main() -> int:
 
     status = "not_ready"
     reason = "insufficient-xiaomi-dtb"
-    if xiaomi_dtb_count >= 1 and is_candidate_hint(hint):
+    if not PACK_INFO.exists():
+        status = "unknown"
+        reason = "pack-info-missing"
+    elif xiaomi_dtb_count >= 1 and is_candidate_hint(hint):
         if not anykernel_ok:
             reason = "candidate-missing-anykernel"
         elif not anykernel_validate_ok:
