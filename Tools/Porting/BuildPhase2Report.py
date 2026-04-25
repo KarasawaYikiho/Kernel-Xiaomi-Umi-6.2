@@ -55,6 +55,25 @@ def main() -> int:
     dtbs_rc = bexit.get("dtbs_rc", "n/a")
 
     anyk_val_status = anyk_val.get("status", "unknown")
+    bootimg_status = boot.get("status", "missing")
+    bootimg_reference_gate = boot.get("official_reference_gate", "no")
+    phase2_blockers: list[str] = []
+    if def_rc != "0":
+        phase2_blockers.append(f"defconfig_rc={def_rc}")
+    if build_rc != "0":
+        phase2_blockers.append(f"build_rc={build_rc}")
+    if dtbs_rc != "0":
+        phase2_blockers.append(f"dtbs_rc={dtbs_rc}")
+    if bootimg_status != "ok":
+        phase2_blockers.append(f"bootimg_status={bootimg_status}")
+    if bootimg_reference_gate != "yes":
+        phase2_blockers.append(f"bootimg_official_reference_gate={bootimg_reference_gate}")
+    if anyk_val_status != "ok":
+        phase2_blockers.append(f"anykernel_validate_status={anyk_val_status}")
+    phase2_build_gate = "pass" if def_rc == "0" and build_rc == "0" else "fail"
+    phase2_dtbs_gate = "pass" if dtbs_rc == "0" else "fail"
+    phase2_rom_gate = "pass" if bootimg_status == "ok" and bootimg_reference_gate == "yes" else "fail"
+    phase2_complete = "yes" if not phase2_blockers else "no"
     next_action = derive_next_action(
         defconfig_rc=def_rc,
         build_rc=build_rc,
@@ -70,13 +89,21 @@ def main() -> int:
         runtime_validation_overall=runtime_result.get("overall", "UNKNOWN"),
     )
     runtime_ready = derive_runtime_ready(next_action)
+    if phase2_complete != "yes":
+        runtime_ready = "no"
 
     lines = [
         "phase2_report=1",
         f"device={report_device}",
+        f"phase2_report_state={'ready' if phase2_complete == 'yes' else 'not_ready'}",
         f"defconfig_rc={bexit.get('defconfig_rc', 'n/a')}",
         f"build_rc={bexit.get('build_rc', 'n/a')}",
         f"dtbs_rc={bexit.get('dtbs_rc', 'n/a')}",
+        f"phase2_build_gate={phase2_build_gate}",
+        f"phase2_dtbs_gate={phase2_dtbs_gate}",
+        f"phase2_rom_gate={phase2_rom_gate}",
+        f"phase2_complete={phase2_complete}",
+        f"phase2_blockers={','.join(phase2_blockers)}",
         f"dts_copied={summary.get('dts_copied', '0')}",
         f"dts_only_copied={summary.get('dts_only_copied', '0')}",
         f"dtsi_only_copied={summary.get('dtsi_only_copied', '0')}",

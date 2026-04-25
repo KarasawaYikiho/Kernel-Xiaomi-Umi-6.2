@@ -28,7 +28,7 @@ ALLOW = re.compile(
     r"(sm8250-xiaomi|xiaomi-sm8250|qcom-sm8250|sm8250|kona|umi|cmi|lmi|apollo|alioth|thyme|psyche|cas|munch|elish|enuma|dagu|pipa)",
     re.I,
 )
-DENY = re.compile(r"(rumi|lumia|sony|hdk|mtp|edo|pdx)", re.I)
+DENY = re.compile(r"(rumi|lumia|sony|hdk|mtp|edo|pdx|iot-rb5)", re.I)
 TOKEN_SPLIT = re.compile(r"[-_./]+")
 PREFER = [
     re.compile(r"^sm8250-xiaomi-[a-z0-9_-]+\.dtb$", re.I),
@@ -64,9 +64,6 @@ def alias_names(path_str: str, supported_devices: list[str]) -> list[str]:
                     f"qcom-sm8250-{device}.dtb",
                 ]
             )
-
-    if {"xiaomi", "sm8250"}.issubset(tokens):
-        names.append("xiaomi-sm8250-common.dtb")
 
     seen: set[str] = set()
     out: list[str] = []

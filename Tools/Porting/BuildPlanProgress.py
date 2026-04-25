@@ -47,17 +47,30 @@ def parse_phase_table(lines: list[str]) -> dict[str, str]:
 
 
 def parse_phase2_checklist(lines: list[str]) -> list[tuple[bool, str]]:
+    return parse_phase_checklist(lines, 2)
+
+
+def parse_phase_checklist(lines: list[str], phase: int) -> list[tuple[bool, str]]:
     items: list[tuple[bool, str]] = []
+    in_phase = False
     in_checklist = False
+    phase_heading = re.compile(rf"^## Phase {phase}(?::|$)")
     for line in lines:
-        if line.strip() == "## Phase 2 Checklist":
+        stripped = line.strip()
+        if phase_heading.match(stripped):
+            in_phase = True
+            in_checklist = False
+            continue
+        if in_phase and stripped.startswith("## "):
+            break
+        if not in_phase:
+            continue
+        if stripped in {"Checklist:", "## Phase 2 Checklist"}:
             in_checklist = True
             continue
-        if in_checklist and line.startswith("## "):
-            break
         if not in_checklist:
             continue
-        match = re.match(r"- \[(x| )\] (.+)$", line.strip(), flags=re.IGNORECASE)
+        match = re.match(r"- \[(x| )\] (.+)$", stripped, flags=re.IGNORECASE)
         if not match:
             continue
         item = match.group(2).strip().replace("`", "")
@@ -94,6 +107,22 @@ def derive_evidence_status(item: str, report: dict[str, str]) -> tuple[str, str]
             return "complete", "dtb_manifest_matches_build"
         return "pending", "dtb_manifest_mismatch_remaining"
 
+    if key == "build_workflow_targets_the_6_target_tree":
+        return "pending", "awaiting_ci_evidence_for_target_workflow"
+
+    if key == "ci_evidence_confirms_dtbs_rc_0":
+        if report.get("dtbs_rc") == "0":
+            return "complete", "dtbs_rc_zero"
+        return "pending", f"dtbs_rc={report.get('dtbs_rc', 'n/a')}"
+
+    if key == "phase_2_report_has_no_required_blockers":
+        if report.get("phase2_complete") == "yes":
+            return "complete", "phase2_complete"
+        return "pending", report.get("phase2_blockers", "phase2_not_complete")
+
+    if key == "update_porting_changelog_md_with_phase_2_milestone_evidence":
+        return "pending", "changelog_update_required"
+
     if key == "device_side_runtime_validation_on_official_rom_environment":
         overall = report.get("runtime_validation_overall", "UNKNOWN")
         if overall == "PASS":
@@ -107,11 +136,20 @@ def derive_evidence_status(item: str, report: dict[str, str]) -> tuple[str, str]
     return "unknown", "no_evidence_rule"
 
 
+def phase_next_gap(checklist: list[tuple[bool, str]]) -> str:
+    for checked, item in checklist:
+        if not checked:
+            return normalize_key(item)
+    return ""
+
+
 def main() -> int:
     ART.mkdir(parents=True, exist_ok=True)
     lines = PLAN.read_text(encoding="utf-8").splitlines() if PLAN.exists() else []
     phase_table = parse_phase_table(lines)
     checklist = parse_phase2_checklist(lines)
+    phase3_checklist = parse_phase_checklist(lines, 3)
+    phase4_checklist = parse_phase_checklist(lines, 4)
     report = parse_kv(ART / "phase2-report.txt")
 
     completed = 0
@@ -158,6 +196,11 @@ def main() -> int:
             f"phase_2_checklist_completed={completed}",
             f"phase_2_checklist_remaining={remaining}",
             f"phase_2_next_gap={(remaining_items[0] if remaining_items else '')}",
+            f"phase_3_checklist_total={len(phase3_checklist)}",
+            f"phase_3_next_gap={phase_next_gap(phase3_checklist)}",
+            f"phase_4_checklist_total={len(phase4_checklist)}",
+            f"phase_4_next_gap={phase_next_gap(phase4_checklist)}",
+            "phase_4_blocked_by=phase_2,phase_3",
         ]
     )
 
@@ -172,6 +215,8 @@ def main() -> int:
         f"- Phase 4: `{phase_table.get('phase_4_status', 'unknown')}`",
         f"- Phase 2 checklist: `{completed}/{total}` complete",
         f"- Next gap: `{remaining_items[0] if remaining_items else 'none'}`",
+        f"- Phase 3 next gap: `{phase_next_gap(phase3_checklist) or 'none'}`",
+        "- Phase 4 blocked by: `phase_2,phase_3`",
         "",
         "## Phase 2 Checklist",
         *checklist_lines,

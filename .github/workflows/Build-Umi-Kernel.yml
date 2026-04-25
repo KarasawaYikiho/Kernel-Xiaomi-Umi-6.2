@@ -56,8 +56,8 @@ jobs:
       - name: Load port config
         run: |
           python3 Tools/Porting/ExportPortConfig.py >> "$GITHUB_ENV"
-          echo "KERNEL_REPO=$SOURCE_REPO" >> "$GITHUB_ENV"
-          echo "KERNEL_BRANCH=$SOURCE_BRANCH" >> "$GITHUB_ENV"
+          echo "KERNEL_REPO=$TARGET_REPO" >> "$GITHUB_ENV"
+          echo "KERNEL_BRANCH=$TARGET_BRANCH" >> "$GITHUB_ENV"
 
       - name: Validate device against SM8250 config
         run: |

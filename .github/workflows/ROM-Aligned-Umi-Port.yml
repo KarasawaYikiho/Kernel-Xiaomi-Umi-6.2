@@ -182,6 +182,11 @@ jobs:
           chmod +x Tools/Porting/RunPostprocessSuite.sh
           ./Tools/Porting/RunPostprocessSuite.sh
 
+      - name: Enforce Phase2 gates
+        if: always()
+        run: |
+          python3 Tools/Porting/ValidatePhase2Report.py
+
       - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v5

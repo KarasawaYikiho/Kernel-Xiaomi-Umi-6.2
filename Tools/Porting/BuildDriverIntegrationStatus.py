@@ -72,6 +72,7 @@ def main() -> int:
     OUT.write_text(
         "\n".join(
             [
+                "phase=3",
                 f"status={status}",
                 f"reason={reason}",
                 f"integrated_count={integrated_count}",
@@ -80,6 +81,8 @@ def main() -> int:
                 f"camera_focus_ready={'yes' if has_camera_focus else 'no'}",
                 f"partition_baseline_ready={'yes' if has_partition_baseline else 'no'}",
                 f"manifest_validate_status={manifest_validate_status}",
+                f"next_kernel_usability_blocker={(pending[0] if pending else '')}",
+                f"runtime_blocking_until_phase3_complete={'yes' if pending else 'no'}",
                 "pending=" + ",".join(dict.fromkeys(pending)),
             ]
         )

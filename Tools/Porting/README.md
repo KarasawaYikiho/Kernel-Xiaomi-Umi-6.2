@@ -18,6 +18,7 @@ The workflow auto-fills repository URLs, default branches, toolchain source, loc
 10. `PrepareReleaseBootimg.sh` — ROM-aware release boot.img
 11. `WriteRunMeta.sh` — Write run metadata
 12. `RunPostprocessSuite.sh` — Postprocess chain
+13. `ValidatePhase2Report.py` — Final Phase2 gate for CI pass/fail
 
 `PrepareReleaseBootimg.sh` resolves stock boot baselines in this order: `official_rom_zip`, direct `official_bootimg_path`, `official_rom_dir`, local non-git `Porting/OfficialRomBaseline/boot.img`, `ROM_BOOTIMG_PATH`, then generic `bootimg_prebuilt_path`.
 
@@ -29,14 +30,23 @@ The workflow auto-fills repository URLs, default branches, toolchain source, loc
 - `driver_integration_pending` — Pending drivers
 - `anykernel_validate_status` — AnyKernel validity
 - `bootimg_status` — boot.img readiness
+- `phase2_complete` — hard Phase2 completion gate
+- `phase2_blockers` — required blockers that prevent runtime/device validation
 
 ## Local Validation
 
 ```bash
 python Tools/Porting/RepoSanityCheck.py
+python Tools/Porting/SelftestBuildWorkflow.py
+python Tools/Porting/SelftestDtbManifest.py
 python Tools/Porting/SelftestDecisionFlow.py
+python Tools/Porting/SelftestPhaseFramework.py
 python -m compileall Tools/Porting
 ```
+
+`RunPostprocessSuite.sh` generates reports even when Phase2 is incomplete. The workflow then runs `ValidatePhase2Report.py` as the final gate so incomplete Phase2 artifacts remain uploaded for debugging while CI still fails when hard gates such as `dtbs_rc=0` are not satisfied.
+
+Real-device runtime validation is not part of Phase2. It remains blocked until Phase2 and Phase3 exit criteria are complete.
 
 ## Local Official ROM Baseline
 

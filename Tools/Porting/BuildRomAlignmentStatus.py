@@ -9,6 +9,7 @@ from Manifest import parse_driver_manifest
 ART = Path("artifacts")
 MANIFEST = ART / "rom-alignment-manifest.txt"
 OUT = ART / "rom-alignment-status.txt"
+PHASE4_ITEMS = {"runtime_validation_official_rom"}
 
 
 def main() -> int:
@@ -53,6 +54,8 @@ def main() -> int:
         status = "pending"
         reason = "rom_alignment_manifest_missing"
 
+    phase2_pending = sorted(item for item in pending if item not in PHASE4_ITEMS)
+    phase4_pending = sorted(item for item in pending if item in PHASE4_ITEMS)
     OUT.write_text(
         "\n".join(
             [
@@ -67,6 +70,8 @@ def main() -> int:
                 f"dtbo_match={evidence.get('dtbo_match', 'unknown')}",
                 f"vbmeta_match={evidence.get('vbmeta_match', 'unknown')}",
                 f"runtime_validation_overall={runtime_result.get('overall', 'UNKNOWN')}",
+                "phase2_pending=" + ",".join(phase2_pending),
+                "phase4_pending=" + ",".join(phase4_pending),
                 "pending=" + ",".join(sorted(dict.fromkeys(pending))),
             ]
         )

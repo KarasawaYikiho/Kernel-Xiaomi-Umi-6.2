@@ -2,6 +2,13 @@
 
 > Milestone-only changelog.
 
+## 2026-04-25
+
+- Reframed `Porting-Plan.md` around 6+ target builds, Phase2 hard gates, Phase3 usability, and Phase4 runtime validation
+- Added Phase2/P3/P4 report wiring so plan progress, phase2 report, ROM alignment, driver integration, and runtime summary use the same phase ownership model
+- Added a final Phase2 CI gate through `ValidatePhase2Report.py` while preserving uploaded artifacts for failed/incomplete runs
+- Added selftests for target workflow selection, DTB manifest filtering, and phase framework gating
+
 ## 2026-04-14
 
 - Fixed workflow script name errors causing exit code 127

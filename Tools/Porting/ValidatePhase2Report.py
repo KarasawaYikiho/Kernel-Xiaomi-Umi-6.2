@@ -11,6 +11,11 @@ REQ_KEYS = [
     "device",
     "defconfig_rc",
     "build_rc",
+    "dtbs_rc",
+    "phase2_build_gate",
+    "phase2_dtbs_gate",
+    "phase2_rom_gate",
+    "phase2_complete",
     "flash_status",
     "anykernel_ok",
     "anykernel_validate_status",
@@ -26,6 +31,7 @@ REQ_KEYS = [
 ALLOWED_YES_NO = {"yes", "no"}
 ALLOWED_PARSE = {"exact", "default-empty", "default-invalid", "unknown"}
 ALLOWED_DRIVER_INTEGRATION = {"pending", "partial", "complete", "unknown"}
+ALLOWED_GATE = {"pass", "fail"}
 
 
 def main() -> int:
@@ -57,6 +63,18 @@ def main() -> int:
     if driver_integration and driver_integration not in ALLOWED_DRIVER_INTEGRATION:
         invalid.append(f"driver_integration_status:{driver_integration}")
 
+    for gate_key in ("phase2_build_gate", "phase2_dtbs_gate", "phase2_rom_gate"):
+        gate = rep.get(gate_key, "")
+        if gate and gate not in ALLOWED_GATE:
+            invalid.append(f"{gate_key}:{gate}")
+
+    if rep.get("dtbs_rc") != "0":
+        invalid.append(f"dtbs_rc:{rep.get('dtbs_rc', '')}")
+    if rep.get("phase2_complete") != "yes":
+        invalid.append(f"phase2_complete:{rep.get('phase2_complete', '')}")
+    if rep.get("runtime_ready") == "yes" and rep.get("phase2_complete") != "yes":
+        invalid.append("runtime_ready_without_phase2_complete")
+
     status = "ok" if not missing and not invalid else "invalid"
 
     OUT.write_text(
@@ -72,7 +90,7 @@ def main() -> int:
         encoding="utf-8",
     )
     print(f"wrote {OUT}: {status}")
-    return 0
+    return 0 if status == "ok" else 2
 
 
 if __name__ == "__main__":

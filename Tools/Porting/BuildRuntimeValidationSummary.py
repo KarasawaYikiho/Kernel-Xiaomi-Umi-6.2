@@ -31,20 +31,27 @@ def main() -> int:
     bootimg_build_missing = report.get("bootimg_build_missing", "")
     release_status = report.get("release_status", "unknown")
     anykernel_ok = report.get("anykernel_ok", "no")
+    phase2_complete = report.get("phase2_complete", "no")
+    phase2_blockers = split_csv(report.get("phase2_blockers", ""))
 
     runtime_blockers: list[str] = []
+    phase2_runtime_blockers: list[str] = []
     if report.get("defconfig_rc", "n/a") not in ("0", "n/a"):
-        runtime_blockers.append(f"defconfig_rc={report.get('defconfig_rc', 'n/a')}")
+        phase2_runtime_blockers.append(f"defconfig_rc={report.get('defconfig_rc', 'n/a')}")
     if report.get("build_rc", "n/a") not in ("0", "n/a"):
-        runtime_blockers.append(f"build_rc={report.get('build_rc', 'n/a')}")
+        phase2_runtime_blockers.append(f"build_rc={report.get('build_rc', 'n/a')}")
     if report.get("dtbs_rc", "n/a") not in ("0", "n/a"):
-        runtime_blockers.append(f"dtbs_rc={report.get('dtbs_rc', 'n/a')}")
+        phase2_runtime_blockers.append(f"dtbs_rc={report.get('dtbs_rc', 'n/a')}")
     if report.get("flash_status", "unknown") != "candidate":
-        runtime_blockers.append(f"flash_status={report.get('flash_status', 'unknown')}")
-    if driver_runtime_blockers:
-        runtime_blockers.extend(
-            [f"driver_integration_pending={x}" for x in driver_runtime_blockers]
-        )
+        phase2_runtime_blockers.append(f"flash_status={report.get('flash_status', 'unknown')}")
+    if phase2_complete != "yes" and not phase2_blockers and not phase2_runtime_blockers:
+        phase2_runtime_blockers.append("phase2_complete!=yes")
+    for blocker in phase2_blockers:
+        if blocker not in phase2_runtime_blockers:
+            phase2_runtime_blockers.append(blocker)
+    runtime_blockers.extend(phase2_runtime_blockers)
+    phase3_blockers = [f"driver_integration_pending={x}" for x in driver_runtime_blockers]
+    runtime_blockers.extend(phase3_blockers)
     if consistency_status not in ("ok", "unknown"):
         runtime_blockers.append(f"decision_consistency={consistency_status}")
     if consistency_errors:
@@ -105,6 +112,7 @@ def main() -> int:
         f"- Run: `{meta.get('run_number', '?')}`",
         f"- SHA: `{meta.get('sha', '')}`",
         f"- next_action: `{next_action}`",
+        f"- phase2_complete: `{phase2_complete}`",
         f"- runtime_ready: `{runtime_ready}`",
         f"- decision_consistency: `{consistency_status}`",
         f"- driver_integration_status: `{driver_status}`",
@@ -122,8 +130,18 @@ def main() -> int:
     if runtime_blockers:
         md.extend(
             [
-                "## Runtime Blockers",
-                *[f"- {x}" for x in runtime_blockers],
+                "## Phase 2 Blockers",
+                *(
+                    [f"- {x}" for x in phase2_runtime_blockers]
+                    if phase2_runtime_blockers
+                    else ["- none"]
+                ),
+                "",
+                "## Phase 3 Usability Blockers",
+                *([f"- {x}" for x in phase3_blockers] if phase3_blockers else ["- none"]),
+                "",
+                "## Phase 4 Runtime Validation",
+                "- blocked until Phase 2 and Phase 3 exit criteria are complete",
                 "",
             ]
         )
