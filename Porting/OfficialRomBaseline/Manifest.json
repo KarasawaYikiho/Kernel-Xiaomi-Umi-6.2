@@ -17,19 +17,28 @@
       "dir": "Porting/OfficialRomBaseline/BootImgParts",
       "chunk_size": 8388608,
       "count": 16,
-      "filename_prefix": "BootImgPart"
+      "filename_prefix": "BootImgPart",
+      "duplicate_parts": {
+        "BootImgPart0008.bin": "BootImgPart0007.bin",
+        "BootImgPart0009.bin": "BootImgPart0007.bin",
+        "BootImgPart0010.bin": "BootImgPart0007.bin",
+        "BootImgPart0011.bin": "BootImgPart0007.bin",
+        "BootImgPart0012.bin": "BootImgPart0007.bin",
+        "BootImgPart0013.bin": "BootImgPart0007.bin",
+        "BootImgPart0014.bin": "BootImgPart0007.bin"
+      }
     }
   },
   "firmware": {
-    "dtbo.img": {
+    "Dtbo.img": {
       "size": 33554432,
       "sha256": "5a4a3cf8fdb3e78c16c7f155f1195eed332cf78993562a36d02bac632d09ab70"
     },
-    "vbmeta.img": {
+    "Vbmeta.img": {
       "size": 8192,
       "sha256": "04f103061f80bdc0805c85b66c1679d9c441546fd1dbc54d4278939f6cdace88"
     },
-    "vbmeta_system.img": {
+    "Vbmeta-System.img": {
       "size": 4096,
       "sha256": "848c54c8e2a057c74952ae877afbd571854765acc84eb2e29351b2636236a52d"
     }

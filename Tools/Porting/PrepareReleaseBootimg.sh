@@ -248,17 +248,23 @@ extract_rom_support_images() {
   local tmp_vbmeta="$ART/rom-vbmeta.tmp"
   local tmp_vbmeta_system="$ART/rom-vbmeta-system.tmp"
   if [[ -d "$rom_ref" ]]; then
-    if [[ -f "$rom_ref/dtbo.img" ]]; then
+    if [[ -f "$rom_ref/Dtbo.img" ]]; then
+      cp -f "$rom_ref/Dtbo.img" "$ART/dtbo.img"
+    elif [[ -f "$rom_ref/dtbo.img" ]]; then
       cp -f "$rom_ref/dtbo.img" "$ART/dtbo.img"
     elif [[ -f "$rom_ref/firmware-update/dtbo.img" ]]; then
       cp -f "$rom_ref/firmware-update/dtbo.img" "$ART/dtbo.img"
     fi
-    if [[ -f "$rom_ref/vbmeta.img" ]]; then
+    if [[ -f "$rom_ref/Vbmeta.img" ]]; then
+      cp -f "$rom_ref/Vbmeta.img" "$ART/vbmeta.img"
+    elif [[ -f "$rom_ref/vbmeta.img" ]]; then
       cp -f "$rom_ref/vbmeta.img" "$ART/vbmeta.img"
     elif [[ -f "$rom_ref/firmware-update/vbmeta.img" ]]; then
       cp -f "$rom_ref/firmware-update/vbmeta.img" "$ART/vbmeta.img"
     fi
-    if [[ -f "$rom_ref/vbmeta_system.img" ]]; then
+    if [[ -f "$rom_ref/Vbmeta-System.img" ]]; then
+      cp -f "$rom_ref/Vbmeta-System.img" "$ART/vbmeta_system.img"
+    elif [[ -f "$rom_ref/vbmeta_system.img" ]]; then
       cp -f "$rom_ref/vbmeta_system.img" "$ART/vbmeta_system.img"
     elif [[ -f "$rom_ref/firmware-update/vbmeta_system.img" ]]; then
       cp -f "$rom_ref/firmware-update/vbmeta_system.img" "$ART/vbmeta_system.img"

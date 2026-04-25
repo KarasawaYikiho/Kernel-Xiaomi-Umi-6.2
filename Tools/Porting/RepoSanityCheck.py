@@ -32,14 +32,6 @@ TRACKED_GENERATED_PREFIXES = (
 )
 TRACKED_GENERATED_FILES = ("source.zip",)
 TRACKED_GENERATED_SUFFIXES = (".pyc",)
-TRACKED_NAME_EXCEPTIONS = {
-    "Porting/OfficialRomBaseline/dtbo.img",
-    "Porting/OfficialRomBaseline/vbmeta.img",
-    "Porting/OfficialRomBaseline/vbmeta_system.img",
-    "Tools/Porting/AnyKernel3Template/anykernel.sh",
-}
-
-
 def list_tracked_files() -> list[str]:
     try:
         proc = subprocess.run(
@@ -69,9 +61,6 @@ def check_tracked_names() -> list[str]:
         return [str(exc)]
 
     for path in tracked:
-        if path in TRACKED_NAME_EXCEPTIONS:
-            continue
-
         rel = Path(path)
         if any(part.startswith(".") for part in rel.parts):
             continue

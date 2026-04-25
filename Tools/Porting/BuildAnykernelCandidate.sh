@@ -39,6 +39,10 @@ if [ -n "$imagegz_path" ]; then
       cp -Rv "$template_dir"/. "$work_dir"/ || true
       cp -v "$imagegz_path" "$work_dir/Image.gz" || true
 
+      if [ -f "$work_dir/Anykernel.sh" ]; then
+        mv -f "$work_dir/Anykernel.sh" "$work_dir/anykernel.sh"
+      fi
+
       # Optional: include first matched primary dtb as dtb
       if [ -s artifacts/primary_dtb_paths.txt ]; then
         first_dtb="$(head -n1 artifacts/primary_dtb_paths.txt)"

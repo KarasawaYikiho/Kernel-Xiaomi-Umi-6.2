@@ -81,6 +81,16 @@ def list_part_files(parts_dir: Path, manifest: dict) -> list[Path]:
         else {}
     )
     prefix = str(part_meta.get("filename_prefix", "")).strip()
+    count = part_meta.get("count")
+    duplicate_parts = part_meta.get("duplicate_parts", {})
+    if prefix and isinstance(count, int) and count > 0:
+        parts = []
+        for idx in range(count):
+            name = f"{prefix}{idx:04d}.bin"
+            if isinstance(duplicate_parts, dict):
+                name = str(duplicate_parts.get(name, name))
+            parts.append(parts_dir / name)
+        return parts
     parts = [p for p in parts_dir.iterdir() if p.is_file()]
     if prefix:
         parts = [p for p in parts if p.name.startswith(prefix)]
@@ -99,6 +109,8 @@ def materialize_from_parts(
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with out_path.open("wb") as out:
         for part in parts:
+            if not part.exists():
+                return None, f"part-missing:{part}"
             out.write(part.read_bytes())
     return out_path, "ok"
 

@@ -14,6 +14,8 @@ INVENTORY = Path("Porting/Inventory.json")
 COPIED_DTS = ART / "copied_dts.txt"
 TARGET = Path("target")
 ROM_BASELINE_DIR = Path("Porting/OfficialRomBaseline")
+ROM_BASELINE_DTBO = ROM_BASELINE_DIR / "Dtbo.img"
+ROM_BASELINE_VBMETA = ROM_BASELINE_DIR / "Vbmeta.img"
 
 
 def _sha256(path: Path) -> str:
@@ -131,12 +133,12 @@ def main() -> int:
     dtbo_local = (
         _find_candidate_by_name(ART, ["dtbo.img"])
         or _find_candidate_by_name(Path("out"), ["dtbo.img"])
-        or _find_first_existing([ROM_BASELINE_DIR / "dtbo.img"])
+        or _find_first_existing([ROM_BASELINE_DTBO])
     )
     vbmeta_local = (
         _find_candidate_by_name(ART, ["vbmeta.img"])
         or _find_candidate_by_name(Path("out"), ["vbmeta.img"])
-        or _find_first_existing([ROM_BASELINE_DIR / "vbmeta.img"])
+        or _find_first_existing([ROM_BASELINE_VBMETA])
     )
 
     boot_match = "no"

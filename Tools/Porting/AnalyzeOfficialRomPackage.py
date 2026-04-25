@@ -12,6 +12,11 @@ from PortConfig import get_nested, load_port_config
 
 BASELINE_DIR = Path("Porting/OfficialRomBaseline")
 BASELINE_MANIFEST = BASELINE_DIR / "Manifest.json"
+REPO_BASELINE_IMAGE_NAMES = {
+    "dtbo.img": "Dtbo.img",
+    "vbmeta.img": "Vbmeta.img",
+    "vbmeta_system.img": "Vbmeta-System.img",
+}
 OUT_MD = Path("Porting/OfficialRomAnalysis.md")
 OUT_BASELINE = Path("artifacts/official-rom-baseline.json")
 
@@ -103,6 +108,16 @@ def list_part_files(parts_dir: Path, manifest: dict) -> list[Path]:
         else {}
     )
     prefix = str(part_meta.get("filename_prefix", "")).strip()
+    count = part_meta.get("count")
+    duplicate_parts = part_meta.get("duplicate_parts", {})
+    if prefix and isinstance(count, int) and count > 0:
+        chunks = []
+        for idx in range(count):
+            name = f"{prefix}{idx:04d}.bin"
+            if isinstance(duplicate_parts, dict):
+                name = str(duplicate_parts.get(name, name))
+            chunks.append(parts_dir / name)
+        return chunks
     chunks = [p for p in parts_dir.iterdir() if p.is_file()]
     if prefix:
         chunks = [p for p in chunks if p.name.startswith(prefix)]
@@ -114,6 +129,8 @@ def materialize_split_bootimg(parts_dir: Path, manifest: dict) -> bytes:
         return b""
     chunks = list_part_files(parts_dir, manifest)
     if not chunks:
+        return b""
+    if any(not chunk.exists() for chunk in chunks):
         return b""
     return b"".join(chunk.read_bytes() for chunk in chunks)
 
@@ -232,7 +249,8 @@ def collect_from_repo_baseline(parts_dir: Path) -> dict[str, object]:
     def read_bytes(name: str) -> bytes:
         if name == "boot.img":
             return boot_data
-        path = BASELINE_DIR / name.split("/", 1)[-1]
+        base_name = name.split("/", 1)[-1]
+        path = BASELINE_DIR / REPO_BASELINE_IMAGE_NAMES.get(base_name, base_name)
         if not path.exists():
             return b""
         return path.read_bytes()
