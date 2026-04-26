@@ -1,10 +1,13 @@
-name: ROM-Aligned SM8250 Port (Reference Baseline)
+name: ROM-Aligned SM8250 Port
 
 concurrency:
   group: rom-aligned-sm8250-${{ github.ref }}
   cancel-in-progress: true
 
 on:
+  push:
+    branches:
+      - master
   workflow_dispatch:
     inputs:
       device:
@@ -14,6 +17,7 @@ on:
 
 jobs:
   port-and-build:
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     env:
@@ -24,148 +28,146 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       PATH: /home/runner/.local/bin:/usr/local/bin:/usr/bin:/bin
     steps:
-      - name: Checkout orchestrator repo
+      - name: Checkout kernel source
         uses: actions/checkout@v5
 
       - name: Install deps
         run: |
-          chmod +x Tools/Porting/InstallCiDeps.sh
-          ./Tools/Porting/InstallCiDeps.sh
+          chmod +x Porting/Tools/InstallCiDeps.sh
+          ./Porting/Tools/InstallCiDeps.sh
 
       - name: Load port config
         run: |
-          python3 Tools/Porting/ExportPortConfig.py >> "$GITHUB_ENV"
+          python3 Porting/Tools/ExportPortConfig.py >> "$GITHUB_ENV"
 
       - name: Validate device against SM8250 config
         run: |
-          python3 Tools/Porting/ValidatePortDevice.py "$DEVICE"
+          python3 Porting/Tools/ValidatePortDevice.py "$DEVICE"
 
       - name: Analyze official ROM package baseline
         if: always()
         run: |
-          python3 Tools/Porting/AnalyzeOfficialRomPackage.py || true
+          python3 Porting/Tools/AnalyzeOfficialRomPackage.py || true
 
-      - name: Clone source and target
+      - name: Prepare SO-TS reference
         run: |
-          chmod +x Tools/Porting/PreparePhase2Sources.sh
-          ./Tools/Porting/PreparePhase2Sources.sh \
+          chmod +x Porting/Tools/PreparePhase2Sources.sh
+          ./Porting/Tools/PreparePhase2Sources.sh \
             "$SOURCE_REPO" \
-            "$SOURCE_BRANCH" \
-            "$TARGET_REPO" \
-            "$TARGET_BRANCH"
+            "$SOURCE_BRANCH"
 
       - name: Check target kernel major
         run: |
-          chmod +x Tools/Porting/CheckTargetKernelVersion.sh
-          ./Tools/Porting/CheckTargetKernelVersion.sh
+          chmod +x Porting/Tools/CheckTargetKernelVersion.sh
+          ./Porting/Tools/CheckTargetKernelVersion.sh
 
       - name: Normalize boot image size input
         shell: bash
         run: |
-          chmod +x Tools/Porting/NormalizeBootimgRequiredBytes.sh
-          ./Tools/Porting/NormalizeBootimgRequiredBytes.sh
+          chmod +x Porting/Tools/NormalizeBootimgRequiredBytes.sh
+          ./Porting/Tools/NormalizeBootimgRequiredBytes.sh
 
       - name: Apply Phase2 migration
         run: |
-          chmod +x Tools/Porting/ApplyPhase2Migration.sh
-          ./Tools/Porting/ApplyPhase2Migration.sh "${{ github.event.inputs.device }}"
+          chmod +x Porting/Tools/ApplyPhase2Migration.sh
+          ./Porting/Tools/ApplyPhase2Migration.sh "${{ github.event.inputs.device }}"
 
       - name: Build target kernel (attempt)
         env:
           ARCH: arm64
         run: |
-          chmod +x Tools/Porting/RunPhase2Build.sh
-          ./Tools/Porting/RunPhase2Build.sh "${{ github.event.inputs.device }}"
+          chmod +x Porting/Tools/RunPhase2Build.sh
+          ./Porting/Tools/RunPhase2Build.sh "${{ github.event.inputs.device }}"
 
       - name: Collect artifacts + device package
         if: always()
         run: |
-          chmod +x Tools/Porting/CollectPhase2Artifacts.sh
-          ./Tools/Porting/CollectPhase2Artifacts.sh "${{ github.event.inputs.device }}"
+          chmod +x Porting/Tools/CollectPhase2Artifacts.sh
+          ./Porting/Tools/CollectPhase2Artifacts.sh "${{ github.event.inputs.device }}"
 
       - name: Build AnyKernel candidate zip
         if: always()
         run: |
-          chmod +x Tools/Porting/BuildAnykernelCandidate.sh
-          ./Tools/Porting/BuildAnykernelCandidate.sh
+          chmod +x Porting/Tools/BuildAnykernelCandidate.sh
+          ./Porting/Tools/BuildAnykernelCandidate.sh
 
       - name: Prepare release boot image (ROM-aware best effort)
         if: always()
         run: |
-          chmod +x Tools/Porting/PrepareReleaseBootimg.sh
-          ./Tools/Porting/PrepareReleaseBootimg.sh
+          chmod +x Porting/Tools/PrepareReleaseBootimg.sh
+          ./Porting/Tools/PrepareReleaseBootimg.sh
 
       - name: Fetch inventory and analyze reference drivers
         if: always()
         run: |
-          python3 Tools/Porting/FetchInventory.py || true
-          python3 Tools/Porting/AnalyzeReferenceDrivers.py || true
+          python3 Porting/Tools/FetchInventory.py || true
+          python3 Porting/Tools/AnalyzeReferenceDrivers.py || true
 
       - name: Build driver integration evidence
         if: always()
         run: |
-          python3 Tools/Porting/BuildDriverIntegrationEvidence.py || true
+          python3 Porting/Tools/BuildDriverIntegrationEvidence.py || true
 
       - name: Validate AnyKernel candidate structure
         if: always()
         run: |
-          python3 Tools/Porting/ValidateAnykernelCandidate.py || true
+          python3 Porting/Tools/ValidateAnykernelCandidate.py || true
 
       - name: Validate boot image constraints
         if: always()
         run: |
-          python3 Tools/Porting/ValidateBootImage.py || true
+          python3 Porting/Tools/ValidateBootImage.py || true
 
       - name: Initialize driver integration manifest
         if: always()
         run: |
-          python3 Tools/Porting/InitDriverIntegrationManifest.py || true
+          python3 Porting/Tools/InitDriverIntegrationManifest.py || true
 
       - name: Sync driver integration manifest with ROM/reference backlog
         if: always()
         run: |
-          python3 Tools/Porting/SyncDriverIntegrationManifest.py || true
+          python3 Porting/Tools/SyncDriverIntegrationManifest.py || true
 
       - name: Validate driver integration manifest
         if: always()
         run: |
-          python3 Tools/Porting/ValidateDriverIntegrationManifest.py || true
+          python3 Porting/Tools/ValidateDriverIntegrationManifest.py || true
 
       - name: Initialize ROM alignment manifest
         if: always()
         run: |
-          python3 Tools/Porting/InitRomAlignmentManifest.py || true
+          python3 Porting/Tools/InitRomAlignmentManifest.py || true
 
       - name: Sync ROM alignment manifest with artifact evidence
         if: always()
         run: |
-          python3 Tools/Porting/SyncRomAlignmentManifest.py || true
+          python3 Porting/Tools/SyncRomAlignmentManifest.py || true
 
       - name: Validate ROM alignment manifest
         if: always()
         run: |
-          python3 Tools/Porting/ValidateRomAlignmentManifest.py || true
+          python3 Porting/Tools/ValidateRomAlignmentManifest.py || true
 
       - name: Build driver integration status
         if: always()
         run: |
-          python3 Tools/Porting/BuildDriverIntegrationStatus.py || true
+          python3 Porting/Tools/BuildDriverIntegrationStatus.py || true
 
       - name: Build ROM alignment status
         if: always()
         run: |
-          python3 Tools/Porting/BuildRomAlignmentStatus.py || true
+          python3 Porting/Tools/BuildRomAlignmentStatus.py || true
 
       - name: Generate consolidated phase2 report
         if: always()
         run: |
-          python3 Tools/Porting/BuildPhase2Report.py || true
+          python3 Porting/Tools/BuildPhase2Report.py || true
 
       - name: Write run metadata
         if: always()
         run: |
-          chmod +x Tools/Porting/WriteRunMeta.sh
-          ./Tools/Porting/WriteRunMeta.sh \
+          chmod +x Porting/Tools/WriteRunMeta.sh
+          ./Porting/Tools/WriteRunMeta.sh \
             "${{ github.run_id }}" \
             "${{ github.run_number }}" \
             "${{ github.sha }}" \
@@ -179,13 +181,13 @@ jobs:
       - name: Run postprocess suite
         if: always()
         run: |
-          chmod +x Tools/Porting/RunPostprocessSuite.sh
-          ./Tools/Porting/RunPostprocessSuite.sh
+          chmod +x Porting/Tools/RunPostprocessSuite.sh
+          ./Porting/Tools/RunPostprocessSuite.sh
 
       - name: Enforce Phase2 gates
         if: always()
         run: |
-          python3 Tools/Porting/ValidatePhase2Report.py
+          python3 Porting/Tools/ValidatePhase2Report.py
 
       - name: Upload artifacts
         if: always()

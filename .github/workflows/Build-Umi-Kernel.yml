@@ -1,6 +1,9 @@
-name: Build SM8250 Kernel (Reference-style)
+name: Build SM8250 Kernel
 
 on:
+  push:
+    branches:
+      - master
   workflow_dispatch:
     inputs:
       device:
@@ -30,6 +33,7 @@ on:
 
 jobs:
   build:
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-24.04
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -37,7 +41,7 @@ jobs:
       contents: read
 
     steps:
-      - name: Checkout builder repo
+      - name: Checkout kernel source
         uses: actions/checkout@v5
 
       - name: Cleanup disk
@@ -50,18 +54,18 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential git curl wget bison flex zip bc cpio libssl-dev ccache python-is-python3
+          sudo apt-get install -y build-essential git curl wget bison flex zip bc cpio libssl-dev ccache python-is-python3 clang llvm lld
           sudo apt-get install -y gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi
 
       - name: Load port config
         run: |
-          python3 Tools/Porting/ExportPortConfig.py >> "$GITHUB_ENV"
-          echo "KERNEL_REPO=$TARGET_REPO" >> "$GITHUB_ENV"
-          echo "KERNEL_BRANCH=$TARGET_BRANCH" >> "$GITHUB_ENV"
+          python3 Porting/Tools/ExportPortConfig.py >> "$GITHUB_ENV"
+          echo "KERNEL_DIR=$GITHUB_WORKSPACE" >> "$GITHUB_ENV"
+          echo "OUT_DIR=$GITHUB_WORKSPACE/out" >> "$GITHUB_ENV"
 
       - name: Validate device against SM8250 config
         run: |
-          python3 Tools/Porting/ValidatePortDevice.py "${{ github.event.inputs.device }}"
+          python3 Porting/Tools/ValidatePortDevice.py "${{ github.event.inputs.device }}"
 
       - name: Setup cache (ccache)
         uses: actions/cache@v4
@@ -74,30 +78,24 @@ jobs:
 
       - name: Setup Toolchain (ZyC-Clang 15)
         run: |
-          chmod +x Tools/Porting/SetupKernelToolchain.sh
-          ./Tools/Porting/SetupKernelToolchain.sh
-
-      - name: Clone kernel source
-        run: |
-          git clone --depth=1 --branch "$KERNEL_BRANCH" "$KERNEL_REPO" kernel
+          chmod +x Porting/Tools/SetupKernelToolchain.sh
+          ./Porting/Tools/SetupKernelToolchain.sh
 
       - name: Build kernel
-        working-directory: kernel
         run: |
-          chmod +x build.sh
           if [ "${{ github.event.inputs.ksu }}" = "true" ]; then
-            bash build.sh "${{ github.event.inputs.device }}" ksu
-          else
-            bash build.sh "${{ github.event.inputs.device }}"
+            echo "KernelSU enablement is not wired for the in-repo Kbuild flow yet" >&2
+            exit 1
           fi
+          make O=out ARCH=arm64 LLVM=1 LLVM_IAS=1 umi_defconfig
+          make O=out ARCH=arm64 LLVM=1 LLVM_IAS=1 -j"$(nproc)" Image.gz modules dtbs
 
       - name: Collect artifacts
         run: |
           mkdir -p artifacts
-          cp -v kernel/*.zip artifacts/ || true
-          cp -v kernel/out/.config artifacts/ || true
-          cp -v kernel/out/arch/arm64/boot/Image artifacts/ || true
-          cp -v kernel/out/arch/arm64/boot/dtb artifacts/ || true
+          cp -v out/.config artifacts/ || true
+          cp -v out/arch/arm64/boot/Image.gz artifacts/ || true
+          find out/arch/arm64/boot/dts -name '*.dtb' -print -exec cp -v {} artifacts/ \; || true
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v5

@@ -2,7 +2,7 @@
 
 ## Scope
 
-GitHub workflows, scripts, documentation.
+Kernel source, DTS, defconfig, drivers, GitHub workflows, scripts, and documentation.
 
 ## Reporting
 
@@ -15,7 +15,7 @@ Open a private security advisory on GitHub. Include:
 ## Response
 
 - Triage: within 72 hours
-- Patched issues noted in CHANGELOG
+- Patched issues noted in `Porting/CHANGELOG.md`
 
 ## Rules
 

@@ -22,7 +22,7 @@ The purpose of these files is to make ROM alignment reproducible inside CI witho
 
 `boot.img` is intentionally not checked into git because the stock image exceeds GitHub's file size limit. Its pinned size, hash, and header hints are stored in `Manifest.json` and `BootImageBaseline.env`, while local workflows can still consume a local ROM zip or extracted ROM directory.
 
-For GitHub Actions and other environments that cannot access local ROM directories, the official `boot.img` is stored in git as split chunks under `BootImgParts/`. Repeated zero-filled chunks are represented once and mapped through `Manifest.json`; CI reconstructs the full image via `Tools/Porting/MaterializeOfficialBootimg.py`.
+For GitHub Actions and other environments that cannot access local ROM directories, the official `boot.img` is stored in git as split chunks under `BootImgParts/`. Repeated zero-filled chunks are represented once and mapped through `Manifest.json`; CI reconstructs the full image via `Porting/Tools/MaterializeOfficialBootimg.py`.
 
 When you need a stock boot baseline, prefer this order:
 
@@ -46,5 +46,5 @@ For local work on this machine, prefer `OFFICIAL_ROM_DIR=D:\GIT\MIUI_UMI` so the
 To refresh the split baseline after updating the local stock image:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File "Tools/Porting/RefreshOfficialBootimgParts.ps1"
+powershell -ExecutionPolicy Bypass -File "Porting/Tools/RefreshOfficialBootimgParts.ps1"
 ```

@@ -1,14 +1,15 @@
 # Porting Docs
 
-Planning and baseline analysis for Xiaomi SM8250-family porting, with `umi` kept only as the current official ROM reference baseline.
+Planning and baseline analysis for the yefxx-based Xiaomi SM8250 kernel source tree, with `umi` kept as the current official ROM reference baseline.
 
 ## Files
 
 | File | Description |
 |------|-------------|
-| `../Porting-Plan.md` | Roadmap |
-| `Sm8250PortConfig.json` | Unified SM8250 workflow/source/ROM baseline config |
-| `BaselineLock.json` | Pinned source/target |
+| `../PortingPlan.md` | Roadmap |
+| `../AGENTS.md` | Persistent branch, source-role, naming, and verification policy |
+| `Sm8250PortConfig.json` | Unified SM8250 workflow/source-reference/ROM baseline config |
+| `BaselineLock.json` | Pinned source baseline and references |
 | `Inventory.json` | Capability inventory |
 | `GapReport.md` | Gap summary |
 | `ReferenceDriversAnalysis.md` | Donor driver analysis |
@@ -20,7 +21,7 @@ Planning and baseline analysis for Xiaomi SM8250-family porting, with `umi` kept
 
 ## Reading Order
 
-1. `../Porting-Plan.md`
+1. `../PortingPlan.md`
 2. Latest `CHANGELOG.md`
 3. `GapReport.md`
 4. `OfficialRomAlignmentFramework.md`

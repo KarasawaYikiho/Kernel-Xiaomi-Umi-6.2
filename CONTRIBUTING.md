@@ -4,12 +4,12 @@ Thanks for improving Kernel-Xiaomi-Umi.
 
 ## Scope
 
-Porting orchestrator (workflow + scripts + diagnostics), not kernel source.
+Kernel source, DTS, defconfig, drivers, GitHub workflows, porting scripts, diagnostics, and documentation.
 
 ## Before You Start
 
 1. Read `README.md`
-2. Read `Porting-Plan.md`
+2. Read `PortingPlan.md`
 3. Check `Porting/CHANGELOG.md`
 
 ## Branch Strategy
@@ -21,13 +21,15 @@ Porting orchestrator (workflow + scripts + diagnostics), not kernel source.
 
 - What changed and why
 - Validation evidence
-- Risk notes for workflow/script changes
+- Risk notes for kernel, DTS, defconfig, workflow, and script changes
 
 ## Source Rules
 
-Reference sources are listed in `README.md` and `Porting/README.md`.
+Source and reference roles are listed in `README.md` and `Porting/README.md`.
 
-- Author IDs are discovery inputs
+- yefxx is the source baseline
+- SO-TS is reference-only for targeted comparisons
+- Official ROM artifacts are validation-only, not code donors
 - No blind subtree copy
 - No proprietary blob import
 

@@ -12,7 +12,7 @@ body:
     attributes:
       label: Scope
       description: Which part is affected?
-      placeholder: "workflow / Tools/Porting / docs"
+      placeholder: "workflow / Porting/Tools / docs"
     validations:
       required: true
 

@@ -4,12 +4,12 @@
 
 ## 适用范围
 
-迁移编排仓库（工作流 + 脚本 + 诊断），不是内核源码。
+内核源码、DTS、defconfig、驱动、GitHub workflows、迁移脚本、诊断与文档。
 
 ## 开始前
 
 1. 阅读 `README-Zh-Cn.md`
-2. 阅读 `Porting-Plan.md`
+2. 阅读 `PortingPlan.md`
 3. 查看 `Porting/CHANGELOG.md`
 
 ## 分支策略
@@ -21,13 +21,15 @@
 
 - 变更内容与动机
 - 验证证据
-- 风险说明
+- 内核、DTS、defconfig、工作流和脚本变更的风险说明
 
 ## 来源规则
 
-参考源统一维护在 `README-Zh-Cn.md` 和 `Porting/README.md`。
+源码与参考源角色统一维护在 `README-Zh-Cn.md` 和 `Porting/README.md`。
 
-- 作者 ID 仅用于发现
+- yefxx 是源码基线
+- SO-TS 仅用于定向对比参考
+- 官方 ROM 产物仅用于验证，不能作为代码 donor
 - 禁止整树盲拷贝
 - 禁止导入 proprietary blob
 

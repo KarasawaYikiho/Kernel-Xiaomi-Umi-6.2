@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This project builds a 6+ `umi` kernel from source.
+This project builds a yefxx-based Linux 6.11 `umi` kernel from source.
 
 The official Xiaomi ROM is used as a reference extraction source and validation baseline for release-chain alignment, not as the target kernel version and not as a code donor.
 
@@ -16,7 +16,7 @@ The ROM alignment framework covers only compatibility-facing checkpoints:
 - DTB target coverage required by the current manifest
 - runtime validation on official userspace
 
-It does not redefine the project target away from the 6+ source kernel baseline.
+It does not redefine the project target away from the yefxx-based source kernel baseline.
 
 ## Core Backlog
 

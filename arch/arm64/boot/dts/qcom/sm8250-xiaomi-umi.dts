@@ -1,0 +1,23 @@
+// SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+/*
+ * Initial Xiaomi Mi 10 (umi) device tree seed for the yefxx SM8250 baseline.
+ */
+
+/dts-v1/;
+
+#include <dt-bindings/arm/qcom,ids.h>
+#include "sm8250.dtsi"
+#include "pm8150.dtsi"
+#include "pm8150b.dtsi"
+#include "pm8150l.dtsi"
+
+/ {
+	model = "Xiaomi Mi 10";
+	compatible = "xiaomi,umi", "qcom,sm8250";
+
+	chassis-type = "handset";
+
+	/* Required for bootloaders that select the DTB by Qualcomm board data. */
+	qcom,msm-id = <QCOM_ID_SM8250 0x20001>;
+	qcom,board-id = <0x8 0>;
+};

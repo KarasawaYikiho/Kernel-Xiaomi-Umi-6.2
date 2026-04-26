@@ -1,3 +1,23 @@
+* text=auto eol=lf
+
+*.a binary
+*.bin binary
+*.bmp binary
+*.bz2 binary
+*.dtb binary
+*.elf binary
+*.gz binary
+*.ico binary
+*.jar binary
+*.jpg binary
+*.jpeg binary
+*.o binary
+*.pdf binary
+*.png binary
+*.so binary
+*.xz binary
+*.zip binary
+
 *.sh text eol=lf
 *.py text eol=lf
 *.json text eol=lf
@@ -6,3 +26,7 @@
 *.yml text eol=lf
 *.yaml text eol=lf
 *.md text eol=lf
+*.[ch] diff=cpp
+*.dts diff=dts
+*.dts[io] diff=dts
+*.rs diff=rust

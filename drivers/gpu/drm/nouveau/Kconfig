@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: MIT
+
+config DRM_NOUVEAU
+	tristate "Nouveau (NVIDIA) cards"
+	depends on BROKEN
+	help
+	  Placeholder for Windows-safe SM8250 imports where nouveau sources are
+	  intentionally omitted because Windows cannot materialize AUX paths.
