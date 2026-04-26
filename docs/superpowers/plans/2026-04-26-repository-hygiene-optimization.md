@@ -54,8 +54,8 @@
 - All modified project-owned files on `master`.
 
 - [x] Remove generated `artifacts/`, `out/`, and Python caches.
-- [ ] Commit the optimized master state.
-- [ ] Push `origin/master`.
+- [x] Commit the optimized master state.
+- [x] Push `origin/master`.
 
 ### Task 5: Apply And Push Main
 
@@ -66,14 +66,14 @@
 - [x] Apply the same project-owned cleanup without adding kernel source.
 - [x] Run non-kernel sanity checks.
 - [x] Confirm `main` lacks imported kernel source roots.
-- [ ] Commit and push `origin/main`.
+- [x] Commit and push `origin/main`.
 
 ### Task 6: Final Verification
 
 **Files:**
 - Verify remote branch state.
 
-- [ ] Confirm `origin/master` contains kernel source roots.
-- [ ] Confirm `origin/main` lacks kernel source roots.
-- [ ] Confirm no tracked local paths remain on either branch.
-- [ ] Report commit hashes and verification evidence.
+- [x] Confirm `origin/master` contains kernel source roots.
+- [x] Confirm `origin/main` lacks kernel source roots.
+- [x] Confirm no tracked local paths remain on either branch.
+- [x] Report commit hashes and verification evidence.
