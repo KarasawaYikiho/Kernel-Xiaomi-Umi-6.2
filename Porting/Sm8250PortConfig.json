@@ -32,9 +32,9 @@
     "install_dir": "$HOME/zyc-clang"
   },
   "official_rom": {
-    "default_bootimg": "D:\\GIT\\MIUI_UMI\\boot.img",
-    "default_dir": "D:\\GIT\\MIUI_UMI",
-    "default_zip": "D:\\GIT\\MIUI_UMI_OS1.0.5.0.TJBCNXM_d01651ed86_13.0.zip",
+    "default_bootimg": "",
+    "default_dir": "",
+    "default_zip": "",
     "baseline_dir": "Porting/OfficialRomBaseline",
     "manifest": "Porting/OfficialRomBaseline/Manifest.json",
     "env": "Porting/OfficialRomBaseline/BootImageBaseline.env"

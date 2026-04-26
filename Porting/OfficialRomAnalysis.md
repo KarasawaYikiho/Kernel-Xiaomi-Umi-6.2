@@ -3,7 +3,7 @@
 ## Status
 - status: `ok`
 - Source Kind: `directory`
-- Source File: `D:\GIT\MIUI_UMI`
+- Source File: `OFFICIAL_ROM_DIR`
 - Entry Count: `48`
 - Top-Level Entries: `META-INF, boot.img, dynamic_partitions_op_list, firmware-update, mi_ext.new.dat.br, mi_ext.patch.dat, mi_ext.transfer.list, odm.new.dat.br, odm.patch.dat, odm.transfer.list, product.new.dat.br, product.patch.dat, product.transfer.list, system.new.dat.br, system.patch.dat, system.transfer.list, system_ext.new.dat.br, system_ext.patch.dat, system_ext.transfer.list, vendor.new.dat.br, vendor.patch.dat, vendor.transfer.list`
 

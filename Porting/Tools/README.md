@@ -68,7 +68,7 @@ Real-device runtime validation is not part of Phase2. It remains blocked until P
 powershell -ExecutionPolicy Bypass -File "Porting/Tools/RunLocalOfficialRomBaseline.ps1"
 ```
 
-This is the shortest Windows path for local ROM alignment. It analyzes `OFFICIAL_ROM_DIR`, prepares `artifacts/boot.img`, and validates the result in one command.
+This is the local ROM alignment entry point. Set `OFFICIAL_ROM_DIR` or `OFFICIAL_BOOTIMG_PATH` before running it when private stock ROM material is required; otherwise the tracked split baseline remains the portable fallback.
 
 Refreshes:
 
@@ -85,6 +85,6 @@ Refreshes:
 - `SetupKernelToolchain.sh` resolves the cloud build toolchain from `Porting/Sm8250PortConfig.json`, so workflow YAML no longer carries raw download URLs.
 - `MaterializeOfficialBootimg.py` reconstructs the tracked split baseline from `Porting/OfficialRomBaseline/BootImgParts/` when Action cannot access a local ROM directory.
 - `BuildAnykernelCandidate.sh` now prefers the checked-in `Porting/Tools/AnyKernel3Template/` and no longer needs to clone AnyKernel3 just to produce a candidate zip.
-- For local runs, prefer `OFFICIAL_ROM_DIR=D:\GIT\MIUI_UMI` so the extracted ROM directory supplies `boot.img`, `dtbo.img`, and `vbmeta*.img` without committing large binaries.
+- For local runs, prefer `OFFICIAL_ROM_DIR` so the extracted ROM directory supplies `boot.img`, `dtbo.img`, and `vbmeta*.img` without committing large binaries.
 - `RefreshOfficialBootimgParts.ps1` regenerates the tracked `BootImgParts/` chunks from a local stock image when maintainers need to update the baseline.
 - `ValidateBootImage.py` now treats official boot reference binding as a hard gate: format, size, header version, and trusted source metadata must all line up before `flash_ready=yes`.

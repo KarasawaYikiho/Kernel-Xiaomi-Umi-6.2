@@ -22,11 +22,12 @@ PROJECT_NAME_CHECK_ROOT_FILES = {
     "PortingPlan.md",
 }
 REQUIRED_IGNORES = (
-    "artifacts/",
-    "source/",
-    "target/",
-    "source.extract/",
-    "target.extract/",
+    "/artifacts/",
+    "/out/",
+    "/source/",
+    "/target/",
+    "/source.extract/",
+    "/target.extract/",
     "source.zip",
     ".ruff_cache/",
     "__pycache__/",
@@ -40,6 +41,33 @@ TRACKED_GENERATED_PREFIXES = (
 )
 TRACKED_GENERATED_FILES = ("source.zip",)
 TRACKED_GENERATED_SUFFIXES = (".pyc",)
+TEXT_SCAN_SKIP_SUFFIXES = (
+    ".bin",
+    ".bmp",
+    ".dtb",
+    ".elf",
+    ".gz",
+    ".img",
+    ".jpg",
+    ".jpeg",
+    ".o",
+    ".png",
+    ".so",
+    ".xz",
+    ".zip",
+)
+LOCAL_ROM_ROOT = "G" + "IT"
+LOCAL_USER = "D" + "2O"
+LOCAL_WORKSPACE_NAME = "Kernel-" + "Xiaomi-" + "Umi-6.12"
+LOCAL_PATH_PATTERNS = (
+    re.compile(rf"\b[A-Za-z]:[\\/]{LOCAL_ROM_ROOT}[\\/][^\s`'\")]+", re.IGNORECASE),
+    re.compile(rf"\b[A-Za-z]:[\\/]Users[\\/]{LOCAL_USER}[\\/][^\s`'\")]+", re.IGNORECASE),
+    re.compile(rf"/mnt/[A-Za-z]/Users/{LOCAL_USER}/[^\s`'\")]+", re.IGNORECASE),
+    re.compile(rf"(?:^|[\\/])Users[\\/]{LOCAL_USER}[\\/][^\s`'\")]+", re.IGNORECASE),
+    re.compile(re.escape(LOCAL_WORKSPACE_NAME)),
+)
+
+
 def list_tracked_files() -> list[str]:
     try:
         proc = subprocess.run(
@@ -89,6 +117,37 @@ def check_tracked_names() -> list[str]:
                 errs.append(f"tracked path has non-conforming file name: {path}")
 
     return errs
+
+
+def check_no_local_paths_in_files(paths: list[Path]) -> list[str]:
+    errs: list[str] = []
+    for path in paths:
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        for lineno, line in enumerate(text.splitlines(), start=1):
+            for pattern in LOCAL_PATH_PATTERNS:
+                if pattern.search(line):
+                    try:
+                        shown = path.relative_to(ROOT)
+                    except ValueError:
+                        shown = path
+                    errs.append(f"local machine path in tracked content: {shown}:{lineno}")
+                    break
+    return errs
+
+
+def check_no_local_paths_in_tracked_content() -> list[str]:
+    try:
+        tracked = list_tracked_files()
+    except RuntimeError as exc:  # pragma: no cover
+        return [str(exc)]
+
+    paths = [
+        (ROOT / path)
+        for path in tracked
+        if (ROOT / path).is_file()
+        and not Path(path).suffix.lower() in TEXT_SCAN_SKIP_SUFFIXES
+    ]
+    return check_no_local_paths_in_files(paths)
 
 
 def check_python_compile() -> list[str]:
@@ -213,6 +272,7 @@ def main() -> int:
     errors.extend(check_generated_dirs_ignored())
     errors.extend(check_tracked_generated_content())
     errors.extend(check_tracked_names())
+    errors.extend(check_no_local_paths_in_tracked_content())
 
     report = {
         "ok": len(errors) == 0,

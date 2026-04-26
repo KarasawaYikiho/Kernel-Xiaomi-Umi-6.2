@@ -33,11 +33,10 @@ Run **`Build-Umi-Kernel.yml`** to build the checked-out kernel tree, or **`ROM-A
 |-------|---------|-------------|
 | `device` | `umi` | Device codename; current default baseline remains `umi` |
 
-Reference locations, default branches, toolchain source, and boot image baseline paths are no longer workflow inputs. The workflow auto-fills them in code:
+Reference locations, default branches, toolchain source, and boot image baseline paths are no longer workflow inputs. The workflow auto-fills them from repository config and explicit environment variables:
 
-- yefxx baseline metadata, SO-TS reference metadata, toolchain download source, and ROM defaults are centralized in `Porting/Sm8250PortConfig.json`
-- Local ROM dir for maintainer runs: `D:\GIT\MIUI_UMI`
-- Local ROM zip fallback for maintainer runs: `D:\GIT\MIUI_UMI_OS1.0.5.0.TJBCNXM_d01651ed86_13.0.zip`
+- yefxx baseline metadata, SO-TS reference metadata, and toolchain download source are centralized in `Porting/Sm8250PortConfig.json`
+- Local ROM inputs are supplied with `OFFICIAL_ROM_DIR`, `OFFICIAL_ROM_ZIP`, or `OFFICIAL_BOOTIMG_PATH` when maintainers need private stock ROM material
 - GitHub Action fallback: tracked `Porting/OfficialRomBaseline/BootImgParts/` chunks auto-reassembled in CI
 - `BOOTIMG_REQUIRED_BYTES`: derived from the active ROM baseline first, then falls back only when baseline metadata is unavailable
 
@@ -48,11 +47,11 @@ Reference locations, default branches, toolchain source, and boot image baseline
 
 ## Local Boot Baseline
 
-For the shortest Windows path on this machine, run:
+For local ROM baseline refreshes, set `OFFICIAL_ROM_DIR` or `OFFICIAL_BOOTIMG_PATH`, then run:
 
 Use `Porting/Tools/RunLocalOfficialRomBaseline.ps1`; refreshed outputs and local validation details stay centralized in `Porting/Tools/README.md` to avoid duplicated maintenance.
 
-It defaults to `D:\GIT\MIUI_UMI` and keeps the official `boot.img` out of git.
+The script keeps the official `boot.img` out of git and uses tracked split baseline chunks when no private local input is provided.
 
 ## Repository Hygiene
 

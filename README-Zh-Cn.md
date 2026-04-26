@@ -36,11 +36,10 @@
 |-----|--------|-------------|
 | `device` | `umi` | 设备代号；当前默认参考基线仍为 `umi` |
 
-参考源、路径、默认分支和 boot 大小来源不再作为工作流输入手动填写，而是由代码自动填充：
+参考源、路径、默认分支和 boot 大小来源不再作为工作流输入手动填写，而是由仓库配置和显式环境变量提供：
 
-- yefxx 基线元数据、SO-TS 参考源元数据、工具链下载源、参考 ROM 本地路径统一收敛到 `Porting/Sm8250PortConfig.json`
-- 维护者本地 ROM 目录：`D:\GIT\MIUI_UMI`
-- 维护者本地 ROM zip 回退：`D:\GIT\MIUI_UMI_OS1.0.5.0.TJBCNXM_d01651ed86_13.0.zip`
+- yefxx 基线元数据、SO-TS 参考源元数据、工具链下载源统一收敛到 `Porting/Sm8250PortConfig.json`
+- 维护者本地 ROM 输入通过 `OFFICIAL_ROM_DIR`、`OFFICIAL_ROM_ZIP` 或 `OFFICIAL_BOOTIMG_PATH` 显式提供
 - GitHub Action 回退：仓库跟踪的 `Porting/OfficialRomBaseline/BootImgParts/` 分片会在 CI 中自动重组
 - `BOOTIMG_REQUIRED_BYTES`：优先从当前 ROM 基线自动推导，只有在基线元数据缺失时才退回默认值
 
@@ -51,11 +50,11 @@
 
 ## 本地 Boot 基线
 
-在这台机器上，最短 Windows 入口是：
+刷新本地 Boot 基线时，先设置 `OFFICIAL_ROM_DIR` 或 `OFFICIAL_BOOTIMG_PATH`，然后运行：
 
 直接使用 `Porting/Tools/RunLocalOfficialRomBaseline.ps1`；具体刷新产物和本地校验步骤统一收敛到 `Porting/Tools/README.md`，避免多处重复维护。
 
-它默认使用 `D:\GIT\MIUI_UMI`，无需把官方 `boot.img` 提交进 Git。
+该脚本不会把官方 `boot.img` 提交进 Git；未提供私有本地输入时使用仓库内的分片基线。
 
 ## 仓库清洁约定
 

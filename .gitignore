@@ -110,12 +110,12 @@ sphinx_*/
 /rust-project.json
 
 # Build/work artifacts
-artifacts/
-out/
-source/
-target/
-source.extract/
-target.extract/
+/artifacts/
+/out/
+/source/
+/target/
+/source.extract/
+/target.extract/
 source.zip
 
 # Local editor/OS noise

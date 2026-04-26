@@ -502,7 +502,7 @@
     "liyafe1997": []
   },
   "meta": {
-    "generator": "Porting/Tools/Fetch_Inventory.py",
-    "cwd": "D:\\GIT\\Kernel-Xiaomi-Umi-6.12"
+    "generator": "Porting/Tools/FetchInventory.py",
+    "cwd": "repository-root"
   }
 }
