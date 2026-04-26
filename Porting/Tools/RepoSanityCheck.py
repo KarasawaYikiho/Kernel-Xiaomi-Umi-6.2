@@ -66,6 +66,13 @@ LOCAL_PATH_PATTERNS = (
     re.compile(rf"(?:^|[\\/])Users[\\/]{LOCAL_USER}[\\/][^\s`'\")]+", re.IGNORECASE),
     re.compile(re.escape(LOCAL_WORKSPACE_NAME)),
 )
+LOCAL_PATH_GREP_PATTERN = (
+    rf"([A-Za-z]:[\\/]{LOCAL_ROM_ROOT}[\\/][^[:space:]`'\")]+"
+    rf"|[A-Za-z]:[\\/]Users[\\/]{LOCAL_USER}[\\/][^[:space:]`'\")]+"
+    rf"|/mnt/[A-Za-z]/Users/{LOCAL_USER}/[^[:space:]`'\")]+"
+    rf"|(^|[\\/])Users[\\/]{LOCAL_USER}[\\/][^[:space:]`'\")]+"
+    rf"|{re.escape(LOCAL_WORKSPACE_NAME)})"
+)
 
 
 def list_tracked_files() -> list[str]:
@@ -136,18 +143,28 @@ def check_no_local_paths_in_files(paths: list[Path]) -> list[str]:
 
 
 def check_no_local_paths_in_tracked_content() -> list[str]:
-    try:
-        tracked = list_tracked_files()
-    except RuntimeError as exc:  # pragma: no cover
-        return [str(exc)]
+    proc = subprocess.run(
+        ["git", "grep", "-I", "-n", "-E", LOCAL_PATH_GREP_PATTERN, "--", "."],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if proc.returncode == 1:
+        return []
+    if proc.returncode != 0:
+        detail = proc.stderr.strip() or proc.stdout.strip() or "unknown git grep error"
+        return [f"unable to inspect tracked files via git grep: {detail}"]
 
-    paths = [
-        (ROOT / path)
-        for path in tracked
-        if (ROOT / path).is_file()
-        and not Path(path).suffix.lower() in TEXT_SCAN_SKIP_SUFFIXES
-    ]
-    return check_no_local_paths_in_files(paths)
+    errs: list[str] = []
+    for line in proc.stdout.splitlines():
+        path, sep, rest = line.partition(":")
+        lineno, line_sep, _content = rest.partition(":")
+        if sep and line_sep and lineno.isdigit():
+            errs.append(f"local machine path in tracked content: {path}:{lineno}")
+        else:
+            errs.append(f"local machine path in tracked content: {line}")
+    return errs
 
 
 def check_python_compile() -> list[str]:
