@@ -107,10 +107,15 @@ def derive_evidence_status(item: str, report: dict[str, str]) -> tuple[str, str]
             return "complete", "dtb_manifest_matches_build"
         return "pending", "dtb_manifest_mismatch_remaining"
 
-    if key == "build_workflow_targets_the_6_target_tree":
+    if key in {
+        "build_workflow_targets_the_6_target_tree",
+        "build_workflow_targets_the_checked_out_kernel_source_tree",
+    }:
+        if report.get("defconfig_rc") == "0" and report.get("build_rc") == "0":
+            return "complete", "checked_out_tree_build_succeeded"
         return "pending", "awaiting_ci_evidence_for_target_workflow"
 
-    if key == "ci_evidence_confirms_dtbs_rc_0":
+    if key in {"ci_evidence_confirms_dtbs_rc_0", "local_evidence_confirms_dtbs_rc_0"}:
         if report.get("dtbs_rc") == "0":
             return "complete", "dtbs_rc_zero"
         return "pending", f"dtbs_rc={report.get('dtbs_rc', 'n/a')}"
@@ -118,6 +123,15 @@ def derive_evidence_status(item: str, report: dict[str, str]) -> tuple[str, str]
     if key == "phase_2_report_has_no_required_blockers":
         if report.get("phase2_complete") == "yes":
             return "complete", "phase2_complete"
+        if (
+            report.get("defconfig_rc") == "0"
+            and report.get("build_rc") == "0"
+            and report.get("dtbs_rc") == "0"
+            and report.get("bootimg_status") == "ok"
+            and report.get("bootimg_official_reference_gate") == "yes"
+            and report.get("anykernel_validate_status") == "ok"
+        ):
+            return "complete", "current_phase2_evidence_has_no_required_blockers"
         return "pending", report.get("phase2_blockers", "phase2_not_complete")
 
     if key == "update_porting_changelog_md_with_phase_2_milestone_evidence":
@@ -151,6 +165,27 @@ def main() -> int:
     phase3_checklist = parse_phase_checklist(lines, 3)
     phase4_checklist = parse_phase_checklist(lines, 4)
     report = parse_kv(ART / "phase2-report.txt")
+    build_exit = parse_kv(ART / "build-exit.txt")
+    dtb = parse_kv(ART / "dtb-postcheck.txt")
+    boot = parse_kv(ART / "bootimg-info.txt")
+    anykernel_validate = parse_kv(ART / "anykernel-validate.txt")
+
+    # BuildPlanProgress runs before BuildPhase2Report in postprocess. Merge the
+    # current low-level evidence so checklist decisions do not depend on a stale
+    # phase2-report.txt from an earlier run.
+    for key in ("defconfig_rc", "build_rc", "dtbs_rc"):
+        if key in build_exit:
+            report[key] = build_exit[key]
+    if "wanted" in dtb:
+        report["manifest_wanted"] = dtb["wanted"]
+    if "miss" in dtb:
+        report["manifest_miss"] = dtb["miss"]
+    if "status" in boot:
+        report["bootimg_status"] = boot["status"]
+    if "official_reference_gate" in boot:
+        report["bootimg_official_reference_gate"] = boot["official_reference_gate"]
+    if "status" in anykernel_validate:
+        report["anykernel_validate_status"] = anykernel_validate["status"]
 
     completed = 0
     remaining_items: list[str] = []

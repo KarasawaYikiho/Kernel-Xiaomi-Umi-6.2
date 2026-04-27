@@ -2,6 +2,15 @@
 
 > Milestone-only changelog.
 
+## 2026-04-27
+
+- Completed local Phase2 evidence for `umi`: `defconfig_rc=0`, `build_rc=0`, `dtbs_rc=0`, and `phase2_report_state=ready`
+- Confirmed DTB manifest/build alignment with 4 wanted DTBs, 4 hits, and 0 misses
+- Prepared ROM-aligned reference `boot.img` evidence from the official baseline with `bootimg_status=ok` and `bootimg_official_reference_gate=yes`
+- Updated runtime validation guidance to use temporary `fastboot boot` as the first device route and keep Phase3 camera blockers ahead of device testing
+- Registered the dual-track reference strategy: yefxx 6.11 remains the experimental mainline build baseline while LineageOS, liyafe, and N0Kernel are targeted reference inputs
+- Clarified the boot artifact goal as official-aligned, patcher-agnostic, and compatible with KernelSU and Magisk
+
 ## 2026-04-25
 
 - Reframed `PortingPlan.md` around 6+ target builds, Phase2 hard gates, Phase3 usability, and Phase4 runtime validation

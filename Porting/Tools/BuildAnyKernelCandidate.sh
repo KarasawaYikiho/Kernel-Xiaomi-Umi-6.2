@@ -32,36 +32,52 @@ if [ -n "$imagegz_path" ]; then
   fi
 
   if [ -n "$template_dir" ] && [ -d "$template_dir" ]; then
+    anykernel_reason=zip-build-failed
+    rm -rf "$work_dir"
+    mkdir -p "$work_dir"
+    cp -Rv "$template_dir"/. "$work_dir"/ || true
+    cp -v "$imagegz_path" "$work_dir/Image.gz" || true
+
+    if [ -f "$work_dir/AnyKernel.sh" ]; then
+      mv -f "$work_dir/AnyKernel.sh" "$work_dir/anykernel.sh"
+    fi
+
+    # Optional: include first matched primary dtb as dtb
+    if [ -s artifacts/primary_dtb_paths.txt ]; then
+      first_dtb="$(head -n1 artifacts/primary_dtb_paths.txt)"
+      if [ -f "$first_dtb" ]; then
+        cp -v "$first_dtb" "$work_dir/dtb" || true
+        anykernel_has_dtb=yes
+        anykernel_dtb_source="$first_dtb"
+      fi
+    fi
+
+    # Best-effort device hint
+    sed -i "s/^  echo \"device.name1=.*/  echo \"device.name1=$DEVICE\"/" "$work_dir/anykernel.sh" || true
+
     if command -v zip >/dev/null 2>&1; then
-      anykernel_reason=zip-build-failed
-      rm -rf "$work_dir"
-      mkdir -p "$work_dir"
-      cp -Rv "$template_dir"/. "$work_dir"/ || true
-      cp -v "$imagegz_path" "$work_dir/Image.gz" || true
-
-      if [ -f "$work_dir/AnyKernel.sh" ]; then
-        mv -f "$work_dir/AnyKernel.sh" "$work_dir/anykernel.sh"
-      fi
-
-      # Optional: include first matched primary dtb as dtb
-      if [ -s artifacts/primary_dtb_paths.txt ]; then
-        first_dtb="$(head -n1 artifacts/primary_dtb_paths.txt)"
-        if [ -f "$first_dtb" ]; then
-          cp -v "$first_dtb" "$work_dir/dtb" || true
-          anykernel_has_dtb=yes
-          anykernel_dtb_source="$first_dtb"
-        fi
-      fi
-
-      # Best-effort device hint
-      sed -i "s/^  echo \"device.name1=.*/  echo \"device.name1=$DEVICE\"/" "$work_dir/anykernel.sh" || true
-
       if (cd "$work_dir" && zip -r9 ../AnyKernel3-candidate.zip .); then
         anykernel_ok=yes
         anykernel_reason=ok
       fi
     else
-      anykernel_reason=zip-command-missing
+      WORK_DIR="$work_dir" python3 - <<'PY'
+from __future__ import annotations
+
+import os
+from pathlib import Path
+from zipfile import ZIP_DEFLATED, ZipFile
+
+work_dir = Path(os.environ["WORK_DIR"])
+zip_path = work_dir.parent / "AnyKernel3-candidate.zip"
+with ZipFile(zip_path, "w", ZIP_DEFLATED) as zf:
+    for path in sorted(p for p in work_dir.rglob("*") if p.is_file()):
+        zf.write(path, path.relative_to(work_dir).as_posix())
+PY
+      if [ -f artifacts/AnyKernel3-candidate.zip ]; then
+        anykernel_ok=yes
+        anykernel_reason=ok
+      fi
     fi
   fi
 fi

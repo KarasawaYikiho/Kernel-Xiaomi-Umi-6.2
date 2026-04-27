@@ -39,7 +39,7 @@ def main() -> int:
     driver_runtime_blockers = driver_integration_runtime_blockers(
         driver_integration_status, driver_integration_pending
     )
-    magisk_patch_ready = (
+    fastboot_boot_package_ready = (
         release_status == "ready"
         and bootimg_status == "ok"
         and report.get("bootimg_rom_size_match", "unknown") == "yes"
@@ -62,9 +62,9 @@ def main() -> int:
         blockers.extend(
             [f"driver_integration_pending={x}" for x in driver_runtime_blockers]
         )
-    if not magisk_patch_ready and report.get("anykernel_ok", "no") != "yes":
+    if not fastboot_boot_package_ready and report.get("anykernel_ok", "no") != "yes":
         blockers.append("anykernel_ok!=yes")
-    if not magisk_patch_ready and report.get(
+    if not fastboot_boot_package_ready and report.get(
         "anykernel_validate_status", "unknown"
     ) not in (
         "ok",
@@ -73,7 +73,7 @@ def main() -> int:
         blockers.append(
             f"anykernel_validate_status={report.get('anykernel_validate_status', 'unknown')}"
         )
-    if not magisk_patch_ready and runtime_ready != "yes":
+    if not fastboot_boot_package_ready and runtime_ready != "yes":
         blockers.append(f"runtime_ready={runtime_ready}")
 
     release_followups: list[str] = []
@@ -106,7 +106,7 @@ def main() -> int:
         f"- runtime_ready: `{runtime_ready}`",
         f"- bootimg_status: `{bootimg_status}`",
         f"- release_status: `{release_status}`",
-        f"- magisk_patch_ready: `{'yes' if magisk_patch_ready else 'no'}`",
+        f"- fastboot_boot_package_ready: `{'yes' if fastboot_boot_package_ready else 'no'}`",
         f"- bootimg_build_status: `{bootimg_build_status}`",
         f"- bootimg_size_bytes: `{bootimg_size}`",
         f"- bootimg_required_bytes: `{bootimg_required}`",
@@ -114,6 +114,9 @@ def main() -> int:
         f"- bootimg_rom_header_version_match: `{report.get('bootimg_rom_header_version_match', 'unknown')}`",
         f"- bootimg_official_reference_gate: `{report.get('bootimg_official_reference_gate', 'no')}`",
         f"- bootimg_build_source: `{report.get('bootimg_build_source', '') or 'unknown'}`",
+        "- boot_artifact_strategy: `official-aligned custom boot`",
+        "- boot_patcher_policy: `patcher-agnostic`",
+        "- boot_compatible_patchers: `KernelSU,Magisk`",
         f"- decision_consistency: `{consistency_status}`",
         f"- decision_consistency_errors: `{consistency_errors or 'none'}`",
         f"- driver_integration_status: `{driver_integration_status}`",
@@ -123,9 +126,9 @@ def main() -> int:
         f"- runtime_validation_patched_boot_image: `{report.get('runtime_validation_patched_boot_image', '') or 'not_recorded'}`",
         "",
         "## Decision",
-        "- [ ] If `magisk_patch_ready=yes` and `decision_consistency=ok`, use the Magisk-patched boot path as the primary device validation route.",
-        "- [ ] `driver_integration_status` may remain `partial` only when the pending items are release follow-ups that do not block the Magisk-patched boot flow.",
-        "- [ ] AnyKernel packaging is secondary for this validation stage and should not override a ready ROM-aligned `artifacts/boot.img`.",
+        "- [ ] If `fastboot_boot_package_ready=yes` and `decision_consistency=ok`, use `fastboot boot` as the first device validation route; do not flash on the first pass.",
+        "- [ ] `driver_integration_status` may remain `partial` only when the pending items are release follow-ups that do not block the temporary `fastboot boot` flow.",
+        "- [ ] AnyKernel packaging is secondary for this validation stage and should not override the selected `fastboot boot` route.",
         "- [ ] If runtime gate is not satisfied, stop and finish the listed runtime blockers first.",
         "",
     ]
@@ -142,7 +145,7 @@ def main() -> int:
     if release_followups:
         md.extend(
             [
-                "## Release / Alignment Follow-ups (non-blocking for runtime validation)",
+            "## Release / Alignment Follow-ups (non-blocking for temporary boot validation)",
                 *[f"- {b}" for b in release_followups],
                 "",
             ]
@@ -155,10 +158,10 @@ def main() -> int:
             "- [ ] Confirm bootloader/unlock state and recovery path prepared.",
             "- [ ] Keep previous known-good boot image for rollback.",
             "",
-            "## Flash & Boot",
-            "- [ ] Patch `artifacts/boot.img` with Magisk and prepare the patched boot image for flashing when `magisk_patch_ready=yes`.",
-            "- [ ] Record the patched output filename in `meta.patched_boot_image` and keep `meta.boot_method=magisk_patched_boot`.",
-            "- [ ] Use AnyKernel only as a fallback experiment if the Magisk path is unavailable.",
+            "## Temporary Boot",
+            "- [ ] Prepare the custom-kernel boot image package, then boot it temporarily with `fastboot boot <boot.img>` when `fastboot_boot_package_ready=yes`.",
+            "- [ ] Keep `meta.boot_method=fastboot_boot` and record the tested boot image filename in `meta.patched_boot_image`.",
+            "- [ ] Use AnyKernel only as a fallback experiment if the `fastboot boot` route is unavailable.",
             "- [ ] First boot completes without bootloop (wait 3-5 min).",
             "- [ ] `adb shell uname -a` returns expected kernel build.",
             "",

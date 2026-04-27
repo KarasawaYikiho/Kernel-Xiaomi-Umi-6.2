@@ -12,6 +12,7 @@ Planning and baseline analysis for the yefxx-based Xiaomi SM8250 kernel source t
 | `BaselineLock.json` | Pinned source baseline and references |
 | `Inventory.json` | Capability inventory |
 | `GapReport.md` | Gap summary |
+| `ReferenceSourceStrategy.md` | yefxx 6.11, LineageOS, liyafe, and N0Kernel source-role strategy |
 | `ReferenceDriversAnalysis.md` | Donor driver analysis |
 | `OfficialRomAnalysis.md` | ROM metadata |
 | `OfficialRomBaseline/` | Repo-side ROM baseline metadata and compact validation images |
@@ -24,4 +25,5 @@ Planning and baseline analysis for the yefxx-based Xiaomi SM8250 kernel source t
 1. `../PortingPlan.md`
 2. Latest `CHANGELOG.md`
 3. `GapReport.md`
-4. `OfficialRomAlignmentFramework.md`
+4. `ReferenceSourceStrategy.md`
+5. `OfficialRomAlignmentFramework.md`

@@ -38,6 +38,7 @@ PREFER = [
     re.compile(r"^[a-z0-9_-]+-sm8250\.dtb$", re.I),
     re.compile(r"^qcom-sm8250-[a-z0-9_-]+\.dtb$", re.I),
 ]
+DTB_MAKEFILE_ENTRY = re.compile(r"(?:^|\s)dtb-[^+]*\+=\s*(.+)$")
 
 
 def to_dtb_name(path_str: str) -> str | None:
@@ -81,6 +82,37 @@ def rank_name(name: str) -> int:
         if pattern.search(name):
             return i
     return len(PREFER)
+
+
+def parse_buildable_dtb_names(text: str) -> set[str]:
+    names: set[str] = set()
+    for line in text.splitlines():
+        line = line.split("#", 1)[0].strip()
+        if not line:
+            continue
+        match = DTB_MAKEFILE_ENTRY.search(line)
+        if not match:
+            continue
+        for token in match.group(1).split():
+            if token.endswith(".dtb"):
+                names.add(token)
+    return names
+
+
+def collect_buildable_dtb_names() -> set[str]:
+    names: set[str] = set()
+    for root in TARGET_DTS_ROOTS:
+        makefile = root / "Makefile"
+        if not makefile.exists():
+            continue
+        names.update(parse_buildable_dtb_names(makefile.read_text(encoding="utf-8", errors="ignore")))
+    return names
+
+
+def filter_buildable_names(names: list[str], buildable: set[str]) -> list[str]:
+    if not buildable:
+        return names
+    return [name for name in names if name in buildable]
 
 
 def collect_from_logs(
@@ -154,6 +186,7 @@ def main() -> int:
     config = load_port_config()
     supported_devices = get_supported_devices(config)
     device = resolve_device(config)
+    buildable = collect_buildable_dtb_names()
 
     names, debug, log_sources = collect_from_logs(supported_devices)
     source = ",".join(log_sources) if log_sources else ""
@@ -174,7 +207,7 @@ def main() -> int:
 
     seen: set[str] = set()
     uniq: list[str] = []
-    for name in names:
+    for name in filter_buildable_names(names, buildable):
         if name not in seen:
             seen.add(name)
             uniq.append(name)
@@ -187,6 +220,7 @@ def main() -> int:
         f"device={device or 'unknown'}",
         f"candidate_total={len(names)}",
         f"unique_total={len(uniq)}",
+        f"buildable_total={len(buildable)}",
         "format=origin<TAB>kind<TAB>input<TAB>candidate",
     ]
     debug_lines.extend(debug)

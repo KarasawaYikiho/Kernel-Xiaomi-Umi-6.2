@@ -30,7 +30,7 @@ def main() -> int:
         )
         else "blocked"
     )
-    magisk_patch_ready = (
+    fastboot_boot_package_ready = (
         report.get("release_status", "unknown") == "ready"
         and report.get("bootimg_status", "missing") == "ok"
         and report.get("bootimg_rom_size_match", "unknown") == "yes"
@@ -112,7 +112,7 @@ def main() -> int:
             "next_action": report.get("next_action", "collect-more-data"),
             "runtime_ready": report.get("runtime_ready", "no"),
             "runtime_gate_status": runtime_gate_status,
-            "magisk_patch_ready": "yes" if magisk_patch_ready else "no",
+            "fastboot_boot_package_ready": "yes" if fastboot_boot_package_ready else "no",
             "driver_integration_status": report.get(
                 "driver_integration_status", "pending"
             ),

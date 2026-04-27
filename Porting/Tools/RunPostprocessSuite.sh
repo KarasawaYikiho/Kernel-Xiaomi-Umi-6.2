@@ -42,6 +42,7 @@ steps=(
   "SyncDriverIntegrationManifest.py"
   "ValidateDriverIntegrationManifest.py"
   "ValidateAnyKernelCandidate.py"
+  "PrepareReleaseBootImg.sh"
   "ValidateBootImage.py"
   "SyncRomAlignmentManifest.py"
   "ValidateRomAlignmentManifest.py"

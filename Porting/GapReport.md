@@ -39,21 +39,13 @@ The official ROM should be treated as a reference extraction source and validati
 
 Therefore, the current gap against the official ROM should be understood as a compatibility and release-chain gap rather than a requirement to downgrade the target kernel version.
 
-## Current Release-Chain Gap
+## Current Release-Chain State
 
-- `boot.img` delivery is still incomplete in the latest Phase2 artifact
-- ROM boot / `dtbo` / `vbmeta` consistency is not yet confirmed
-- DTB target coverage remains incomplete
-- runtime validation is still pending on device
+- Phase2 build evidence is complete for `umi`: `defconfig_rc=0`, `build_rc=0`, `dtbs_rc=0`.
+- ROM-aligned boot baseline evidence is present: `bootimg_status=ok` and `bootimg_official_reference_gate=yes`.
+- DTB manifest-to-build coverage is complete for the current Umi Phase2 target set.
+- Runtime validation remains blocked by Phase3 usability work, especially `camera_isp_path` and `camera_sensor_module`.
 
----
+## Next Analysis Focus
 
-## 分析总结
-
-| 优先级 | 任务 | 依据 |
-|--------|------|------|
-| P0 | 完成驱动集成清单 | Phase2Decision.py:driver_integration_runtime_blockers |
-| P1 | 改进DTB清单映射 | BuildDtbManifest.py 白名单优化 |
-| P1 | 增强运行时验证 | BuildRuntimeValidationSummary.py |
-| P2 | 增加自动化测试 | 边界条件覆盖 |
-| P2 | 文档完善 | 与代码变更同步 |
+Use `ReferenceSourceStrategy.md` before importing any Phase3 driver or DTS delta. LineageOS and liyafe 4.19 sources are targeted donor candidates; N0Kernel is packaging evidence only.

@@ -1,6 +1,6 @@
 # Reference Driver Analysis
 
-Author-ID discovery context: `UtsavBalar1231`, `liyafe1997` (Strawing).
+Source-role context is maintained in `ReferenceSourceStrategy.md`.
 
 ## Input Summary
 
@@ -20,7 +20,7 @@ Author-ID discovery context: `UtsavBalar1231`, `liyafe1997` (Strawing).
 
 ## Integration Rules
 
-1. Keep source of truth as `so_ts + base_5plus`.
-2. Use donor references only for targeted deltas.
+1. Keep yefxx 6.11 as the experimental mainline build baseline.
+2. Use SO-TS, LineageOS, liyafe, and N0Kernel only for targeted deltas and packaging evidence.
 3. Require Kconfig mapping + DTS compatibility + CI gate for every imported area.
 4. No blind subtree copy.

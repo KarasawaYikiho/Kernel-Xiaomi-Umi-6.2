@@ -23,7 +23,44 @@
   },
   "target": {
     "repo": "https://github.com/yefxx/xiaomi-umi-linux-kernel.git",
-    "branch": "master"
+    "branch": "master",
+    "role": "experimental_mainline_build_baseline",
+    "kernel_version": "6.11.0"
+  },
+  "reference_sources": [
+    {
+      "name": "LineageOSSm8250",
+      "repo": "https://github.com/LineageOS/android_kernel_xiaomi_sm8250.git",
+      "branch": "lineage-23.2",
+      "role": "targeted_donor_candidate",
+      "kernel_version": "4.19.325",
+      "primary_base": false,
+      "relevance": ["umi", "dts", "camera", "techpack", "lineage"]
+    },
+    {
+      "name": "LiyafeSm8250Mod",
+      "repo": "https://github.com/liyafe1997/kernel_xiaomi_sm8250_mod.git",
+      "branch": "android15-lineage22-mod",
+      "role": "cautious_targeted_donor_candidate",
+      "kernel_version": "4.19.325",
+      "primary_base": false,
+      "relevance": ["umi", "dts", "camera", "anykernel", "kernelsu", "susfs"]
+    },
+    {
+      "name": "N0KernelUmiAnyKernel",
+      "filename": "N0Kernel-umi-2024-12-30_23-10-52.zip",
+      "role": "packaging_reference",
+      "kernel_version": "4.19.246-N0kernel",
+      "primary_base": false,
+      "relevance": ["umi", "anykernel", "dtb", "dtbo", "boot_packaging"]
+    }
+  ],
+  "boot_artifact_strategy": {
+    "kind": "official_aligned_custom_boot",
+    "first_device_route": "fastboot_boot",
+    "patcher_agnostic": true,
+    "compatible_patchers": ["KernelSU", "Magisk"],
+    "alignment_inputs": ["official_boot_header", "official_ramdisk", "official_cmdline", "official_partition_size", "official_dtbo_vbmeta_baseline"]
   },
   "toolchain": {
     "name": "zyc-clang-15",

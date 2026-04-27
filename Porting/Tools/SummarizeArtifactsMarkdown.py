@@ -59,7 +59,7 @@ def main() -> int:
         f"- Boot Image ROM Match: `size={r.get('bootimg_rom_size_match', 'unknown')}` `header={r.get('bootimg_rom_header_version_match', 'unknown')}` `sha256={r.get('bootimg_rom_sha256_match', 'unknown')}`",
         f"- Boot Image Official Reference Gate: `{r.get('bootimg_official_reference_gate', 'no')}` ({r.get('bootimg_official_reference_gate_reasons', '') or 'none'})",
         f"- Boot Image Build: `{r.get('bootimg_build_status', 'unknown')}` ({r.get('bootimg_build_reason', 'n/a')})",
-        f"- Magisk Patch Path: `{'ready' if r.get('release_status', 'unknown') == 'ready' and r.get('bootimg_status', 'missing') == 'ok' and r.get('bootimg_rom_size_match', 'unknown') == 'yes' and r.get('bootimg_rom_header_version_match', 'unknown') == 'yes' and r.get('bootimg_official_reference_gate', 'no') == 'yes' else 'blocked'}`",
+        f"- Fastboot Boot Package: `{'ready' if r.get('release_status', 'unknown') == 'ready' and r.get('bootimg_status', 'missing') == 'ok' and r.get('bootimg_rom_size_match', 'unknown') == 'yes' and r.get('bootimg_rom_header_version_match', 'unknown') == 'yes' and r.get('bootimg_official_reference_gate', 'no') == 'yes' else 'blocked'}`",
         "",
         "## Next Focus",
         f"- Focus: `{n.get('focus', 'collect-more-data')}`",

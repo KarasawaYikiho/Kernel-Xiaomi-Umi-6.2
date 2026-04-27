@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-from BuildDtbManifest import alias_names, to_dtb_name
+from BuildDtbManifest import alias_names, filter_buildable_names, parse_buildable_dtb_names, to_dtb_name
 
 
 SUPPORTED = [
@@ -57,6 +57,26 @@ def main() -> int:
         ["sm8250-xiaomi-umi.dtb", "umi-sm8250.dtb", "qcom-sm8250-umi.dtb"],
     )
     expect_not_in("umi_overlay_no_common_dtb", "xiaomi-sm8250-common.dtb", aliases)
+    buildable = parse_buildable_dtb_names(
+        """
+        dtb-$(CONFIG_ARCH_QCOM) += sm8250-xiaomi-elish-boe.dtb
+        dtb-$(CONFIG_ARCH_QCOM) += sm8250-xiaomi-umi.dtb
+        dtb-$(CONFIG_ARCH_QCOM) += sm8250-xiaomi-pipa.dtb
+        """
+    )
+    expect_equal(
+        "manifest_filters_aliases_to_buildable_targets",
+        filter_buildable_names(
+            [
+                "sm8250-xiaomi-apollo.dtb",
+                "sm8250-xiaomi-umi.dtb",
+                "umi-sm8250.dtb",
+                "qcom-sm8250-umi.dtb",
+            ],
+            buildable,
+        ),
+        ["sm8250-xiaomi-umi.dtb"],
+    )
     print("dtb manifest filters non-device blockers")
     return 0
 

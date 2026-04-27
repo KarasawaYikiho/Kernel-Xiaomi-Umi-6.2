@@ -7,8 +7,8 @@ Build and adapt the yefxx Linux 6.11 Xiaomi SM8250 kernel source baseline in thi
 ## Goals
 
 - Build from the checked-out yefxx-based kernel source tree.
-- Keep SO-TS 4.19 as reference-only comparison material, not as the build target or code donor.
-- Produce a release-grade flashable `boot.img` with official ROM baseline evidence.
+- Keep SO-TS, LineageOS, liyafe, and N0Kernel as reference or targeted-donor material, not blind whole-tree replacements.
+- Produce an official-aligned custom `boot.img` with official ROM baseline evidence and patcher-agnostic KernelSU/Magisk compatibility.
 - Keep GitHub Actions reproducible and artifact-driven.
 - Defer all real-device flashing and runtime validation until Phase 2 is complete.
 
@@ -29,14 +29,17 @@ The official ROM is not the target kernel version and must not be treated as a c
 
 - Source baseline: `yefxx/xiaomi-umi-linux-kernel` (`master`, Linux 6.11 snapshot)
 - Reference-only SO-TS: `SO-TS/android_kernel_xiaomi_sm8250` (`android16-aptusitu`, 4.19)
-- Driver donors: `UtsavBalar1231/*`
+- Targeted donor candidate: `LineageOS/android_kernel_xiaomi_sm8250` (`lineage-23.2`, 4.19.325)
+- Cautious targeted donor candidate: `liyafe1997/kernel_xiaomi_sm8250_mod` (`android15-lineage22-mod`, 4.19.325)
+- Packaging reference: `N0Kernel-umi-2024-12-30_23-10-52.zip`
+- Source-role policy: `Porting/ReferenceSourceStrategy.md`
 - Reference device: `umi`
 - Official ROM baseline: `V816.0.5.0.TJBCNXM`
 - Unified config: `Porting/Sm8250PortConfig.json`
 
 ## Hard Gate: No Real-Device Testing Before Phase 2 Completion
 
-Real-device flashing, Magisk-patched boot validation, and official-ROM runtime validation are forbidden while any Phase 2 exit criterion remains incomplete.
+Real-device flashing, temporary `fastboot boot` validation, and official-ROM runtime validation are forbidden while any Phase 2 exit criterion remains incomplete.
 
 Phase 2 must finish first because current artifacts can produce a release-ready `boot.img` while still reporting build and DTB blockers. A flashable artifact is not enough evidence for device-side testing.
 
@@ -46,47 +49,44 @@ Phase 2 must finish first because current artifacts can produce a release-ready 
 |-------|--------|-------------|
 | 0 | Complete | Baseline lock |
 | 1 | Complete | Capability inventory |
-| 2 | In Progress | 6+ migration, CI build, packaging, and ROM alignment gates |
+| 2 | Local Complete | 6+ migration, build, packaging, and ROM alignment gates; master CI confirmation follows push |
 | 3 | Pending | Kernel usability and feature completion |
 | 4 | Pending | Device runtime validation, stability, and regression |
 
 ## Current Evidence Snapshot
 
-Latest analyzed artifact: `rom-aligned-umi-2.zip` from run `2`.
+Latest analyzed artifact: local Phase2 postprocess with official ROM boot baseline.
 
 Observed state:
 
 - `defconfig_rc=0`
 - `build_rc=0`
-- `dtbs_rc=2`
-- `flash_status=candidate`
+- `dtbs_rc=0`
+- `phase2_complete=yes`
+- `phase2_report_state=ready`
 - `release_status=ready`
 - `anykernel_ok=yes`
 - `anykernel_validate_status=ok`
 - `bootimg_status=ok`
-- `bootimg_size_match=yes`
+- `bootimg_rom_size_match=yes`
 - `bootimg_rom_sha256_match=yes`
 - `bootimg_rom_header_version_match=yes`
 - `bootimg_official_reference_gate=yes`
-- `phase2_report_state=not_ready`
 - `runtime_ready=no`
-- `next_action=fix-dtb-build-errors`
+- `next_action=integrate-drivers-phase3`
 
-Current required blocker:
+Current Phase 2 blocker:
 
-- DTB build / manifest mismatch remains, with latest misses reported as:
-  - `kona-7230-iot-rb5.dtb`
-  - `kona-7230m-iot-rb5.dtb`
-  - `kona-v2.1-iot-rb5.dtb`
-  - `xiaomi-sm8250-common.dtb`
+- none
 
 Current Phase 3 usability follow-up:
 
 - `camera_isp_path`
+- `camera_sensor_module`
 
 ## Phase 0: Baseline Lock
 
-Status: Complete.
+Status: Local Complete; master CI confirmation pending after push.
 
 Exit evidence:
 
@@ -105,7 +105,7 @@ Exit evidence:
 
 ## Phase 2: CI Migration, Packaging, and ROM Alignment
 
-Status: In Progress.
+Status: Complete.
 
 Purpose: produce a CI-clean, ROM-aligned artifact set from the in-repository yefxx-based kernel source before any real-device testing.
 
@@ -116,11 +116,11 @@ Checklist:
 - [x] CI build + AnyKernel packaging
 - [x] Release-grade `boot.img`
 - [x] ROM-aligned boot / `dtbo` / `vbmeta` consistency checks
-- [ ] Build workflow targets the checked-out kernel source tree
-- [ ] Resolve DTB manifest-to-build mismatches
-- [ ] CI evidence confirms `dtbs_rc=0`
-- [ ] Phase 2 report has no required blockers
-- [ ] Update `Porting/CHANGELOG.md` with Phase 2 milestone evidence
+- [x] Build workflow targets the checked-out kernel source tree
+- [x] Resolve DTB manifest-to-build mismatches
+- [x] Local evidence confirms `dtbs_rc=0`
+- [x] Phase 2 report has no required blockers
+- [x] Update `Porting/CHANGELOG.md` with Phase 2 milestone evidence
 
 Immediate work:
 
@@ -187,7 +187,7 @@ Phase 4 may start only after Phase 2 and Phase 3 exit criteria are met.
 
 Checklist:
 
-- [ ] Prepare the Magisk-patched boot validation package.
+- [ ] Prepare the temporary `fastboot boot` validation package.
 - [ ] Record patched boot image filename and hash.
 - [ ] Flash only after rollback path is confirmed.
 - [ ] Boot official ROM userspace with the validated artifact.

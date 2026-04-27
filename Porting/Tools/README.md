@@ -55,6 +55,7 @@ python Porting/Tools/SelftestBuildWorkflow.py
 python Porting/Tools/SelftestDtbManifest.py
 python Porting/Tools/SelftestDecisionFlow.py
 python Porting/Tools/SelftestPhaseFramework.py
+python Porting/Tools/SelftestReferenceStrategy.py
 python Porting/Tools/SelftestRepoSanityCheck.py
 python -m compileall Porting/Tools
 ```
@@ -88,4 +89,5 @@ Refreshes:
 - `BuildAnyKernelCandidate.sh` now prefers the checked-in `Porting/Tools/AnyKernel3Template/` and no longer needs to clone AnyKernel3 just to produce a candidate zip.
 - For local runs, prefer `OFFICIAL_ROM_DIR` so the extracted ROM directory supplies `boot.img`, `dtbo.img`, and `vbmeta*.img` without committing large binaries.
 - `RefreshOfficialBootImgParts.ps1` regenerates the tracked `BootImgParts/` chunks from a local stock image when maintainers need to update the baseline.
-- `ValidateBootImage.py` now treats official boot reference binding as a hard gate: format, size, header version, and trusted source metadata must all line up before `flash_ready=yes`.
+- `ValidateBootImage.py` treats official boot reference binding as a hard gate: format, size, header version, and trusted source metadata must all line up before `flash_ready=yes`.
+- Boot artifact readiness is patcher-agnostic: the target is an official-aligned custom boot image that remains compatible with KernelSU, Magisk, or equivalent patchers.

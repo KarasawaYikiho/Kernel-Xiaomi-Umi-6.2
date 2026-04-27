@@ -29,7 +29,7 @@ def main() -> int:
     release_status = r.get("release_status", "unknown")
     rom_alignment = r.get("rom_alignment_status", "pending")
     rom_bootimg = f"{r.get('bootimg_rom_size_match', 'unknown')}/{r.get('bootimg_rom_header_version_match', 'unknown')}/{r.get('bootimg_official_reference_gate', 'no')}"
-    magisk_ready = (
+    fastboot_boot_package_ready = (
         "yes"
         if release_status == "ready"
         and r.get("bootimg_status", "missing") == "ok"
@@ -57,7 +57,7 @@ def main() -> int:
         f"build={build_rc} | flash={flash} | anykernel={anyk}/{anyk_reason}/{anyk_val} "
         f"| driver_integration={driver_integration} | rom_alignment={rom_alignment} | runtime_gate={runtime_gate} "
         f"| runtime_result={runtime_result}{runtime_result_suffix} "
-        f"| runtime_status={runtime_status}/{runtime_boot_method} | magisk_ready={magisk_ready} "
+        f"| runtime_status={runtime_status}/{runtime_boot_method} | fastboot_boot_package_ready={fastboot_boot_package_ready} "
         f"| runtime_ready={runtime_ready}({runtime_marker}) | release={release_status} "
         f"| rom_bootimg={rom_bootimg} | hit_ratio={ratio} | next={next_action}"
     )

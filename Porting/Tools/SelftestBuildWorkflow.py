@@ -27,7 +27,7 @@ def main() -> int:
     expect_contains(text, "DEVICE: ${{ github.event.inputs.device || 'umi' }}")
     expect_contains(text, 'python3 Porting/Tools/ValidatePortDevice.py "$DEVICE"')
     expect_contains(text, 'make O=out ARCH=arm64 LLVM=1 LLVM_IAS=1 umi_defconfig')
-    expect_contains(text, 'make O=out ARCH=arm64 LLVM=1 LLVM_IAS=1 -j"$(nproc)" Image.gz modules dtbs')
+    expect_contains(text, 'make O=out ARCH=arm64 LLVM=1 LLVM_IAS=1 -j"$(nproc)" Image.gz dtbs')
     expect_contains(text, 'cp -v out/.config artifacts/ || true')
     expect_contains(text, 'cp -v out/arch/arm64/boot/Image.gz artifacts/ || true')
     expect_not_contains(text, 'working-directory: kernel')
@@ -37,6 +37,29 @@ def main() -> int:
     expect_not_contains(text, 'build.sh')
     expect_not_contains(text, 'echo "KERNEL_REPO=$SOURCE_REPO" >> "$GITHUB_ENV"')
     expect_not_contains(text, 'echo "KERNEL_BRANCH=$SOURCE_BRANCH" >> "$GITHUB_ENV"')
+
+    phase2 = (ROOT / "Porting" / "Tools" / "RunPhase2Build.sh").read_text(
+        encoding="utf-8"
+    )
+    expect_contains(phase2, 'ARCH=arm64')
+    expect_contains(phase2, 'make -C "$KERNEL_DIR" O="$OUT_DIR" ARCH=arm64 LLVM=1 LLVM_IAS=1 "${DEVICE}_defconfig"')
+    expect_contains(phase2, 'make -C "$KERNEL_DIR" O="$OUT_DIR" ARCH=arm64 LLVM=1 LLVM_IAS=1 -j"$(nproc)" Image.gz')
+    expect_not_contains(phase2, 'Image.gz modules')
+    expect_contains(phase2, 'make -C "$KERNEL_DIR" O="$OUT_DIR" ARCH=arm64 LLVM=1 LLVM_IAS=1 "qcom/$dtb"')
+
+    anykernel = (ROOT / "Porting" / "Tools" / "BuildAnyKernelCandidate.sh").read_text(
+        encoding="utf-8"
+    )
+    expect_contains(anykernel, "python3 - <<'PY'")
+    expect_not_contains(anykernel, "zip-command-missing")
+
+    postprocess = (ROOT / "Porting" / "Tools" / "RunPostprocessSuite.sh").read_text(
+        encoding="utf-8"
+    )
+    prepare_idx = postprocess.find('"PrepareReleaseBootImg.sh"')
+    validate_idx = postprocess.find('"ValidateBootImage.py"')
+    if prepare_idx < 0 or validate_idx < 0 or prepare_idx > validate_idx:
+        raise AssertionError("postprocess must prepare boot.img before validating it")
     print("build workflow uses checked-out kernel source")
     return 0
 

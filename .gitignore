@@ -36,6 +36,10 @@ __pycache__/
 *.rpm
 *.rsi
 *.s
+!arch/**/*.S
+!certs/*.S
+!scripts/*.S
+!usr/*.S
 *.so
 *.so.dbg
 *.su

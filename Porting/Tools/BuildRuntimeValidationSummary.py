@@ -74,7 +74,7 @@ def main() -> int:
             ]
         )
 
-    magisk_patch_ready = (
+    fastboot_boot_package_ready = (
         release_status == "ready"
         and bootimg_status == "ok"
         and report.get("bootimg_rom_size_match", "unknown") == "yes"
@@ -82,7 +82,7 @@ def main() -> int:
         and report.get("bootimg_official_reference_gate", "no") == "yes"
     )
 
-    if not magisk_patch_ready:
+    if not fastboot_boot_package_ready:
         if report.get("anykernel_ok", "no") != "yes":
             runtime_blockers.append("anykernel_ok!=yes")
         if report.get("anykernel_validate_status", "unknown") not in ("ok", "unknown"):
@@ -92,12 +92,15 @@ def main() -> int:
         if runtime_ready != "yes":
             runtime_blockers.append(f"runtime_ready={runtime_ready}")
     else:
+        phase2_runtime_blockers = [
+            x for x in phase2_runtime_blockers if not x.startswith("flash_status=")
+        ]
         runtime_blockers = [
             x for x in runtime_blockers if not x.startswith("flash_status=")
         ]
 
     headline = (
-        "READY FOR MAGISK-PATCHED BOOT VALIDATION"
+        "READY FOR FASTBOOT BOOT VALIDATION"
         if not runtime_blockers
         else "NOT READY FOR DEVICE RUNTIME VALIDATION"
     )
@@ -118,7 +121,7 @@ def main() -> int:
         f"- driver_integration_status: `{driver_status}`",
         f"- flash_status: `{report.get('flash_status', 'unknown')}`",
         f"- anykernel: `{report.get('anykernel_ok', 'no')}/{report.get('anykernel_validate_status', 'unknown')}`",
-        f"- magisk_patch_ready: `{'yes' if magisk_patch_ready else 'no'}`",
+        f"- fastboot_boot_package_ready: `{'yes' if fastboot_boot_package_ready else 'no'}`",
         f"- focus: `{focus.get('focus', '')}` ({focus.get('reason', 'n/a')})",
         f"- result_overall: `{runtime_result.get('overall', 'UNKNOWN')}`",
         f"- boot_method: `{runtime_result.get('boot_method', 'unknown')}`",
@@ -149,7 +152,7 @@ def main() -> int:
         md.extend(
             [
                 "## Runtime Gate Result",
-                "- ROM-aligned boot packaging is ready for device-side Magisk patch validation.",
+                "- ROM-aligned boot packaging is ready for temporary `fastboot boot` validation.",
                 "- Driver integration has no remaining runtime-blocking items.",
                 "- AnyKernel packaging is no longer the primary gate for the current validation path.",
                 "",
@@ -166,9 +169,9 @@ def main() -> int:
         )
 
     next_steps = [
-        "- Copy `artifacts/boot.img` to the device and patch it with the Magisk app.",
-        "- Flash the Magisk-patched boot image, then confirm the device still boots cleanly.",
-        "- After the first rooted boot, collect dmesg/logcat and rerun postprocess with the validation result.",
+        "- Prepare the custom-kernel boot image package for temporary boot validation.",
+        "- Boot it with `fastboot boot <boot.img>` first; do not flash on the first pass.",
+        "- After the first boot, collect dmesg/logcat and rerun postprocess with the validation result.",
     ]
     runtime_overall = runtime_result.get("overall", "UNKNOWN")
     runtime_status = runtime_result.get("status", "missing_input")
@@ -185,24 +188,24 @@ def main() -> int:
             "- If release packaging is already green, close remaining ROM / driver alignment follow-ups.",
         ]
     elif runtime_blockers:
-        if magisk_patch_ready:
+        if fastboot_boot_package_ready:
             next_steps = [
-                "- Release boot image is already ready; keep the Magisk-patched boot path as the target validation route.",
+                "- Release boot image evidence is ready; keep `fastboot boot` as the target validation route.",
                 "- Clear the listed runtime blockers before asking for another device-side validation pass.",
                 "- Treat AnyKernel packaging as secondary evidence rather than the primary path.",
-                "- After the blockers are cleared, rerun postprocess and continue with the Magisk-patched boot flow.",
+                "- After the blockers are cleared, rerun postprocess and continue with the temporary `fastboot boot` flow.",
             ]
         else:
             next_steps = [
                 "- Finish release boot image preparation before device-side validation.",
                 "- Clear the listed runtime blockers before asking for another device-side validation pass.",
                 "- If AnyKernel packaging is available earlier, treat it as secondary evidence rather than the primary path.",
-                "- After packaging is ready, rerun postprocess and continue with the Magisk-patched boot flow.",
+                "- After packaging is ready, rerun postprocess and continue with the temporary `fastboot boot` flow.",
             ]
     elif runtime_status == "awaiting_device_validation":
         next_steps = [
-            "- Patch `artifacts/boot.img` with Magisk and note the patched image filename in `meta.patched_boot_image`.",
-            "- Flash the patched boot image, complete the checklist items, then change the `check.*` lines from `UNKNOWN`.",
+            "- Boot the prepared image with `fastboot boot <boot.img>` and note the tested filename in `meta.patched_boot_image`.",
+            "- Complete the checklist items, then change the `check.*` lines from `UNKNOWN`.",
             "- After the first device run, attach dmesg/logcat references in the same input file and rerun postprocess.",
         ]
 

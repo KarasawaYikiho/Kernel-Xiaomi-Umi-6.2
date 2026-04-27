@@ -105,8 +105,8 @@ def derive_next_action(
     ):
         next_action = "ready-for-action-test"
 
-    # The primary runtime path can be a ROM-aligned boot image patched by Magisk,
-    # even when AnyKernel packaging or build-context artifacts are absent.
+    # The primary runtime path is a temporary fastboot boot image, even when
+    # AnyKernel packaging or build-context artifacts are absent.
     if (
         next_action == "collect-more-data"
         and bootimg_status == "ok"

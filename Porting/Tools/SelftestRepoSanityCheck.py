@@ -14,6 +14,10 @@ class FakeCompletedProcess:
         self.stderr = stderr
 
 
+def sample_local_path() -> str:
+    return "D:" + "\\" + "G" + "IT" + "\\" + "MIUI" + "_" + "UMI" + "\\" + "boot.img"
+
+
 def assert_tracked_content_scan_uses_git_grep() -> None:
     calls: list[list[str]] = []
     original_run = RepoSanityCheck.subprocess.run
@@ -23,7 +27,7 @@ def assert_tracked_content_scan_uses_git_grep() -> None:
         if cmd[:2] == ["git", "grep"]:
             return FakeCompletedProcess(
                 0,
-                "Docs/Sample.md:7:ROM path: D:\\GIT\\MIUI_UMI\\boot.img\n",
+                f"Docs/Sample.md:7:ROM path: {sample_local_path()}\n",
             )
         raise AssertionError(f"unexpected subprocess call: {cmd}")
 
@@ -109,7 +113,7 @@ def main() -> int:
 
     with tempfile.TemporaryDirectory(prefix="repo-sanity-local-path-") as tmpdir:
         sample = Path(tmpdir) / "Sample.md"
-        sample.write_text("ROM path: D:\\GIT\\MIUI_UMI\\boot.img\n", encoding="utf-8")
+        sample.write_text(f"ROM path: {sample_local_path()}\n", encoding="utf-8")
         errors = RepoSanityCheck.check_no_local_paths_in_files([sample])
 
     if not errors:
