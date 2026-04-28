@@ -265,8 +265,8 @@ extract_rom_support_images() {
     elif [[ -f "$rom_ref/firmware-update/vbmeta.img" ]]; then
       cp -f "$rom_ref/firmware-update/vbmeta.img" "$ART/vbmeta.img"
     fi
-    if [[ -f "$rom_ref/Vbmeta-System.img" ]]; then
-      cp -f "$rom_ref/Vbmeta-System.img" "$ART/vbmeta_system.img"
+    if [[ -f "$rom_ref/VbmetaSystem.img" ]]; then
+      cp -f "$rom_ref/VbmetaSystem.img" "$ART/vbmeta_system.img"
     elif [[ -f "$rom_ref/vbmeta_system.img" ]]; then
       cp -f "$rom_ref/vbmeta_system.img" "$ART/vbmeta_system.img"
     elif [[ -f "$rom_ref/firmware-update/vbmeta_system.img" ]]; then
@@ -343,6 +343,7 @@ prepare_official_rom_bootimg() {
   local out_boot="$ART/boot.img"
   local tmp_boot="$ART/official-rom-boot.tmp"
   local source_boot="$ART/official-rom-boot-source.img"
+  local repack_required_bytes repack_rc size
 
   rm -f "$out_boot" "$tmp_boot" "$source_boot"
   if [[ -n "$official_bootimg_path" && -f "$official_bootimg_path" ]]; then
@@ -354,6 +355,42 @@ prepare_official_rom_bootimg() {
   fi
 
   if [[ -f "$source_boot" ]] && is_android_boot_image "$source_boot"; then
+    if [[ -n "$kernel_path" && -f "$kernel_path" && -n "$python_cmd" && -f "Porting/Tools/ReplaceBootKernel.py" ]]; then
+      repack_required_bytes="0"
+      if [[ "$required_bytes" =~ ^[0-9]+$ ]]; then
+        repack_required_bytes="$required_bytes"
+      fi
+      set +e
+      "$python_cmd" Porting/Tools/ReplaceBootKernel.py \
+        --stock-boot "$source_boot" \
+        --kernel "$kernel_path" \
+        --output "$out_boot" \
+        --required-bytes "$repack_required_bytes" >/dev/null
+      repack_rc=$?
+      set -e
+      if [[ $repack_rc -eq 0 && -f "$out_boot" ]] && is_android_boot_image "$out_boot"; then
+        size="$(stat -c%s "$out_boot" 2>/dev/null || wc -c < "$out_boot")"
+        write_bootimg_ok "official-rom-kernel-repacked" "official_rom_repacked_kernel" "$rom_source_used" "$out_boot" "$size"
+        echo "bootimg prepared: $out_boot ($size bytes)"
+        exit 0
+      fi
+      {
+        echo "status=failed"
+        echo "reason=official-rom-repack-failed"
+        echo "missing="
+        echo "kernel_path=$kernel_path"
+        echo "ramdisk_path=$ramdisk_path"
+        echo "dtb_path=$dtb_path"
+        echo "mkbootimg_cmd=$mkbootimg_cmd"
+        echo "header_version=$header_version"
+        echo "base=$base"
+        echo "pagesize=$pagesize"
+        echo "source=official_rom_repacked_kernel"
+        echo "source_ref=$rom_source_used"
+      } > "$OUT"
+      echo "bootimg repack failed: $source_boot"
+      exit 0
+    fi
     prepare_prebuilt_bootimg "$source_boot" "official_rom_baseline" "$rom_source_used"
   fi
 }

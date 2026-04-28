@@ -30,12 +30,18 @@ REPORT_NEXT_TO_FOCUS: dict[str, str] = {
 }
 
 RUNTIME_SAFE_DRIVER_PENDING: set[str] = {
+    "camera_isp_path",
+    "camera_sensor_module",
     "rom_boot_chain_consistency",
     "rom_dtbo_consistency",
     "rom_vbmeta_consistency",
     "rom_dynamic_partition_baseline",
     "partition_baseline_not_confirmed",
     "target_tree_missing_for_driver_validation",
+}
+
+RUNTIME_SAFE_ROM_ALIGNMENT_PENDING: set[str] = {
+    "runtime_validation_official_rom",
 }
 
 
@@ -72,6 +78,41 @@ def driver_integration_allows_runtime(
     return not driver_integration_runtime_blockers(
         driver_integration_status=driver_integration_status,
         driver_integration_pending=driver_integration_pending,
+    )
+
+
+def rom_alignment_runtime_blockers(
+    rom_alignment_status: str,
+    rom_alignment_pending: str = "",
+) -> list[str]:
+    if rom_alignment_status in ("complete", "unknown"):
+        return []
+    pending = split_csv(rom_alignment_pending)
+    blocking = [item for item in pending if item not in RUNTIME_SAFE_ROM_ALIGNMENT_PENDING]
+    if blocking:
+        return blocking
+    if rom_alignment_status == "partial" and pending:
+        return []
+    return pending or [f"rom_alignment_status={rom_alignment_status}"]
+
+
+def rom_alignment_allows_runtime(
+    rom_alignment_status: str,
+    rom_alignment_pending: str = "",
+) -> bool:
+    return not rom_alignment_runtime_blockers(
+        rom_alignment_status=rom_alignment_status,
+        rom_alignment_pending=rom_alignment_pending,
+    )
+
+
+def fastboot_boot_package_ready(report: dict[str, str]) -> bool:
+    return (
+        report.get("release_status", "unknown") == "ready"
+        and report.get("bootimg_status", "missing") == "ok"
+        and report.get("bootimg_rom_size_match", "unknown") == "yes"
+        and report.get("bootimg_rom_header_version_match", "unknown") == "yes"
+        and report.get("bootimg_official_reference_gate", "no") == "yes"
     )
 
 
@@ -125,9 +166,9 @@ def derive_next_action(
     ):
         next_action = "integrate-drivers-phase3"
 
-    if next_action == "ready-for-action-test" and rom_alignment_status not in (
-        "complete",
-        "unknown",
+    if next_action == "ready-for-action-test" and not rom_alignment_allows_runtime(
+        rom_alignment_status=rom_alignment_status,
+        rom_alignment_pending=rom_alignment_pending,
     ):
         next_action = "prepare-release-bootimg"
 

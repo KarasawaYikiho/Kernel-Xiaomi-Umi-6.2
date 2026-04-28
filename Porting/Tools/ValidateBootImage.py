@@ -200,6 +200,7 @@ def main() -> int:
         gate_reasons.append("boot_build_source_missing")
     elif source and source not in {
         "official_rom_baseline",
+        "official_rom_repacked_kernel",
         "prebuilt_path",
         "mkbootimg",
     }:

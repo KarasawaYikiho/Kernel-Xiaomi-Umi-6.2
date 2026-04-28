@@ -2,7 +2,7 @@
 from pathlib import Path
 
 from KvUtils import parse_kv
-from Phase2Decision import driver_integration_allows_runtime
+from Phase2Decision import driver_integration_allows_runtime, fastboot_boot_package_ready
 
 ART = Path("artifacts")
 OUT = ART / "artifact-summary.md"
@@ -26,6 +26,18 @@ def main() -> int:
     rv = parse_kv(ART / "runtime-validation-result.txt")
 
     next_action = r.get("next_action", "")
+    bootimg_source = r.get("bootimg_build_source", "")
+    stock_sha_match = r.get("bootimg_rom_sha256_match", "unknown")
+    boot_image_label = (
+        "custom-kernel official-aligned"
+        if bootimg_source == "official_rom_repacked_kernel"
+        else "release follow-up"
+    )
+    stock_sha_note = (
+        "expected for custom kernel"
+        if bootimg_source == "official_rom_repacked_kernel" and stock_sha_match == "no"
+        else ""
+    )
     runtime_gate = (
         "ready"
         if r.get("runtime_ready", "no") == "yes"
@@ -55,11 +67,12 @@ def main() -> int:
         f"- Decision Consistency: `{d.get('status', 'unknown')}`",
         f"- Runtime Validation Result: `{rv.get('overall', 'UNKNOWN')}` ({rv.get('status', 'missing_input')})",
         f"- Runtime Validation Failed Step: `{rv.get('failed_step', '') or 'none'}`",
-        f"- Boot Image: `{r.get('bootimg_status', 'missing')}` ({r.get('bootimg_reason', 'n/a')}) - release follow-up",
+        f"- Boot Image: `{r.get('bootimg_status', 'missing')}` ({r.get('bootimg_reason', 'n/a')}) - {boot_image_label}",
         f"- Boot Image ROM Match: `size={r.get('bootimg_rom_size_match', 'unknown')}` `header={r.get('bootimg_rom_header_version_match', 'unknown')}` `sha256={r.get('bootimg_rom_sha256_match', 'unknown')}`",
+        f"- Stock Boot SHA Match: `{stock_sha_match}`{f' ({stock_sha_note})' if stock_sha_note else ''}",
         f"- Boot Image Official Reference Gate: `{r.get('bootimg_official_reference_gate', 'no')}` ({r.get('bootimg_official_reference_gate_reasons', '') or 'none'})",
         f"- Boot Image Build: `{r.get('bootimg_build_status', 'unknown')}` ({r.get('bootimg_build_reason', 'n/a')})",
-        f"- Fastboot Boot Package: `{'ready' if r.get('release_status', 'unknown') == 'ready' and r.get('bootimg_status', 'missing') == 'ok' and r.get('bootimg_rom_size_match', 'unknown') == 'yes' and r.get('bootimg_rom_header_version_match', 'unknown') == 'yes' and r.get('bootimg_official_reference_gate', 'no') == 'yes' else 'blocked'}`",
+        f"- Fastboot Boot Package: `{'ready' if fastboot_boot_package_ready(r) else 'blocked'}`",
         "",
         "## Next Focus",
         f"- Focus: `{n.get('focus', 'collect-more-data')}`",

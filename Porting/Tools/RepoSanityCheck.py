@@ -18,7 +18,9 @@ PROJECT_NAME_CHECK_PREFIXES = (
 )
 PROJECT_NAME_CHECK_ROOT_FILES = {
     "AGENTS.md",
+    "ContributingZhCn.md",
     "PortingPlan.md",
+    "ReadmeZhCn.md",
 }
 REQUIRED_IGNORES = (
     "/artifacts/",

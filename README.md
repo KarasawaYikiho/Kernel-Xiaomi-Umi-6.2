@@ -1,6 +1,6 @@
 # Kernel-Xiaomi-SM8250
 
-English | [简体中文](README-Zh-Cn.md)
+English | [简体中文](ReadmeZhCn.md)
 
 Xiaomi SM8250-family kernel source tree based on `yefxx/xiaomi-umi-linux-kernel`, with `umi` as the current ROM-alignment reference device.
 

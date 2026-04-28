@@ -2,7 +2,7 @@
 from pathlib import Path
 
 from KvUtils import parse_kv
-from Phase2Decision import derive_runtime_ready, driver_integration_allows_runtime
+from Phase2Decision import derive_runtime_ready, driver_integration_allows_runtime, fastboot_boot_package_ready
 
 ART = Path("artifacts")
 OUT = ART / "status-badge-line.txt"
@@ -29,15 +29,10 @@ def main() -> int:
     release_status = r.get("release_status", "unknown")
     rom_alignment = r.get("rom_alignment_status", "pending")
     rom_bootimg = f"{r.get('bootimg_rom_size_match', 'unknown')}/{r.get('bootimg_rom_header_version_match', 'unknown')}/{r.get('bootimg_official_reference_gate', 'no')}"
-    fastboot_boot_package_ready = (
-        "yes"
-        if release_status == "ready"
-        and r.get("bootimg_status", "missing") == "ok"
-        and r.get("bootimg_rom_size_match", "unknown") == "yes"
-        and r.get("bootimg_rom_header_version_match", "unknown") == "yes"
-        and r.get("bootimg_official_reference_gate", "no") == "yes"
-        else "no"
-    )
+    stock_sha = r.get("bootimg_rom_sha256_match", "unknown")
+    if r.get("bootimg_build_source", "") == "official_rom_repacked_kernel" and stock_sha == "no":
+        stock_sha = "no(expected-custom)"
+    fastboot_boot_ready = "yes" if fastboot_boot_package_ready(r) else "no"
 
     expected_runtime_ready = derive_runtime_ready(next_action)
     runtime_marker = (
@@ -57,9 +52,9 @@ def main() -> int:
         f"build={build_rc} | flash={flash} | anykernel={anyk}/{anyk_reason}/{anyk_val} "
         f"| driver_integration={driver_integration} | rom_alignment={rom_alignment} | runtime_gate={runtime_gate} "
         f"| runtime_result={runtime_result}{runtime_result_suffix} "
-        f"| runtime_status={runtime_status}/{runtime_boot_method} | fastboot_boot_package_ready={fastboot_boot_package_ready} "
+        f"| runtime_status={runtime_status}/{runtime_boot_method} | fastboot_boot_package_ready={fastboot_boot_ready} "
         f"| runtime_ready={runtime_ready}({runtime_marker}) | release={release_status} "
-        f"| rom_bootimg={rom_bootimg} | hit_ratio={ratio} | next={next_action}"
+        f"| rom_bootimg={rom_bootimg} | stock_sha={stock_sha} | hit_ratio={ratio} | next={next_action}"
     )
     OUT.write_text(line + "\n", encoding="utf-8")
     print(f"wrote {OUT}")

@@ -249,6 +249,7 @@ def test_status_outputs_use_fastboot_boot_package_label(tmp: Path) -> None:
     write(tmp / "artifacts" / "next-focus.txt", "focus=integrate-drivers-phase3\nreason=phase3_pending")
     write(tmp / "artifacts" / "phase2-report-validate.txt", "status=ok")
     write(tmp / "artifacts" / "runtime-validation-result.txt", "overall=UNKNOWN\nstatus=awaiting_device_validation\nboot_method=fastboot_boot")
+    write(tmp / "artifacts" / "phase2-report.txt", read(tmp / "artifacts" / "phase2-report.txt") + "bootimg_rom_sha256_match=no\nbootimg_build_source=official_rom_repacked_kernel\n")
     SummarizeArtifactsMarkdown.main()
     BuildStatusBadgeLine.main()
     CollectMetricsJson.main()
@@ -263,7 +264,10 @@ def test_status_outputs_use_fastboot_boot_package_label(tmp: Path) -> None:
         if "magisk" in text.lower():
             raise AssertionError(f"{name}: still contains magisk-specific runtime labeling")
     expect_contains("artifact summary fastboot", summary, "Fastboot Boot Package")
+    expect_contains("artifact summary custom boot", summary, "custom-kernel official-aligned")
+    expect_contains("artifact summary expected sha mismatch", summary, "Stock Boot SHA Match: `no` (expected for custom kernel)")
     expect_contains("status badge fastboot", badge, "fastboot_boot_package_ready=")
+    expect_contains("status badge sha", badge, "stock_sha=no(expected-custom)")
     expect_contains("metrics fastboot", metrics, "fastboot_boot_package_ready")
 
 
@@ -387,6 +391,7 @@ def test_status_reports_emit_phase_ownership(tmp: Path) -> None:
     driver = kv(tmp / "artifacts" / "driver-integration-status.txt")
     expect("driver phase", driver.get("phase"), "3")
     expect("driver blocker", driver.get("next_kernel_usability_blocker"), "camera_isp_path")
+    expect("driver runtime gate", driver.get("runtime_blocking_until_phase3_complete"), "no")
 
     write(tmp / "artifacts" / "rom-alignment-manifest.txt", "integrated: bootimg_release_packaging\npending: dtb_target_coverage\npending: runtime_validation_official_rom")
     write(tmp / "artifacts" / "rom-alignment-manifest-validate.txt", "status=ok")

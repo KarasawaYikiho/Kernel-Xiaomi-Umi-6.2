@@ -8,7 +8,7 @@
 
 ## 开始前
 
-1. 阅读 `README-Zh-Cn.md`
+1. 阅读 `ReadmeZhCn.md`
 2. 阅读 `PortingPlan.md`
 3. 查看 `Porting/CHANGELOG.md`
 
@@ -25,7 +25,7 @@
 
 ## 来源规则
 
-源码与参考源角色统一维护在 `README-Zh-Cn.md` 和 `Porting/README.md`。
+源码与参考源角色统一维护在 `ReadmeZhCn.md` 和 `Porting/README.md`。
 
 - yefxx 是源码基线
 - SO-TS 仅用于定向对比参考
@@ -38,7 +38,7 @@
 - 行为变化时更新文档
 - 要求 CI 证据
 - 保持 `CHANGELOG.md` 简洁
-- 遵循 `README-Zh-Cn.md` 中的仓库清洁约定
+- 遵循 `ReadmeZhCn.md` 中的仓库清洁约定
 
 ## 安全
 

@@ -5,6 +5,7 @@ from pathlib import Path
 
 from KvUtils import parse_kv
 from Manifest import parse_driver_manifest
+from Phase2Decision import driver_integration_runtime_blockers
 
 ART = Path("artifacts")
 OUT = ART / "driver-integration-status.txt"
@@ -50,7 +51,6 @@ def main() -> int:
     manifest_validate_status = manifest_validate.get("status", "unknown")
     if manifest_validate_status not in ("ok", "unknown"):
         pending.append("manifest_format_invalid")
-
     if integrated_count >= 3 and not pending:
         status = "complete"
         reason = "integration_manifest_complete"
@@ -69,6 +69,11 @@ def main() -> int:
         status = "pending"
         reason = "integration_manifest_missing_or_empty"
 
+    runtime_blockers = driver_integration_runtime_blockers(
+        driver_integration_status=status,
+        driver_integration_pending=",".join(dict.fromkeys(pending)),
+    )
+
     OUT.write_text(
         "\n".join(
             [
@@ -82,7 +87,7 @@ def main() -> int:
                 f"partition_baseline_ready={'yes' if has_partition_baseline else 'no'}",
                 f"manifest_validate_status={manifest_validate_status}",
                 f"next_kernel_usability_blocker={(pending[0] if pending else '')}",
-                f"runtime_blocking_until_phase3_complete={'yes' if pending else 'no'}",
+                f"runtime_blocking_until_phase3_complete={'yes' if runtime_blockers else 'no'}",
                 "pending=" + ",".join(dict.fromkeys(pending)),
             ]
         )

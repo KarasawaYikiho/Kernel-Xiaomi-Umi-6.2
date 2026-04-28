@@ -5,6 +5,7 @@ from KvUtils import parse_kv
 from Phase2Decision import (
     DEFAULT_BOOTIMG_REQUIRED_BYTES_STR,
     driver_integration_runtime_blockers,
+    fastboot_boot_package_ready as derive_fastboot_boot_package_ready,
 )
 
 ART = Path("artifacts")
@@ -39,13 +40,7 @@ def main() -> int:
     driver_runtime_blockers = driver_integration_runtime_blockers(
         driver_integration_status, driver_integration_pending
     )
-    fastboot_boot_package_ready = (
-        release_status == "ready"
-        and bootimg_status == "ok"
-        and report.get("bootimg_rom_size_match", "unknown") == "yes"
-        and report.get("bootimg_rom_header_version_match", "unknown") == "yes"
-        and report.get("bootimg_official_reference_gate", "no") == "yes"
-    )
+    fastboot_boot_package_ready = derive_fastboot_boot_package_ready(report)
 
     blockers: list[str] = []
     if report.get("defconfig_rc", "n/a") not in ("0", "n/a"):

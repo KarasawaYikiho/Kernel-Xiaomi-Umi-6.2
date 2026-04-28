@@ -91,6 +91,13 @@ def assert_github_standard_templates_do_not_fail_titlecase_check() -> None:
         raise AssertionError(f"expected GitHub standard templates to be exempt: {errors}")
 
 
+def assert_localized_root_docs_are_checked_for_titlecase() -> None:
+    required = {"ReadmeZhCn.md", "ContributingZhCn.md"}
+    missing = required - set(RepoSanityCheck.PROJECT_NAME_CHECK_ROOT_FILES)
+    if missing:
+        raise AssertionError(f"localized root docs missing from titlecase check: {sorted(missing)}")
+
+
 def assert_repo_url_is_not_local_path_leak() -> None:
     with tempfile.TemporaryDirectory(prefix="repo-sanity-repo-url-") as tmpdir:
         sample = Path(tmpdir) / "Sample.md"
@@ -109,6 +116,7 @@ def main() -> int:
     assert_tracked_content_scan_accepts_no_matches()
     assert_required_ignores_cover_local_anykernel_and_rom_archives()
     assert_github_standard_templates_do_not_fail_titlecase_check()
+    assert_localized_root_docs_are_checked_for_titlecase()
     assert_repo_url_is_not_local_path_leak()
 
     with tempfile.TemporaryDirectory(prefix="repo-sanity-local-path-") as tmpdir:

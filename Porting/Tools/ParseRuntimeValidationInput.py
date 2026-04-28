@@ -8,7 +8,7 @@ INP = ART / "runtime-validation-input.md"
 OUT = ART / "runtime-validation-result.txt"
 
 ALLOWED = {"PASS", "FAIL", "SKIP", "UNKNOWN"}
-ALLOWED_BOOT_METHODS = {"fastboot_boot", "magisk_patched_boot", "anykernel", "unknown", ""}
+ALLOWED_BOOT_METHODS = {"fastboot_boot", "anykernel", "unknown", ""}
 PREFLIGHT_ORDER = [
     "preflight.bootloader_unlocked",
     "preflight.rom_matches_baseline",

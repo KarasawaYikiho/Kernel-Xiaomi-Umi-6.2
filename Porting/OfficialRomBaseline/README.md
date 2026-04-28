@@ -18,7 +18,7 @@ The purpose of these files is to make ROM alignment reproducible inside CI witho
 - `BootImageBaseline.env` — shell-friendly boot image alignment hints
 - `Dtbo.img` — repository-local DTBO baseline used for alignment evidence
 - `Vbmeta.img` — repository-local vbmeta baseline used for alignment evidence
-- `Vbmeta-System.img` — repository-local vbmeta_system baseline used for alignment evidence
+- `VbmetaSystem.img` — repository-local vbmeta_system baseline used for alignment evidence
 
 `boot.img` is intentionally not checked into git because the stock image exceeds GitHub's file size limit. Its pinned size, hash, and header hints are stored in `Manifest.json` and `BootImageBaseline.env`, while local workflows can still consume a local ROM zip or extracted ROM directory.
 
@@ -39,7 +39,7 @@ The repository currently carries only compact official ROM baseline binaries for
 
 - `Dtbo.img`
 - `Vbmeta.img`
-- `Vbmeta-System.img`
+- `VbmetaSystem.img`
 
 Workflow inputs or local extracted ROM directories are still supported, but repo-local baseline files now provide a stable fallback for CI and local validation.
 

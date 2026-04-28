@@ -6,6 +6,7 @@ from Phase2Decision import (
     derive_next_focus,
     derive_runtime_ready,
     driver_integration_runtime_blockers,
+    fastboot_boot_package_ready,
 )
 
 
@@ -72,6 +73,25 @@ def main() -> int:
             ),
             "integrate-drivers-phase3",
             "no",
+        ),
+        (
+            "runtime-ready-with-camera-smoke-followups",
+            dict(
+                defconfig_rc="0",
+                build_rc="0",
+                dtbs_rc="0",
+                flash_status="unknown",
+                anykernel_ok="yes",
+                anykernel_validate_status="ok",
+                bootimg_status="ok",
+                driver_integration_status="partial",
+                driver_integration_pending="camera_isp_path,camera_sensor_module",
+                rom_alignment_status="partial",
+                rom_alignment_pending="runtime_validation_official_rom",
+                runtime_validation_overall="UNKNOWN",
+            ),
+            "ready-for-action-test",
+            "yes",
         ),
         (
             "runtime-fail-routes-to-analysis",
@@ -219,6 +239,26 @@ def main() -> int:
         driver_integration_pending="rom_boot_chain_consistency,display_pipeline",
     )
     expect("runtime_blockers.filter", ",".join(blockers), "display_pipeline")
+
+    camera_blockers = driver_integration_runtime_blockers(
+        driver_integration_status="partial",
+        driver_integration_pending="camera_isp_path,camera_sensor_module",
+    )
+    expect("runtime_blockers.camera_followups", ",".join(camera_blockers), "")
+
+    expect(
+        "fastboot_boot_package_ready.shared_gate",
+        fastboot_boot_package_ready(
+            {
+                "release_status": "ready",
+                "bootimg_status": "ok",
+                "bootimg_rom_size_match": "yes",
+                "bootimg_rom_header_version_match": "yes",
+                "bootimg_official_reference_gate": "yes",
+            }
+        ),
+        True,
+    )
 
     focus_cases = [
         (

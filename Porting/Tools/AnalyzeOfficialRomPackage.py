@@ -15,7 +15,7 @@ BASELINE_MANIFEST = BASELINE_DIR / "Manifest.json"
 REPO_BASELINE_IMAGE_NAMES = {
     "dtbo.img": "Dtbo.img",
     "vbmeta.img": "Vbmeta.img",
-    "vbmeta_system.img": "Vbmeta-System.img",
+    "vbmeta_system.img": "VbmetaSystem.img",
 }
 OUT_MD = Path("Porting/OfficialRomAnalysis.md")
 OUT_BASELINE = Path("artifacts/official-rom-baseline.json")
