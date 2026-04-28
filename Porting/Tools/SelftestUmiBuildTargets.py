@@ -29,6 +29,10 @@ def require(condition: bool, message: str) -> None:
 
 
 def main() -> int:
+    if not (ROOT / "arch" / "arm64").exists():
+        print("umi build target selftest=skipped (kernel source not present)")
+        return 0
+
     require(DEFCONFIG.is_file(), "missing arch/arm64/configs/umi_defconfig")
     require(DTS.is_file(), "missing arch/arm64/boot/dts/qcom/sm8250-xiaomi-umi.dts")
 
