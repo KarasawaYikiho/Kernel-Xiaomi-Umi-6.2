@@ -95,7 +95,7 @@ def assert_repo_url_is_not_local_path_leak() -> None:
     with tempfile.TemporaryDirectory(prefix="repo-sanity-repo-url-") as tmpdir:
         sample = Path(tmpdir) / "Sample.md"
         sample.write_text(
-            "Docs: https://github.com/KarasawaYikiho/Kernel-Xiaomi-Umi-6.12\n",
+            "Docs: https://github.com/KarasawaYikiho/Kernel-Xiaomi-Umi-6.11\n",
             encoding="utf-8",
         )
         errors = RepoSanityCheck.check_no_local_paths_in_files([sample])
