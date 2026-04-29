@@ -42,9 +42,14 @@ if [ -n "$imagegz_path" ]; then
       mv -f "$work_dir/AnyKernel.sh" "$work_dir/anykernel.sh"
     fi
 
-    # Optional: include first matched primary dtb as dtb
+    # Optional: include device-specific dtb first, fallback to first available
     if [ -s artifacts/primary_dtb_paths.txt ]; then
-      first_dtb="$(head -n1 artifacts/primary_dtb_paths.txt)"
+      device_dtb="$(grep -E "/${DEVICE:-umi}[^/]*\.dtb$" artifacts/primary_dtb_paths.txt 2>/dev/null | head -n1 || true)"
+      if [ -n "$device_dtb" ] && [ -f "$device_dtb" ]; then
+        first_dtb="$device_dtb"
+      else
+        first_dtb="$(head -n1 artifacts/primary_dtb_paths.txt)"
+      fi
       if [ -f "$first_dtb" ]; then
         cp -v "$first_dtb" "$work_dir/dtb" || true
         anykernel_has_dtb=yes

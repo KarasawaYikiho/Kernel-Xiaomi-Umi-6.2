@@ -430,8 +430,13 @@ fi
 
 # dtb (optional for newer header versions but preferred)
 if [[ -z "$dtb_path" && -s "$ART/primary_dtb_paths.txt" ]]; then
-  cand="$(head -n1 "$ART/primary_dtb_paths.txt" || true)"
-  [[ -f "$cand" ]] && dtb_path="$cand"
+  device_dtb="$(grep -E "/${DEVICE:-umi}[^/]*\.dtb$" "$ART/primary_dtb_paths.txt" 2>/dev/null | head -n1 || true)"
+  if [[ -n "$device_dtb" && -f "$device_dtb" ]]; then
+    dtb_path="$device_dtb"
+  else
+    cand="$(head -n1 "$ART/primary_dtb_paths.txt" || true)"
+    [[ -f "$cand" ]] && dtb_path="$cand"
+  fi
 fi
 
 detect_python || true
