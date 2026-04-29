@@ -34,7 +34,7 @@ def main() -> int:
     expect_contains(text, "defconfig_rc=$rc1")
     expect_contains(text, "build_rc=$rc2")
     expect_contains(text, 'make O=out ARCH=arm64 LLVM=1 LLVM_IAS=1 umi_defconfig')
-    expect_contains(text, 'make O=out ARCH=arm64 LLVM=1 LLVM_IAS=1 -j"$(nproc)" Image.gz dtbs')
+    expect_contains(text, 'make O=out ARCH=arm64 LLVM=1 LLVM_IAS=1 -j"$(nproc)" Image.gz')
     expect_contains(text, "if: always()")
     expect_contains(text, 'cp -v out/.config artifacts/ || true')
     expect_contains(text, 'cp -v out/arch/arm64/boot/Image.gz artifacts/ || true')

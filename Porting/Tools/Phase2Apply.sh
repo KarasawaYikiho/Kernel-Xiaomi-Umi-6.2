@@ -53,6 +53,9 @@ set_kconfig_n() {
 # qcom-spmi-adc5 mismatch on current target baseline (undeclared ADC5_* identifiers)
 set_kconfig_n "CONFIG_QCOM_SPMI_ADC5"
 
+# DSCP target removed in 6.11 (only xt_dscp.c match exists, not xt_DSCP.c target)
+set_kconfig_n "CONFIG_NETFILTER_XT_TARGET_DSCP"
+
 # 1.5) leds color-id compatibility patch (some 5+ bases miss LED_COLOR_ID_* defs)
 patch_led_color_compat() {
   local f="$1"
