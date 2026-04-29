@@ -89,7 +89,7 @@ jobs:
             exit 1
           fi
           mkdir -p artifacts
-          find scripts -type f -exec sh -c 'case "$(head -c 2 "$1" 2>/dev/null)" in "#!") chmod +x "$1";; esac' sh {} \;
+          find scripts arch tools -type f -exec sh -c 'case "$(head -c 2 "$1" 2>/dev/null)" in "#!") chmod +x "$1";; esac' sh {} \;
           set +e
           make O=out ARCH=arm64 LLVM=1 LLVM_IAS=1 umi_defconfig > artifacts/make-defconfig.log 2>&1
           rc1=$?

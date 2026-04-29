@@ -17,9 +17,10 @@ if [[ -z "$python_cmd" ]]; then
 fi
 
 mkdir -p "$OUT_DIR" "$ARTIFACTS_DIR"
-if [ -d "$KERNEL_DIR/scripts" ]; then
-  find "$KERNEL_DIR/scripts" -type f -exec sh -c 'case "$(head -c 2 "$1" 2>/dev/null)" in "#!") chmod +x "$1";; esac' sh {} \;
-fi
+for d in "$KERNEL_DIR/scripts" "$KERNEL_DIR/arch" "$KERNEL_DIR/tools"; do
+  [ -d "$d" ] || continue
+  find "$d" -type f -exec sh -c 'case "$(head -c 2 "$1" 2>/dev/null)" in "#!") chmod +x "$1";; esac' sh {} \;
+done
 set +e
 make -C "$KERNEL_DIR" O="$OUT_DIR" ARCH=arm64 LLVM=1 LLVM_IAS=1 "${DEVICE}_defconfig" > "$ARTIFACTS_DIR/make-defconfig.log" 2>&1
 rc1=$?

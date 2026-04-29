@@ -225,6 +225,12 @@ do_copy() {
   dst_dir="$DST_DIR/$dst_root/$subdir"
   mkdir -p "$dst_dir"
   dst_file="$dst_dir/$base"
+
+  if [[ -f "$dst_file" ]]; then
+    COPIED[$src_file]=1
+    return 0
+  fi
+
   cp -f "$src_file" "$dst_file"
 
   COPIED[$src_file]=1
@@ -320,6 +326,7 @@ if [[ -d "$SRC_BIND" ]]; then
     [[ -f "$h" ]] || continue
     rel="${h#$SRC_BIND/}"
     dst="$DST_BIND/$rel"
+    [[ -f "$dst" ]] && continue
     mkdir -p "$(dirname "$dst")"
     cp -f "$h" "$dst"
     bind_copied=$((bind_copied+1))
