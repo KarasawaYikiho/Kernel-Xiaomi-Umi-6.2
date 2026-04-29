@@ -131,7 +131,6 @@ Thumbs.db
 
 # Local agent/superpowers work files
 /docs/superpowers/
-/dosc/superpower/
 
 # Large local ROM baseline inputs
 Porting/OfficialRomBaseline/boot.img
