@@ -44,7 +44,7 @@ if [ -n "$imagegz_path" ]; then
 
     # Optional: include device-specific dtb first, fallback to first available
     if [ -s artifacts/primary_dtb_paths.txt ]; then
-      device_dtb="$(grep -E "/${DEVICE:-umi}[^/]*\.dtb$" artifacts/primary_dtb_paths.txt 2>/dev/null | head -n1 || true)"
+      device_dtb="$(grep -F "sm8250-xiaomi-${DEVICE:-umi}.dtb" artifacts/primary_dtb_paths.txt 2>/dev/null | head -n1 || true)"
       if [ -n "$device_dtb" ] && [ -f "$device_dtb" ]; then
         first_dtb="$device_dtb"
       else
