@@ -88,6 +88,7 @@ jobs:
             echo "KernelSU enablement is not wired for the in-repo Kbuild flow yet" >&2
             exit 1
           fi
+          find scripts -type f -name '*.sh' -exec chmod +x {} +
           make O=out ARCH=arm64 LLVM=1 LLVM_IAS=1 umi_defconfig
           make O=out ARCH=arm64 LLVM=1 LLVM_IAS=1 -j"$(nproc)" Image.gz dtbs
 

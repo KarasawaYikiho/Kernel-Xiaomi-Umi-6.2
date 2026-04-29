@@ -26,6 +26,7 @@ def main() -> int:
     expect_contains(text, 'echo "OUT_DIR=$GITHUB_WORKSPACE/out" >> "$GITHUB_ENV"')
     expect_contains(text, "DEVICE: ${{ github.event.inputs.device || 'umi' }}")
     expect_contains(text, 'python3 Porting/Tools/ValidatePortDevice.py "$DEVICE"')
+    expect_contains(text, "find scripts -type f -name '*.sh' -exec chmod +x {} +")
     expect_contains(text, 'make O=out ARCH=arm64 LLVM=1 LLVM_IAS=1 umi_defconfig')
     expect_contains(text, 'make O=out ARCH=arm64 LLVM=1 LLVM_IAS=1 -j"$(nproc)" Image.gz dtbs')
     expect_contains(text, 'cp -v out/.config artifacts/ || true')
@@ -42,6 +43,7 @@ def main() -> int:
         encoding="utf-8"
     )
     expect_contains(phase2, 'ARCH=arm64')
+    expect_contains(phase2, 'find "$KERNEL_DIR/scripts" -type f -name "*.sh" -exec chmod +x {} +')
     expect_contains(phase2, 'make -C "$KERNEL_DIR" O="$OUT_DIR" ARCH=arm64 LLVM=1 LLVM_IAS=1 "${DEVICE}_defconfig"')
     expect_contains(phase2, 'make -C "$KERNEL_DIR" O="$OUT_DIR" ARCH=arm64 LLVM=1 LLVM_IAS=1 -j"$(nproc)" Image.gz')
     expect_not_contains(phase2, 'Image.gz modules')
